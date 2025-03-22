@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "triplog",
     "accounts",
+    "pages",
 ]
 
 MIDDLEWARE = [
