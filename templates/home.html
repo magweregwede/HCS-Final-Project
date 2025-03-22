@@ -5,9 +5,11 @@
 {% block content %}
 {% if user.is_authenticated %}
 <p>Hi {{ user.username }}</p>
-<p><a href="{% url 'logout' %}">Log Out</a></p>
-{% else %}
-<p>You are not logged in</p>
-<a href="{% url 'login' %}">Log In</a>
-{% endif %}
-{% endblock %}
+<p>
+<form action="{% url 'logout' %}" method="post">{% csrf_token %}
+    <button type="submit">Log Out</button></p>
+    {% else %}
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">Log In</a>
+    {% endif %}
+    {% endblock %}
