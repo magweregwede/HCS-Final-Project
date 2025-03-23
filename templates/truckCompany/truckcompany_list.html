@@ -10,7 +10,10 @@
 </div>
 <a href="{% url 'truckcompany_edit' truckcompany.pk %}">Edit</a>
 <a href="{% url 'truckcompany_delete' truckcompany.pk %}">Delete</a>
-<br>
+<hr>
 
 {% endfor %}
+{% if user.is_authenticated %}
+<p><a href="{% url 'truckcompany_new' %}">+ New</a></p>
+{% endif %}
 {% endblock %}

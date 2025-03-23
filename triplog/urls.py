@@ -5,6 +5,7 @@ from .views import (
     TruckCompanyDetailView,
     TruckCompanyUpdateView,
     TruckCompanyDeleteView,
+    TruckCompanyCreateView,
 )
 
 urlpatterns = [
@@ -12,4 +13,5 @@ urlpatterns = [
     path("truckcompany/<int:pk>/", TruckCompanyDetailView.as_view(), name="truckcompany_detail"),
     path("truckcompany/<int:pk>/edit", TruckCompanyUpdateView.as_view(), name="truckcompany_edit"),
     path("truckcompany/<int:pk>/delete", TruckCompanyDeleteView.as_view(), name="truckcompany_delete"),
+    path("truckcompany/new/", TruckCompanyCreateView.as_view(), name="truckcompany_new"),
 ]
