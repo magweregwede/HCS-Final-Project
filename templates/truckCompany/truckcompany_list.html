@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Truck Companies{% endblock %}
+
+{% block content %}
+{% for truckcompany in truckcompany_list %}
+<div>
+    <a href="{{ truckcompany.get_absolute_url }}">{{ truckcompany.name }}</a>
+    <span>{{ truckcompany.contact }}</span>
+</div>
+<a href="{% url 'truckcompany_edit' truckcompany.pk %}">Edit</a>
+<a href="{% url 'truckcompany_delete' truckcompany.pk %}">Delete</a>
+<br>
+
+{% endfor %}
+{% endblock %}

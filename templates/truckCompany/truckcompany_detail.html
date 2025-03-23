@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="truckcompany-entry">
+    <h2>{{ object.name }}</h2>
+    <p>by {{ object.contact }} | {{ object.email }}</p>
+    <p>{{ object.address }}</p>
+</div>
+<div>
+    <p><a href="{% url 'truckcompany_edit' truckcompany.pk %}">Edit</a>
+        <a href="{% url 'truckcompany_delete' truckcompany.pk %}">Delete</a>
+    </p>
+    <p>Back to <a href="{% url 'truckcompany_list' %}">All Truck Companies</a>.</p>
+</div>
+{% endblock content %}

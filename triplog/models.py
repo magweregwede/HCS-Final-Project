@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
 
 # Create your models here.
 
@@ -11,6 +12,9 @@ class TruckCompany(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return reverse("truckcompany_detail", kwargs={"pk": self.pk})
 
 
 class Truck(models.Model):
