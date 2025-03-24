@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, CreateView
 from django.views.generic.edit import UpdateView, DeleteView
 from django.urls import reverse_lazy
@@ -176,4 +177,9 @@ class TripCreateView(CreateView):
     model = Trip
     template_name = "trip/trip_new.html"
     form_class = TripForm
+
+    def form_valid(self, form):
+        # Automatically set the clerk field to the logged-in user
+        form.instance.clerk = self.request.user
+        return super().form_valid(form)
 

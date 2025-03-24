@@ -6,4 +6,33 @@
     {{ form.as_p }}
     <button type="submit">Save</button>
 </form>
+<p>{{ user.username }}</p>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const statusField = document.querySelector("#id_status");
+        const arrivalTimeField = document.querySelector("#id_arrival_time");
+
+        if (!statusField || !arrivalTimeField) {
+            console.error("Error: One or more elements not found.");
+            return;
+        }
+
+        // When status changes to 'Ongoing', clear arrival time and hide the field
+        statusField.addEventListener("change", function () {
+            if (statusField.value === "Ongoing") {
+                arrivalTimeField.value = "";  // Clear the arrival time field
+                arrivalTimeField.removeAttribute("required");  // Remove the required attribute   
+            }
+        });
+
+        // When arrival time is set, change status to 'Completed'
+        arrivalTimeField.addEventListener("input", function () {
+            if (arrivalTimeField.value) {
+                statusField.value = "Completed";  // Set status to 'Completed'
+            }
+        });
+    });
+</script>
 {% endblock content %}

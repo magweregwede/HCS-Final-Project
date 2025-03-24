@@ -63,7 +63,7 @@ class Trip(models.Model):
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=20, choices=[("Ongoing", "Ongoing"), ("Completed", "Completed")], default="Ongoing")
-    clerk = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    clerk = models.ForeignKey("auth.User",on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Trip {self.id} - {self.truck.plate_number} ({self.status})"
