@@ -43,6 +43,12 @@ from .views import (
     TripProductUpdateView,
     TripProductDeleteView,
     TripProductCreateView,
+    # Trip Route
+    TripRouteListView,
+    TripRouteDetailView,
+    TripRouteUpdateView,
+    TripRouteDeleteView,
+    TripRouteCreateView,
 )
 
 urlpatterns = [
@@ -89,5 +95,10 @@ urlpatterns = [
     path("tripproduct/<int:pk>/edit", TripProductUpdateView.as_view(), name="tripproduct_edit"),
     path("tripproduct/<int:pk>/delete", TripProductDeleteView.as_view(), name="tripproduct_delete"),
     path("tripproduct/new/", TripProductCreateView.as_view(), name="tripproduct_new"),
+    #  Trip Route
+    path("triproute/", TripRouteListView.as_view(), name="triproute_list"),
+    path("triproute/<int:pk>/", TripRouteDetailView.as_view(), name="triproute_detail"),
+    path("triproute/<int:pk>/edit", TripRouteUpdateView.as_view(), name="triproute_edit"),
+    path("triproute/<int:pk>/delete", TripRouteDeleteView.as_view(), name="triproute_delete"),
+    path("triproute/new/", TripRouteCreateView.as_view(), name="triproute_new"),
 ]
-

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Trip Routes{% endblock %}
+
+{% block content %}
+{% for triproute in triproute_list %}
+<div>
+    <a href="{{ triproute.get_absolute_url }}">{{ triproute.trip }}</a>
+    <span>{{ triproute.route }} </span><span>Time taken:{{ triproute.actual_time_min }}</span>
+</div>
+<a href="{% url 'triproute_edit' triproute.pk %}">Edit</a>
+<a href="{% url 'triproute_delete' triproute.pk %}">Delete</a>
+<hr>
+
+{% endfor %}
+{% if user.is_authenticated %}
+<p><a href="{% url 'triproute_new' %}">+ New</a></p>
+{% endif %}
+{% endblock %}

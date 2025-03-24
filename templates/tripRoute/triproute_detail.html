@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="triproute-entry">
+    <h2>by {{ object.trip }} => {{ object.route }}</h2>
+    <p>Trip Duration: {{ object.actual_time_min }}</p>
+</div>
+<div>
+    <p><a href="{% url 'triproute_edit' triproute.pk %}">Edit</a>
+        <a href="{% url 'triproute_delete' triproute.pk %}">Delete</a>
+    </p>
+    <p>Back to <a href="{% url 'triproute_list' %}">All Trip Routes</a>.</p>
+</div>
+{% endblock content %}

@@ -7,7 +7,8 @@
 
 {% for trip, trip_products in grouped_tripproducts.items %}
 <!-- New Trip Group -->
-<h2>Trip: {{ trip.id }} - {{ trip.truck.name }} ({{ trip.driver.name }})</h2>
+<h2> <a href="{{ trip.get_absolute_url }}">Trip: {{ trip.id }}</a> - {{ trip.truck.name }} ({{ trip.driver.name }} -
+    {{trip.driver.contact }})</h2>
 <div class="trip-group">
     {% for tripproduct in trip_products %}
     <div>

@@ -262,3 +262,36 @@ class TripProductCreateView(CreateView):
         "quantity",
         "unit",
     )
+
+# Trip Route
+class TripRouteListView(ListView):
+    model = TripRoute
+    template_name = "tripRoute/triproute_list.html"
+
+class TripRouteDetailView(DetailView):
+    model = TripRoute
+    template_name = "tripRoute/triproute_detail.html"
+
+class TripRouteUpdateView(UpdateView):
+    model = TripRoute
+    fields = (
+        "trip",
+        "route",
+        "actual_time_min",
+    )
+    template_name = "tripRoute/triproute_edit.html"
+
+
+class TripRouteDeleteView(DeleteView):
+    model = TripRoute
+    template_name = "tripRoute/triproute_delete.html"
+    success_url = reverse_lazy("triproute_list")
+
+class TripRouteCreateView(CreateView):
+    model = TripRoute
+    template_name = "tripRoute/triproute_new.html"
+    fields = (
+        "trip",
+        "route",
+        "actual_time_min",
+    )

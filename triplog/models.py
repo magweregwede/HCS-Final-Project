@@ -104,3 +104,6 @@ class TripRoute(models.Model):
 
     def __str__(self):
         return f"Route {self.route.origin} => {self.route.destination} for Trip {self.trip.id}"
+
+    def get_absolute_url(self):
+        return reverse("triproute_detail", kwargs={"pk": self.pk})
