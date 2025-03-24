@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Trip Products{% endblock %}
+
+{% block content %}
+<h1>Trip Products</h1>
+
+{% for trip, trip_products in grouped_tripproducts.items %}
+<!-- New Trip Group -->
+<h2>Trip: {{ trip.id }} - {{ trip.truck.name }} ({{ trip.driver.name }})</h2>
+<div class="trip-group">
+    {% for tripproduct in trip_products %}
+    <div>
+        <a href="{{ tripproduct.get_absolute_url }}">{{ tripproduct.product.name }}</a>
+        <span>{{ tripproduct.quantity }}</span> <span>{{ tripproduct.unit }}</span>
+    </div>
+    <a href="{% url 'tripproduct_edit' tripproduct.pk %}">Edit</a>
+    <a href="{% url 'tripproduct_delete' tripproduct.pk %}">Delete</a>
+    <hr>
+    {% endfor %}
+</div>
+{% endfor %}
+
+{% if user.is_authenticated %}
+<p><a href="{% url 'tripproduct_new' %}">+ New</a></p>
+{% endif %}
+{% endblock %}

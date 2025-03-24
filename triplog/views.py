@@ -4,7 +4,8 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.views.generic.edit import UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .forms import TripForm
-from .models import TruckCompany, Truck, Route, Driver, Trip
+from .models import TruckCompany, Truck, Route, Driver, Trip, Product, TripProduct, TripRoute
+from collections import defaultdict
 
 # Create your views here.
 
@@ -183,3 +184,81 @@ class TripCreateView(CreateView):
         form.instance.clerk = self.request.user
         return super().form_valid(form)
 
+# Product
+class ProductListView(ListView):
+    model = Product
+    template_name = "product/product_list.html"
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = "product/product_detail.html"
+
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    fields = (
+        "name",
+        "category",
+        "description",
+    )
+    template_name = "product/product_edit.html"
+
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    template_name = "product/product_delete.html"
+    success_url = reverse_lazy("product_list")
+
+class ProductCreateView(CreateView):
+    model = Product
+    template_name = "product/product_new.html"
+    fields = (
+        "name",
+        "category",
+        "description",
+    )
+
+# Trip Product
+class TripProductListView(ListView):
+    model = TripProduct
+    template_name = "tripProduct/tripproduct_list.html"
+    context_object_name = "grouped_tripproducts"
+
+    def get_queryset(self):
+        """ Group trip products by trip. """
+        grouped_products = defaultdict(list)
+        for tripproduct in TripProduct.objects.select_related("trip", "trip__truck", "trip__driver", "product"):
+            grouped_products[tripproduct.trip].append(tripproduct)
+
+        return dict(grouped_products)  # Convert defaultdict to a regular dict for template use
+
+class TripProductDetailView(DetailView):
+    model = TripProduct
+    template_name = "tripProduct/tripproduct_detail.html"
+
+
+class TripProductUpdateView(UpdateView):
+    model = TripProduct
+    fields = (
+        "trip",
+        "product",
+        "quantity",
+        "unit",
+    )
+    template_name = "tripProduct/tripproduct_edit.html"
+
+
+class TripProductDeleteView(DeleteView):
+    model = TripProduct
+    template_name = "tripProduct/tripproduct_delete.html"
+    success_url = reverse_lazy("tripproduct_list")
+
+class TripProductCreateView(CreateView):
+    model = TripProduct
+    template_name = "tripProduct/tripproduct_new.html"
+    fields = (
+        "trip",
+        "product",
+        "quantity",
+        "unit",
+    )

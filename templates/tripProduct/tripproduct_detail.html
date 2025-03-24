@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="tripproduct-entry">
+    <h2>{{ object.trip }}</h2>
+    <p>by {{ object.product }} | {{ object.quantity }}</p>
+    <p>{{ object.unit }}</p>
+</div>
+<div>
+    <p><a href="{% url 'tripproduct_edit' tripproduct.pk %}">Edit</a>
+        <a href="{% url 'tripproduct_delete' tripproduct.pk %}">Delete</a>
+    </p>
+    <p>Back to <a href="{% url 'tripproduct_list' %}">All</a>.</p>
+</div>
+{% endblock content %}

@@ -31,6 +31,18 @@ from .views import (
     TripUpdateView,
     TripDeleteView,
     TripCreateView,
+    # Product
+    ProductListView,
+    ProductDetailView,
+    ProductUpdateView,
+    ProductDeleteView,
+    ProductCreateView,
+    # Trip Product
+    TripProductListView,
+    TripProductDetailView,
+    TripProductUpdateView,
+    TripProductDeleteView,
+    TripProductCreateView,
 )
 
 urlpatterns = [
@@ -64,5 +76,18 @@ urlpatterns = [
     path("trip/<int:pk>/edit", TripUpdateView.as_view(), name="trip_edit"),
     path("trip/<int:pk>/delete", TripDeleteView.as_view(), name="trip_delete"),
     path("trip/new/", TripCreateView.as_view(), name="trip_new"),
-
+    # Product
+    path("product/", ProductListView.as_view(), name="product_list"),
+    path("product/<int:pk>/", ProductDetailView.as_view(), name="product_detail"),
+    #  ### Following urls disabled for Product data safety
+    # path("product/<int:pk>/edit", ProductUpdateView.as_view(), name="product_edit"),
+    # path("product/<int:pk>/delete", ProductDeleteView.as_view(), name="product_delete"),
+    path("product/new/", ProductCreateView.as_view(), name="product_new"),
+    # Trip Product
+    path("tripproduct/", TripProductListView.as_view(), name="tripproduct_list"),
+    path("tripproduct/<int:pk>/", TripProductDetailView.as_view(), name="tripproduct_detail"),
+    path("tripproduct/<int:pk>/edit", TripProductUpdateView.as_view(), name="tripproduct_edit"),
+    path("tripproduct/<int:pk>/delete", TripProductDeleteView.as_view(), name="tripproduct_delete"),
+    path("tripproduct/new/", TripProductCreateView.as_view(), name="tripproduct_new"),
 ]
+
