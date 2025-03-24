@@ -37,9 +37,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Local
     "triplog",
     "accounts",
     "pages",
+    # Third Party
+    "import_export",
 ]
 
 MIDDLEWARE = [

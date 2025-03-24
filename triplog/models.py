@@ -100,7 +100,16 @@ class TripProduct(models.Model):
 class TripRoute(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name="trip_routes")
     route = models.ForeignKey(Route, on_delete=models.CASCADE)
-    actual_time_min = models.IntegerField(null=True, blank=True)
+    actual_time_min = models.IntegerField(editable=False, null=True, blank=True)  # Auto-calculated field
+
+    def save(self, *args, **kwargs):
+        if self.trip.arrival_time and self.trip.departure_time:
+            time_difference = self.trip.arrival_time - self.trip.departure_time
+            self.actual_time_min = int(time_difference.total_seconds() / 60)  # Convert seconds to minutes
+        else:
+            self.actual_time_min = None  # If no arrival time, keep it null
+
+        super().save(*args, **kwargs)  # Call the parent save method
 
     def __str__(self):
         return f"Route {self.route.origin} => {self.route.destination} for Trip {self.trip.id}"

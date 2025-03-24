@@ -1,11 +1,12 @@
+from collections import defaultdict
 from django.shortcuts import render
 from django.shortcuts import redirect
+from django.urls import reverse
+from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
 from django.views.generic.edit import UpdateView, DeleteView
-from django.urls import reverse_lazy
-from .forms import TripForm
+from .forms import TripForm, TripProductForm
 from .models import TruckCompany, Truck, Route, Driver, Trip, Product, TripProduct, TripRoute
-from collections import defaultdict
 
 # Create your views here.
 
@@ -183,6 +184,9 @@ class TripCreateView(CreateView):
         # Automatically set the clerk field to the logged-in user
         form.instance.clerk = self.request.user
         return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse('tripproduct_new', kwargs={'trip_id': self.object.id})  # Redirect to trip product form
 
 # Product
 class ProductListView(ListView):
@@ -247,7 +251,6 @@ class TripProductUpdateView(UpdateView):
     )
     template_name = "tripProduct/tripproduct_edit.html"
 
-
 class TripProductDeleteView(DeleteView):
     model = TripProduct
     template_name = "tripProduct/tripproduct_delete.html"
@@ -255,13 +258,20 @@ class TripProductDeleteView(DeleteView):
 
 class TripProductCreateView(CreateView):
     model = TripProduct
+    form_class = TripProductForm
     template_name = "tripProduct/tripproduct_new.html"
-    fields = (
-        "trip",
-        "product",
-        "quantity",
-        "unit",
-    )
+
+    def form_valid(self, form):
+        trip = Trip.objects.get(id=self.kwargs['trip_id'])  # Get the trip ID from URL
+        trip_product = form.save(commit=False)
+        trip_product.trip = trip  # Assign the trip
+        trip_product.save()
+
+        # Check which button was clicked
+        if "save_and_add_another" in self.request.POST:
+            return redirect(reverse("tripproduct_new", kwargs={"trip_id": trip.id}))  # Stay on form
+        else:
+            return redirect(reverse("triproute_new", kwargs={"trip_id": trip.id}))  # Move to next step
 
 # Trip Route
 class TripRouteListView(ListView):
@@ -290,8 +300,17 @@ class TripRouteDeleteView(DeleteView):
 class TripRouteCreateView(CreateView):
     model = TripRoute
     template_name = "tripRoute/triproute_new.html"
-    fields = (
-        "trip",
-        "route",
-        "actual_time_min",
-    )
+    fields = ['route']  # Exclude 'trip' since we auto-assign it
+    # fields = (
+    #     "trip",
+    #     "route",
+    #     "actual_time_min",
+    # )
+
+    def form_valid(self, form):
+        trip_id = self.kwargs.get('trip_id')  # Get trip_id from the URL
+        form.instance.trip_id = trip_id  # Assign trip automatically
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse('trip_detail', kwargs={'pk': self.object.trip.id})  # Redirect to trip details page

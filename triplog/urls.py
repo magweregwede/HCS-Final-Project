@@ -88,7 +88,8 @@ urlpatterns = [
     #  ### Following urls disabled for Product data safety
     # path("product/<int:pk>/edit", ProductUpdateView.as_view(), name="product_edit"),
     # path("product/<int:pk>/delete", ProductDeleteView.as_view(), name="product_delete"),
-    path("product/new/", ProductCreateView.as_view(), name="product_new"),
+    # path("product/new/", ProductCreateView.as_view(), name="product_new"),
+    path('trip/<int:trip_id>/product/new/', TripProductCreateView.as_view(), name='tripproduct_new'),  # Accepts trip_id
     # Trip Product
     path("tripproduct/", TripProductListView.as_view(), name="tripproduct_list"),
     path("tripproduct/<int:pk>/", TripProductDetailView.as_view(), name="tripproduct_detail"),
@@ -101,4 +102,5 @@ urlpatterns = [
     path("triproute/<int:pk>/edit", TripRouteUpdateView.as_view(), name="triproute_edit"),
     path("triproute/<int:pk>/delete", TripRouteDeleteView.as_view(), name="triproute_delete"),
     path("triproute/new/", TripRouteCreateView.as_view(), name="triproute_new"),
+    path('trip/<int:trip_id>/route/new/', TripRouteCreateView.as_view(), name='triproute_new'),  # Accepts trip_id
 ]
