@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Routes{% endblock %}
+
+{% block content %}
+{% for route in route_list %}
+<div>
+    <a href="{{ route.get_absolute_url }}">{{ route.origin }} => {{ route.destination }}</a>
+    <span>{{ route.distance_km }}</span> <span>{{ route.estimated_time_min }}</span>
+</div>
+<a href="{% url 'route_edit' route.pk %}">Edit</a>
+<a href="{% url 'route_delete' route.pk %}">Delete</a>
+<hr>
+
+{% endfor %}
+{% if user.is_authenticated %}
+<p><a href="{% url 'route_new' %}">+ New</a></p>
+{% endif %}
+{% endblock %}

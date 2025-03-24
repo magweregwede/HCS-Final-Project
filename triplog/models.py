@@ -25,17 +25,23 @@ class Truck(models.Model):
 
     def __str__(self):
         return f"{self.plate_number} - {self.truck_company.name}"
+
+    def get_absolute_url(self):
+        return reverse("truck_detail", kwargs={"pk": self.pk})
         
 
 class Driver(models.Model):
     name = models.CharField(max_length=255)
     license_number = models.CharField(max_length=10, unique=True)
     assigned_truck = models.OneToOneField(
-        Truck, on_delete=models.SET_NULL, null=True, blank=True)
+        Truck, on_delete=models.SET_NULL, null=True, blank=True,unique=True)
     contact = models.CharField(max_length=10)
 
     def __str__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return reverse("driver_detail", kwargs={"pk": self.pk})
 
 
 class Route(models.Model):
@@ -46,6 +52,9 @@ class Route(models.Model):
 
     def __str__(self):
         return f"{self.origin} => {self.destination}"
+    
+    def get_absolute_url(self):
+        return reverse("route_detail", kwargs={"pk": self.pk})
 
 
 class Trip(models.Model):
@@ -58,6 +67,9 @@ class Trip(models.Model):
 
     def __str__(self):
         return f"Trip {self.id} - {self.truck.plate_number} ({self.status})"
+    
+    def get_absolute_url(self):
+        return reverse("trip_detail", kwargs={"pk": self.pk})
 
 
 class Product(models.Model):

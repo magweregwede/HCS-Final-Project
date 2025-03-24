@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Trips{% endblock %}
+
+{% block content %}
+{% for trip in trip_list %}
+<div>
+    <a href="{{ trip.get_absolute_url }}">{{ trip.truck }} with {{ trip.driver }} </a>
+    <span>Scheduled {{ trip.departure_time }}</span>
+    <p>Arrived: {{ trip.arrival_time }}</p>
+</div>
+<a href="{% url 'trip_edit' trip.pk %}">Edit</a>
+<!-- <a href="{% url 'trip_delete' trip.pk %}">Cancel</a> -->
+<hr>
+
+{% endfor %}
+{% if user.is_authenticated %}
+<p><a href="{% url 'trip_new' %}">+ New</a></p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="driver">
+    <h2>{{ object.name }} | Contact: {{ object.contact }}</h2>
+    <p>by {{ object.license_number }} | {{ object.assigned_truck }}</p>
+</div>
+<div>
+    <p><a href="{% url 'driver_edit' driver.pk %}">Edit</a>
+        <a href="{% url 'driver_delete' driver.pk %}">Delete</a>
+    </p>
+    <p>Back to <a href="{% url 'driver_list' %}">All Drivers</a>.</p>
+</div>
+{% endblock content %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Trucks{% endblock %}
+
+{% block content %}
+{% for truck in truck_list %}
+<div>
+    <a href="{{ truck.get_absolute_url }}">{{ truck.plate_number }}</a>
+    <span>{{ truck.truck_company }}</span> <span>{{ truck.capacity_kg }}</span> <span>{{ truck.status }}</span>
+</div>
+<a href="{% url 'truck_edit' truck.pk %}">Edit</a>
+<a href="{% url 'truck_delete' truck.pk %}">Delete</a>
+<hr>
+
+{% endfor %}
+{% if user.is_authenticated %}
+<p><a href="{% url 'truck_new' %}">+ New</a></p>
+{% endif %}
+{% endblock %}

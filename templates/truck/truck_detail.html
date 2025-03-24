@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="truck-entry">
+    <h2>{{ object.plate_number }}</h2>
+    <p>by {{ object.truck_company }} | {{ object.status }}</p>
+    <p>{{ object.capacity_kg }}</p>
+</div>
+<div>
+    <p><a href="{% url 'truck_edit' truck.pk %}">Edit</a>
+        <a href="{% url 'truck_delete' truck.pk %}">Delete</a>
+    </p>
+    <p>Back to <a href="{% url 'truck_list' %}">All Trucks</a>.</p>
+</div>
+{% endblock content %}

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>New Truck Company</h1>
+<h1>Delete</h1>
 <form action="" method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save</button>
+    <p>Are you sure you want to delete "{{ driver.name }} "?</p>
+    <button type="submit">Confirm</button>
 </form>
 {% endblock content %}
