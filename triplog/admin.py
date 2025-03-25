@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin, ExportMixin
 from .models import Driver, Product, Route, Trip, TripProduct, TripRoute, Truck, TruckCompany
-from .resources import TripResource, TruckResource, DriverResource, RouteResource, TripProductResource, TripRouteResource
+from .resources import TripResource, TruckResource, DriverResource, RouteResource, TripProductResource, TripRouteResource, TruckCompanyResource, ProductResource
 
 class TripAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = TripResource
@@ -14,7 +14,8 @@ class DriverAdmin(ImportExportModelAdmin, admin.ModelAdmin):
         "contact",
     ]
 
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    resource_class = ProductResource
     list_display = [
         "name",
         "category",
@@ -42,12 +43,15 @@ class TripProductAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 class TripRouteAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = TripRouteResource
 
+class TruckCompanyAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    resource_class = TruckCompanyResource
+
 # Register your models here.
 admin.site.register(Driver, DriverAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Route, RouteAdmin)
 admin.site.register(Truck, TruckAdmin)
-admin.site.register(TruckCompany)
+admin.site.register(TruckCompany, TruckCompanyAdmin)
 admin.site.register(Trip, TripAdmin)
 admin.site.register(TripProduct, TripProductAdmin)
 admin.site.register(TripRoute, TripRouteAdmin)

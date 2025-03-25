@@ -1,5 +1,5 @@
 from import_export import resources
-from .models import Trip, Truck, Driver, Route, TripProduct, TripRoute
+from .models import Trip, Truck, Driver, Route, TripProduct, TripRoute, TruckCompany, Product
 
 class TripResource(resources.ModelResource):
     class Meta:
@@ -29,4 +29,14 @@ class TripProductResource(resources.ModelResource):
 class TripRouteResource(resources.ModelResource):
     class Meta:
         model = TripRoute
+        import_id_fields = ('id',)  # Use 'id' to match records when importing
+
+class TruckCompanyResource(resources.ModelResource):
+    class Meta:
+        model = TruckCompany
+        import_id_fields = ('id',)  # Use 'id' to match records when importing
+
+class ProductResource(resources.ModelResource):
+    class Meta:
+        model = Product
         import_id_fields = ('id',)  # Use 'id' to match records when importing
