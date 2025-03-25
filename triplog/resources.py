@@ -4,23 +4,29 @@ from .models import Trip, Truck, Driver, Route, TripProduct, TripRoute
 class TripResource(resources.ModelResource):
     class Meta:
         model = Trip
+        import_id_fields = ('id',)  # Use 'id' to match records when importing
 
 class TruckResource(resources.ModelResource):
     class Meta:
         model = Truck
+        import_id_fields = ('id',)  # Use 'id' to match records when importing
 
 class DriverResource(resources.ModelResource):
     class Meta:
         model = Driver
+        import_id_fields = ('id',)  # Use 'id' to match records when importing
 
 class RouteResource(resources.ModelResource):
     class Meta:
         model = Route
+        import_id_fields = ('id',)  # Use 'id' to match records when importing
 
 class TripProductResource(resources.ModelResource):
     class Meta:
         model = TripProduct
+        import_id_fields = ('id',)  # Use 'id' to match records when importing
 
 class TripRouteResource(resources.ModelResource):
     class Meta:
         model = TripRoute
+        import_id_fields = ('id',)  # Use 'id' to match records when importing

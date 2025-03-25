@@ -1,12 +1,12 @@
 from django.contrib import admin
-from import_export.admin import ExportMixin
+from import_export.admin import ImportExportModelAdmin, ExportMixin
 from .models import Driver, Product, Route, Trip, TripProduct, TripRoute, Truck, TruckCompany
 from .resources import TripResource, TruckResource, DriverResource, RouteResource, TripProductResource, TripRouteResource
 
-class TripAdmin(ExportMixin, admin.ModelAdmin):
+class TripAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = TripResource
 
-class DriverAdmin(ExportMixin, admin.ModelAdmin):
+class DriverAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = DriverResource
     list_display = [
         "name",
@@ -20,7 +20,7 @@ class ProductAdmin(admin.ModelAdmin):
         "category",
     ]
 
-class RouteAdmin(ExportMixin, admin.ModelAdmin):
+class RouteAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = RouteResource
     list_display = [
         "origin",
@@ -28,7 +28,7 @@ class RouteAdmin(ExportMixin, admin.ModelAdmin):
         "distance_km",
     ]
 
-class TruckAdmin(ExportMixin, admin.ModelAdmin):
+class TruckAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = TruckResource
     list_display = [
         "plate_number",
@@ -36,10 +36,10 @@ class TruckAdmin(ExportMixin, admin.ModelAdmin):
         "capacity_kg"
     ]
 
-class TripProductAdmin(ExportMixin, admin.ModelAdmin):
+class TripProductAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = TripProductResource
 
-class TripRouteAdmin(ExportMixin, admin.ModelAdmin):
+class TripRouteAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = TripRouteResource
 
 # Register your models here.
