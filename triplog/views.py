@@ -32,11 +32,21 @@ class TruckCompanyUpdateView(UpdateView):
     )
     template_name = "truckCompany/truckcompany_edit.html"
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        log_change(self.request, self.object, message="updated", action_flag=CHANGE)
+        return response
+
 
 class TruckCompanyDeleteView(DeleteView):
     model = TruckCompany
     template_name = "truckCompany/truckcompany_delete.html"
     success_url = reverse_lazy("truckcompany_list")
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        log_change(self.request, self.object, message="deleted", action_flag=DELETION)
+        return super().delete(request, *args, **kwargs)
 
 class TruckCompanyCreateView(CreateView):
     model = TruckCompany
@@ -47,6 +57,11 @@ class TruckCompanyCreateView(CreateView):
         "email",
         "address",
     )
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        log_change(self.request, self.object, message="created", action_flag=ADDITION)
+        return response
 
 # Truck
 class TruckListView(ListView):
@@ -68,11 +83,22 @@ class TruckUpdateView(UpdateView):
     )
     template_name = "truck/truck_edit.html"
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        log_change(self.request, self.object, message="updated", action_flag=CHANGE)
+        return response
+
+
 
 class TruckDeleteView(DeleteView):
     model = Truck
     template_name = "truck/truck_delete.html"
     success_url = reverse_lazy("truck_list")
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        log_change(self.request, self.object, message="deleted", action_flag=DELETION)
+        return super().delete(request, *args, **kwargs)
 
 class TruckCreateView(CreateView):
     model = Truck
@@ -83,6 +109,11 @@ class TruckCreateView(CreateView):
         "truck_company",
         "status",
     )
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        log_change(self.request, self.object, message="created", action_flag=ADDITION)
+        return response
 
 # Route
 class RouteListView(ListView):
@@ -104,11 +135,22 @@ class RouteUpdateView(UpdateView):
     )
     template_name = "route/route_edit.html"
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        log_change(self.request, self.object, message="updated", action_flag=CHANGE)
+        return response
+
+
 
 class RouteDeleteView(DeleteView):
     model = Route
     template_name = "route/route_delete.html"
     success_url = reverse_lazy("route_list")
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        log_change(self.request, self.object, message="deleted", action_flag=DELETION)
+        return super().delete(request, *args, **kwargs)
 
 class RouteCreateView(CreateView):
     model = Route
@@ -119,6 +161,11 @@ class RouteCreateView(CreateView):
         "distance_km",
         "estimated_time_min",
     )
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        log_change(self.request, self.object, message="created", action_flag=ADDITION)
+        return response
 
 # Driver
 class DriverListView(ListView):
@@ -140,11 +187,20 @@ class DriverUpdateView(UpdateView):
     )
     template_name = "driver/driver_edit.html"
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        log_change(self.request, self.object, message="updated", action_flag=CHANGE)
+        return response
 
 class DriverDeleteView(DeleteView):
     model = Driver
     template_name = "driver/driver_delete.html"
     success_url = reverse_lazy("driver_list")
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        log_change(self.request, self.object, message="deleted", action_flag=DELETION)
+        return super().delete(request, *args, **kwargs)
 
 class DriverCreateView(CreateView):
     model = Driver
@@ -156,6 +212,11 @@ class DriverCreateView(CreateView):
         "contact",
     )
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        log_change(self.request, self.object, message="created", action_flag=ADDITION)
+        return response
+
 # Trip
 class TripListView(ListView):
     model = Trip
@@ -165,17 +226,33 @@ class TripDetailView(DetailView):
     model = Trip
     template_name = "trip/trip_detail.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tripproducts'] = TripProduct.objects.filter(trip=self.object)
+        return context
+
 
 class TripUpdateView(UpdateView):
     model = Trip
     template_name = "trip/trip_edit.html"
     form_class = TripForm
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        log_change(self.request, self.object, message="updated", action_flag=CHANGE)
+        return response
+
+
 
 class TripDeleteView(DeleteView):
     model = Trip
     template_name = "trip/trip_delete.html"
     success_url = reverse_lazy("trip_list")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        log_change(self.request, self.object, message="deleted", action_flag=DELETION)
+        return response
 
 class TripCreateView(CreateView):
     model = Trip
@@ -212,11 +289,21 @@ class ProductUpdateView(UpdateView):
     )
     template_name = "product/product_edit.html"
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        log_change(self.request, self.object, message="updated", action_flag=CHANGE)
+        return response
+
 
 class ProductDeleteView(DeleteView):
     model = Product
     template_name = "product/product_delete.html"
     success_url = reverse_lazy("product_list")
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        log_change(self.request, self.object, message="deleted", action_flag=DELETION)
+        return super().delete(request, *args, **kwargs)
 
 class ProductCreateView(CreateView):
     model = Product
@@ -226,6 +313,11 @@ class ProductCreateView(CreateView):
         "category",
         "description",
     )
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        log_change(self.request, self.object, message="created", action_flag=ADDITION)
+        return response
 
 # Trip Product
 class TripProductListView(ListView):
@@ -256,10 +348,21 @@ class TripProductUpdateView(UpdateView):
     )
     template_name = "tripProduct/tripproduct_edit.html"
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        log_change(self.request, self.object, message="updated", action_flag=CHANGE)
+        return response
+
+
 class TripProductDeleteView(DeleteView):
     model = TripProduct
     template_name = "tripProduct/tripproduct_delete.html"
     success_url = reverse_lazy("tripproduct_list")
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        log_change(self.request, self.object, message="deleted", action_flag=DELETION)
+        return super().delete(request, *args, **kwargs)
 
 class TripProductCreateView(CreateView):
     model = TripProduct
@@ -300,21 +403,27 @@ class TripRouteUpdateView(UpdateView):
     )
     template_name = "tripRoute/triproute_edit.html"
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        log_change(self.request, self.object, message="updated", action_flag=CHANGE)
+        return response
+
+
 
 class TripRouteDeleteView(DeleteView):
     model = TripRoute
     template_name = "tripRoute/triproute_delete.html"
     success_url = reverse_lazy("triproute_list")
 
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        log_change(self.request, self.object, message="deleted", action_flag=DELETION)
+        return super().delete(request, *args, **kwargs)
+
 class TripRouteCreateView(CreateView):
     model = TripRoute
     template_name = "tripRoute/triproute_new.html"
     fields = ['route']  # Exclude 'trip' since we auto-assign it
-    # fields = (
-    #     "trip",
-    #     "route",
-    #     "actual_time_min",
-    # )
 
     def form_valid(self, form):
         trip_id = self.kwargs.get('trip_id')  # Get trip_id from the URL

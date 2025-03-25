@@ -10,6 +10,27 @@
     {% endif %}
 </div>
 <div>
+    <h2>Trip Products</h2>
+    {% if tripproducts %}
+    <table>
+        <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Unit</th>
+        </tr>
+        {% for product in tripproducts %}
+        <tr>
+            <td>{{ product.product.name }}</td>
+            <td>{{ product.quantity }}</td>
+            <td>{{ product.unit }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No products assigned to this trip yet.</p>
+    {% endif %}
+</div>
+<div>
     <p><a href="{% url 'trip_edit' trip.pk %}">Edit</a>
         <a href="{% url 'trip_delete' trip.pk %}">Cancel</a>
     </p>

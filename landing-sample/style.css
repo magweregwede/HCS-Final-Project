@@ -1,0 +1,88 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: white;
+    color: black;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Dark Mode */
+  body.dark-mode {
+    background-color: #121212;
+    color: white;
+  }
+  
+  /* Navbar */
+  .navbar {
+    background-color: rgb(54, 116, 181);
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    color: white;
+  }
+  
+  .nav-links a, .nav-actions button {
+    color: white;
+    margin-right: 15px;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: white;
+    color: black;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  .dropdown-menu a {
+    padding: 10px;
+    display: block;
+    text-decoration: none;
+    color: black;
+  }
+  
+  .dropdown-menu a:hover {
+    background-color: rgb(209, 248, 239);
+  }
+  
+  /* Content */
+  .page {
+    padding: 20px;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  /* Placeholder */
+  .placeholder {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: rgb(161, 227, 249);
+    border: 1px solid rgb(87, 143, 202);
+    text-align: center;
+    color: black;
+  }
+  
+  /* Footer */
+  footer {
+    background-color: rgb(87, 143, 202);
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+  }
+  
+  footer a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+  }
+  

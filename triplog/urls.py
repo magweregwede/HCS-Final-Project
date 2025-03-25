@@ -86,9 +86,9 @@ urlpatterns = [
     path("product/", ProductListView.as_view(), name="product_list"),
     path("product/<int:pk>/", ProductDetailView.as_view(), name="product_detail"),
     #  ### Following urls disabled for Product data safety
-    # path("product/<int:pk>/edit", ProductUpdateView.as_view(), name="product_edit"),
-    # path("product/<int:pk>/delete", ProductDeleteView.as_view(), name="product_delete"),
-    # path("product/new/", ProductCreateView.as_view(), name="product_new"),
+    path("product/<int:pk>/edit", ProductUpdateView.as_view(), name="product_edit"),
+    path("product/<int:pk>/delete", ProductDeleteView.as_view(), name="product_delete"),
+    path("product/new/", ProductCreateView.as_view(), name="product_new"),
     path('trip/<int:trip_id>/product/new/', TripProductCreateView.as_view(), name='tripproduct_new'),  # Accepts trip_id
     # Trip Product
     path("tripproduct/", TripProductListView.as_view(), name="tripproduct_list"),

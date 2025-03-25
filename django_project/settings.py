@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "pages",
     # Third Party
     "import_export",
+    "simple_history",
 ]
 
 MIDDLEWARE = [
@@ -130,3 +131,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
+
+SIMPLE_HISTORY_HISTORY_ID_USE_UUID = True
+SIMPLE_HISTORY_HISTORY_CHANGE_REASON_USE_TEXTFIELD = True
+SIMPLE_HISTORY_DELETE = False  # Keeps history after deletion
