@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logistics Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Logistics System</h2>
+                <p>Management Dashboard</p>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-category">Main</div>
+                <div class="menu-item active" onclick="loadContent('dashboard')">
+                    <i class="icon-home"></i>
+                    <span>Dashboard</span>
+                </div>
+
+                <div class="menu-category">Operations</div>
+                <div class="menu-item" onclick="toggleSubmenu('trip-ai-menu')">
+                    <i class="icon-ai"></i>
+                    <span>Trip AI</span>
+                </div>
+
+                <div id="trip-ai-menu" class="submenu">
+                    <div class="submenu-item" onclick="loadContent('deliveries')">Deliveries</div>
+                    <div class="submenu-item" onclick="toggleSubmenu('logistics-partners-menu')">Logistics Partners
+                    </div>
+                    <div id="logistics-partners-menu" class="submenu">
+                        <div class="submenu-item" onclick="loadContent('truck-companies')">Truck Companies</div>
+                        <div class="submenu-item" onclick="loadContent('truck-drivers')">Truck Drivers</div>
+                    </div>
+                </div>
+
+                <div class="menu-item" onclick="loadContent('driver-availability')">
+                    <i class="icon-availability"></i>
+                    <span>Driver Availability</span>
+                </div>
+
+                <div class="menu-category">Reports</div>
+                <div class="menu-item" onclick="loadContent('reporting')">
+                    <i class="icon-reporting"></i>
+                    <span>Reporting</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navbar -->
+            <nav class="navbar">
+                <ul class="nav-links">
+                    <li><a href="#" class="active" onclick="loadContent('dashboard')">Home</a></li>
+                    <li><a href="#" onclick="loadContent('products')">Products</a></li>
+                    <li><a href="#" onclick="loadContent('routes')">Routes</a></li>
+                </ul>
+
+                <div class="user-actions">
+                    <div class="dark-mode-toggle" id="darkModeToggle">
+                        <i class="icon-moon"></i>
+                        <span>Dark Mode</span>
+                    </div>
+
+                    <div class="user-dropdown">
+                        <button class="dropdown-btn">
+                            <i class="icon-user"></i> John Doe <i class="icon-chevron"></i>
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="#"><i class="icon-password"></i> Change Password</a>
+                            <a href="#"><i class="icon-logout"></i> Log Out</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Content Area -->
+            <div class="content-area" id="content-area">
+                <!-- Default Dashboard Content -->
+                <div class="page-header">
+                    <h1>Dashboard</h1>
+                    <button class="btn btn-primary">Refresh Data</button>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <h3>Active Deliveries</h3>
+                        <div class="value">42</div>
+                        <div class="change">+5% from last week</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>Available Drivers</h3>
+                        <div class="value">18</div>
+                        <div class="change">-2 from yesterday</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>On-time Rate</h3>
+                        <div class="value">94%</div>
+                        <div class="change">+3% from last month</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>Total Miles</h3>
+                        <div class="value">12,456</div>
+                        <div class="change negative">-8% from last week</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Recent Activities</h2>
+                    </div>
+                    <p>Content for recent activities will go here...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Logistics Management System provides comprehensive solutions for transportation and delivery
+                    management.</p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#" onclick="loadContent('dashboard')">Home</a></li>
+                    <li><a href="#" onclick="loadContent('products')">Products</a></li>
+                    <li><a href="#" onclick="loadContent('routes')">Routes</a></li>
+                    <li><a href="#">Documentation</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">System Status</a></li>
+                    <li><a href="#">Feedback</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                    <li><a href="#">GDPR Compliance</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2023 Logistics Management System. All rights reserved. | Version 2.1.4</p>
+        </div>
+    </footer>
+
+    <script src="trip.js"></script>
+</body>
+
+</html>
