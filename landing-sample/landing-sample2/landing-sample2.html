@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logistics Management System</title>
+    <title>Trip AI</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -13,8 +13,8 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>Logistics System</h2>
-                <p>Management Dashboard</p>
+                <h2>Trip AI</h2>
+                <p>Logistics Management</p>
             </div>
 
             <div class="sidebar-menu">
@@ -33,11 +33,10 @@
                 <div id="trip-ai-menu" class="submenu">
                     <div class="submenu-item" onclick="loadContent('deliveries')">Deliveries</div>
                     <div class="submenu-item" onclick="toggleSubmenu('logistics-partners-menu')">Logistics Partners
-                    </div>
-                    <div id="logistics-partners-menu" class="submenu">
                         <div class="submenu-item" onclick="loadContent('truck-companies')">Truck Companies</div>
                         <div class="submenu-item" onclick="loadContent('truck-drivers')">Truck Drivers</div>
                     </div>
+                    <!-- <div id="logistics-partners-menu" class="submenu"></div> -->
                 </div>
 
                 <div class="menu-item" onclick="loadContent('driver-availability')">
