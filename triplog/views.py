@@ -9,6 +9,8 @@ from django.views.generic.edit import UpdateView, DeleteView
 from .forms import TripForm, TripProductForm
 from .models import TruckCompany, Truck, Route, Driver, Trip, Product, TripProduct, TripRoute
 from .utils import log_change
+from django.db.models import Q
+from datetime import datetime
 
 # Create your views here.
 
@@ -221,6 +223,38 @@ class DriverCreateView(CreateView):
 class TripListView(ListView):
     model = Trip
     template_name = "trip/trip_list.html"
+    context_object_name = "trip_list"
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset().select_related(
+            'truck', 'driver', 'clerk'
+        )
+        
+        # Search functionality (works independently of date filter)
+        search_query = self.request.GET.get('search')
+        if search_query:
+            queryset = queryset.filter(
+                Q(truck__plate_number__icontains=search_query) |
+                Q(driver__name__icontains=search_query)
+            )
+        
+        # Date filter (optional)
+        departure_date = self.request.GET.get('departure_date')
+        if departure_date:
+            try:
+                date_obj = datetime.strptime(departure_date, '%Y-%m-%d').date()
+                queryset = queryset.filter(departure_time__date=date_obj)
+            except ValueError:
+                pass
+        
+        # Default sorting
+        if self.request.GET.get('sort') == 'departure_time':
+            queryset = queryset.order_by('departure_time')
+        else:
+            queryset = queryset.order_by('-departure_time')  # newest first by default
+        
+        return queryset.select_related('truck', 'driver')
 
 class TripDetailView(DetailView):
     model = Trip
