@@ -52,7 +52,6 @@
                         </a>
                     </th>
                     <th>Arrival</th>
-                    <th>Route</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -70,7 +69,6 @@
                     </td>
                     <td>{{ trip.departure_time|date:"M d, Y H:i" }}</td>
                     <td>{{ trip.arrival_time|date:"M d, Y H:i"|default:"-" }}</td>
-                    <td>{{ trip.route.origin }}</td>
                     <td>
                         <span class="status-badge {% if trip.arrival_time %}completed{% else %}in-progress{% endif %}">
                             {% if trip.arrival_time %}Completed{% else %}In Progress{% endif %}

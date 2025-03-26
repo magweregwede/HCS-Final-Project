@@ -227,9 +227,7 @@ class TripListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = super().get_queryset().select_related(
-            'truck', 'driver', 'clerk'
-        )
+        queryset = super().get_queryset()
         
         # Search functionality (works independently of date filter)
         search_query = self.request.GET.get('search')

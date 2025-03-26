@@ -58,7 +58,6 @@ class Route(models.Model):
     def get_absolute_url(self):
         return reverse("route_detail", kwargs={"pk": self.pk})
 
-
 class Trip(models.Model):
     truck = models.ForeignKey(Truck, on_delete=models.CASCADE, related_name="trips")
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name="trips")

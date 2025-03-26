@@ -10,7 +10,7 @@
     <span>{{ triproute.route }} </span>
     <p>Distance: {{ triproute.route.distance_km }} km</p>
     <p>Actual Time: {{ triproute.actual_time_min|minutes_to_hours }}</p> {# Convert minutes #}
-    <p>{{ triproute.driver }}</p>
+    <p>{{ triproute.trip.driver }}</p>
 </div>
 <a href="{% url 'triproute_edit' triproute.pk %}">Edit</a>
 <a href="{% url 'triproute_delete' triproute.pk %}">Delete</a>
