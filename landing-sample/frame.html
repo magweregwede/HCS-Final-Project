@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <nav class="nav-links">
+        <a href="#" onclick="loadContent('./landing-sample2/login')">Trip</a>
+        <!-- other links -->
+    </nav>
+    <div id="content-area" style="width: 800px; height: 600px;"></div>
+</body>
+
+<script>
+    function loadContent(page) {
+        const contentArea = document.getElementById('content-area');
+
+        // Update active nav link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.classList.remove('active');
+            if (link.textContent.toLowerCase() === page.toLowerCase() ||
+                (page !== 'dashboard' && link.textContent === 'Home')) {
+                link.classList.add('active');
+            }
+        });
+
+        // Update active menu item
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.classList.remove('active');
+            if (item.textContent.toLowerCase().includes(page.toLowerCase())) {
+                item.classList.add('active');
+            }
+        });
+
+        // Clear previous content and create iframe
+        contentArea.innerHTML = '';
+        const iframe = document.createElement('iframe');
+        iframe.src = `${page}.html`;
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        contentArea.appendChild(iframe);
+    }
+</script>
+
+</html>

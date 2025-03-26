@@ -31,11 +31,100 @@ function loadContent(page) {
         }
     });
 
-    // In a real application, this would fetch content from the server
-    // For this example, we'll just change the content manually
+    // Clear previous content
+    contentArea.innerHTML = '';
 
+    // Create container for delivery buttons (will be shown only for deliveries section)
+    const deliveryNav = document.createElement('div');
+    deliveryNav.className = 'nav-bar';
+    deliveryNav.style.display = 'none'; // Hidden by default
+    deliveryNav.style.marginBottom = '20px';
+    deliveryNav.style.padding = '10px';
+    // deliveryNav.style.backgroundColor = '#f5f5f5';
+    deliveryNav.style.borderRadius = '5px';
+
+    // Create delivery navigation buttons
+    const buttonNames = ['New Trip', 'View Trips', 'Trip Review'];
+    buttonNames.forEach(btnName => {
+        const button = document.createElement('button');
+        button.textContent = btnName;
+        button.className = 'btn btn-primary';
+        button.style.marginRight = '10px';
+        button.onclick = () => loadContent(btnName.toLowerCase().replace(' ', '-'));
+        deliveryNav.appendChild(button);
+    });
+
+    const iframeContainer = document.createElement('div');
+    iframeContainer.style.width = '100%';
+    iframeContainer.style.height = '100%';
+    iframeContainer.style.overflow = 'hidden';
+
+    // Create iframe
+    const iframe = document.createElement('iframe');
+    iframe.id = 'content-iframe';
+    iframe.style.width = '100%';
+    iframe.style.height = '100px'; // Initial small height
+    iframe.style.border = 'none';
+    iframe.style.overflow = 'hidden';
+
+    // Auto-resize function
+    function resizeIframe() {
+        try {
+            const body = iframe.contentDocument.body;
+            const html = iframe.contentDocument.documentElement;
+            const height = Math.max(
+                body.scrollHeight,
+                body.offsetHeight,
+                html.clientHeight,
+                html.scrollHeight,
+                html.offsetHeight
+            );
+            iframe.style.height = height + 'px';
+        } catch (e) {
+            console.log('Resize error:', e);
+        }
+    }
+
+    // Set up iframe load event
+    iframe.onload = function() {
+        // Initial resize
+        resizeIframe();
+        
+        // Periodic checks for dynamic content
+        const resizeInterval = setInterval(resizeIframe, 100);
+        
+        // Clean up when iframe unloads
+        iframe.contentWindow.addEventListener('unload', () => {
+            clearInterval(resizeInterval);
+        });
+    };
+
+
+    // Set iframe source based on page
     switch (page) {
+        case 'deliveries':
+            deliveryNav.style.display = 'block'; // Show delivery navigation
+            // iframe.src = '#'; // Replace with your deliveries.html path
+            break;
+            
+        case 'new-trip':
+            deliveryNav.style.display = 'block'; // Show delivery navigation
+            iframe.src = './login.html'; // Replace with your new-trip.html path
+            break;
+            
+        case 'view-trips':
+            deliveryNav.style.display = 'block'; // Show delivery navigation
+            iframe.src = './login.html'; // Replace with your view-trips.html path
+            break;
+            
+        case 'trip-review':
+            deliveryNav.style.display = 'block'; // Show delivery navigation
+            iframe.src = './login.html'; // Replace with your trip-review.html path
+            break;
+            
+        // Other cases remain the same
         case 'dashboard':
+            // iframe.src = '#'; // Replace with your dashboard.html path
             contentArea.innerHTML = `
                 <div class="page-header">
                     <h1>Dashboard</h1>
@@ -76,336 +165,43 @@ function loadContent(page) {
                 </div>
             `;
             break;
-
         case 'products':
-            contentArea.innerHTML = `
-                <div class="page-header">
-                    <h1>Products</h1>
-                    <button class="btn btn-primary">Add Product</button>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Product Inventory</h2>
-                        <div>
-                            <button class="btn btn-secondary">Export</button>
-                            <button class="btn btn-primary">Filter</button>
-                        </div>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Product Name</th>
-                                <th>Category</th>
-                                <th>Quantity</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>PRD-1001</td>
-                                <td>Industrial Bearings</td>
-                                <td>Machinery Parts</td>
-                                <td>450</td>
-                                <td>In Stock</td>
-                            </tr>
-                            <tr>
-                                <td>PRD-1002</td>
-                                <td>Steel Pipes</td>
-                                <td>Construction</td>
-                                <td>320</td>
-                                <td>In Stock</td>
-                            </tr>
-                            <tr>
-                                <td>PRD-1003</td>
-                                <td>Electrical Wires</td>
-                                <td>Electrical</td>
-                                <td>780</td>
-                                <td>Low Stock</td>
-                            </tr>
-                            <tr>
-                                <td>PRD-1004</td>
-                                <td>Hydraulic Pumps</td>
-                                <td>Machinery Parts</td>
-                                <td>120</td>
-                                <td>In Stock</td>
-                            </tr>
-                            <tr>
-                                <td>PRD-1005</td>
-                                <td>Aluminum Sheets</td>
-                                <td>Construction</td>
-                                <td>95</td>
-                                <td>Out of Stock</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            `;
+            iframe.src = './login.html'; // Replace with your products.html path
             break;
-
         case 'routes':
-            contentArea.innerHTML = `
-                <div class="page-header">
-                    <h1>Routes</h1>
-                    <button class="btn btn-primary">Create New Route</button>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Route Network</h2>
-                        <div>
-                            <button class="btn btn-secondary">Map View</button>
-                            <button class="btn btn-primary">List View</button>
-                        </div>
-                    </div>
-                    
-                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 300px;">
-                            <h3 style="margin-bottom: 15px;">Primary Routes</h3>
-                            <ul style="list-style: none;">
-                                <li style="padding: 10px; border-bottom: 1px solid var(--light-color);">East Coast Corridor (NYC to Miami)</li>
-                                <li style="padding: 10px; border-bottom: 1px solid var(--light-color);">Midwest Express (Chicago to Denver)</li>
-                                <li style="padding: 10px; border-bottom: 1px solid var(--light-color);">Southern Cross (Dallas to Atlanta)</li>
-                                <li style="padding: 10px; border-bottom: 1px solid var(--light-color);">West Coast Highway (LA to Seattle)</li>
-                            </ul>
-                        </div>
-                        
-                        <div style="flex: 1; min-width: 300px;">
-                            <h3 style="margin-bottom: 15px;">Secondary Routes</h3>
-                            <ul style="list-style: none;">
-                                <li style="padding: 10px; border-bottom: 1px solid var(--light-color);">Northeast Loop (Boston to Philadelphia)</li>
-                                <li style="padding: 10px; border-bottom: 1px solid var(--light-color);">Central Plains (Kansas City to Omaha)</li>
-                                <li style="padding: 10px; border-bottom: 1px solid var(--light-color);">Southwest Connection (Phoenix to El Paso)</li>
-                            </ul>
-                        </div>
-                        
-                        <div style="flex: 1; min-width: 300px;">
-                            <h3 style="margin-bottom: 15px;">Route Statistics</h3>
-                            <div style="background: var(--card-bg); padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                                <p>Total Routes: <strong>7</strong></p>
-                                <p>Average Distance: <strong>1,245 miles</strong></p>
-                                <p>Average Duration: <strong>2.5 days</strong></p>
-                                <p>Most Active: <strong>East Coast Corridor</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
+            iframe.src = './login.html'; // Replace with your routes.html path
             break;
-
         case 'driver-availability':
-            contentArea.innerHTML = `
-                <div class="page-header">
-                    <h1>Driver Availability</h1>
-                    <button class="btn btn-primary">Update Schedule</button>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Current Driver Status</h2>
-                        <div>
-                            <button class="btn btn-secondary">Export</button>
-                            <button class="btn btn-primary">Filter</button>
-                        </div>
-                    </div>
-                    
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Driver ID</th>
-                                <th>Name</th>
-                                <th>Current Location</th>
-                                <th>Status</th>
-                                <th>Next Available</th>
-                                <th>Assigned Route</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>DRV-1001</td>
-                                <td>John Smith</td>
-                                <td>Chicago, IL</td>
-                                <td>On Duty</td>
-                                <td>Tomorrow 8AM</td>
-                                <td>Midwest Express</td>
-                            </tr>
-                            <tr>
-                                <td>DRV-1002</td>
-                                <td>Maria Garcia</td>
-                                <td>Atlanta, GA</td>
-                                <td>Available</td>
-                                <td>Immediate</td>
-                                <td>None</td>
-                            </tr>
-                            <tr>
-                                <td>DRV-1003</td>
-                                <td>Robert Johnson</td>
-                                <td>Denver, CO</td>
-                                <td>On Break</td>
-                                <td>Today 5PM</td>
-                                <td>Southern Cross</td>
-                            </tr>
-                            <tr>
-                                <td>DRV-1004</td>
-                                <td>Sarah Williams</td>
-                                <td>Dallas, TX</td>
-                                <td>On Duty</td>
-                                <td>Tomorrow 10AM</td>
-                                <td>West Coast Highway</td>
-                            </tr>
-                            <tr>
-                                <td>DRV-1005</td>
-                                <td>James Brown</td>
-                                <td>Miami, FL</td>
-                                <td>Available</td>
-                                <td>Immediate</td>
-                                <td>None</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Availability Calendar</h2>
-                    </div>
-                    <p style="text-align: center; padding: 50px 0; background: var(--light-color); border-radius: 8px;">
-                        Interactive calendar view would be displayed here showing driver availability over time.
-                    </p>
-                </div>
-            `;
+            iframe.src = './login.html'; // Replace with your driver-availability.html path
             break;
-
-        case 'deliveries':
-            contentArea.innerHTML = `
-                <div class="page-header">
-                    <h1>Deliveries</h1>
-                    <div>
-                        <button class="btn btn-primary" onclick="loadContent('new-trip')">New Trip Log</button>
-                        <button class="btn btn-primary" onclick="loadContent('view-trips')">View Trips</button>
-                        <button class="btn btn-primary" onclick="loadContent('trip-review')">Trip Review</button>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Delivery Management</h2>
-                    </div>
-                    <p>Select an option above to manage deliveries.</p>
-                </div>
-            `;
-            break;
-
-        case 'new-trip':
-            contentArea.innerHTML = `
-                <div class="page-header">
-                    <h1>New Trip Log</h1>
-                    <button class="btn btn-primary" onclick="loadContent('deliveries')">Back to Deliveries</button>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Create New Trip</h2>
-                    </div>
-                    <p>Form for creating a new trip log will go here...</p>
-                </div>
-            `;
-            break;
-
-        case 'view-trips':
-            contentArea.innerHTML = `
-                <div class="page-header">
-                    <h1>View Trips</h1>
-                    <button class="btn btn-primary" onclick="loadContent('deliveries')">Back to Deliveries</button>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Trip List</h2>
-                    </div>
-                    <p>Table showing all trips will go here...</p>
-                </div>
-            `;
-            break;
-
-        case 'trip-review':
-            contentArea.innerHTML = `
-                <div class="page-header">
-                    <h1>Trip Review</h1>
-                    <button class="btn btn-primary" onclick="loadContent('deliveries')">Back to Deliveries</button>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Trip Performance</h2>
-                    </div>
-                    <p>Analytics and review tools for trips will go here...</p>
-                </div>
-            `;
-            break;
-
         case 'truck-companies':
-            contentArea.innerHTML = `
-                <div class="page-header">
-                    <h1>Truck Companies</h1>
-                    <button class="btn btn-primary">Add Company</button>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Truck Company Management</h2>
-                    </div>
-                    <p>Content for managing truck companies will go here...</p>
-                </div>
-            `;
+            iframe.src = './login.html'; // Replace with your truck-companies.html path
             break;
-
         case 'truck-drivers':
-            contentArea.innerHTML = `
-                <div class="page-header">
-                    <h1>Truck Drivers</h1>
-                    <button class="btn btn-primary">Add Driver</button>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Truck Driver Management</h2>
-                    </div>
-                    <p>Content for managing truck drivers will go here...</p>
-                </div>
-            `;
+            iframe.src = './login.html'; // Replace with your truck-drivers.html path
             break;
-
         case 'reporting':
-            contentArea.innerHTML = `
-                <div class="page-header">
-                    <h1>Reporting</h1>
-                    <button class="btn btn-primary">Generate Report</button>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Reports Dashboard</h2>
-                    </div>
-                    <p>Content for reporting will go here...</p>
-                </div>
-            `;
+            iframe.src = './login.html'; // Replace with your reporting.html path
             break;
-
         default:
             contentArea.innerHTML = `
                 <div class="page-header">
                     <h1>Page Not Found</h1>
                     <button class="btn btn-primary" onclick="loadContent('dashboard')">Back to Dashboard</button>
                 </div>
-                
                 <div class="card">
                     <p>The requested page could not be found.</p>
                 </div>
             `;
+            return;
     }
+
+    // Add elements to content area
+    if (page === 'deliveries' || page === 'new-trip' || page === 'view-trips' || page === 'trip-review') {
+        contentArea.appendChild(deliveryNav);
+    }
+    iframeContainer.appendChild(iframe);
+    contentArea.appendChild(iframeContainer);
 }
 
 // Dark Mode Toggle
