@@ -307,10 +307,34 @@ class TripCreateView(CreateView):
     template_name = "trip/trip_new.html"
     form_class = TripForm
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Preserve the selected driver in the form
+        if self.request.method == 'GET':
+            driver_id = self.request.GET.get('driver')
+            if driver_id:
+                try:
+                    context['selected_driver'] = int(driver_id)
+                    driver = Driver.objects.get(pk=driver_id)
+                    context['assigned_truck'] = driver.assigned_truck
+                except (ValueError, Driver.DoesNotExist):
+                    pass
+        return context
+
+
+
 
     def form_valid(self, form):
         # Automatically set the clerk field to the logged-in user
         form.instance.clerk = self.request.user
+        # Set truck automatically from driver's assignment
+        driver = form.cleaned_data.get('driver')
+        if driver and hasattr(driver, 'assigned_truck'):
+            form.instance.truck = driver.assigned_truck
+            form.instance.clerk = self.request.user
+        else:
+            form.add_error('driver', "Selected driver has no assigned truck")
+            return self.form_invalid(form)
         response = super().form_valid(form)
         log_change(self.request, self.object, message="created", action_flag=ADDITION)
         return response
