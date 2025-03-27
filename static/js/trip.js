@@ -77,7 +77,7 @@ function loadContent(page) {
                     </div>
                     
                     <div class="stat-card">
-                        <h3>Total Miles</h3>
+                        <h3>Total Kilometres</h3>
                         <div class="value">12,456</div>
                         <div class="change negative">-8% from last week</div>
                     </div>
@@ -108,29 +108,18 @@ function loadContent(page) {
 
         case 'products':
             contentArea.innerHTML = `
-                <div class="page-header">
-                    <h1>Product Management</h1>
-                    <button class="btn btn-primary">Add New Product</button>
-                </div>
                 
                 <div class="card">
                     <div class="card-header">
                         <h2>Product Inventory</h2>
-                        <div class="search-bar">
-                            <input type="text" placeholder="Search products..." class="search-input">
-                            <button class="btn btn-secondary">Search</button>
-                        </div>
                     </div>
                     
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Product Name</th>
                                 <th>Category</th>
-                                <th>Quantity</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>Description</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -138,104 +127,52 @@ function loadContent(page) {
                                 <td>PRD-1001</td>
                                 <td>Electronics Package</td>
                                 <td>Fragile</td>
-                                <td>15</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="btn btn-secondary">Edit</button>
-                                    <button class="btn btn-danger">Delete</button>
-                                </td>
                             </tr>
                             <tr>
                                 <td>PRD-1002</td>
                                 <td>Furniture Set</td>
                                 <td>Bulky</td>
-                                <td>8</td>
-                                <td><span class="status active">Active</span></td>
-                                <td>
-                                    <button class="btn btn-secondary">Edit</button>
-                                    <button class="btn btn-danger">Delete</button>
-                                </td>
                             </tr>
                             <tr>
                                 <td>PRD-1003</td>
                                 <td>Clothing Bundle</td>
                                 <td>Standard</td>
-                                <td>32</td>
-                                <td><span class="status inactive">Inactive</span></td>
-                                <td>
-                                    <button class="btn btn-secondary">Edit</button>
-                                    <button class="btn btn-danger">Delete</button>
-                                </td>
                             </tr>
                         </tbody>
                     </table>
                     
-                    <div class="pagination">
-                        <button class="btn btn-secondary">Previous</button>
-                        <span>Page 1 of 3</span>
-                        <button class="btn btn-secondary">Next</button>
-                    </div>
-                </div>
             `;
             break;
 
         case 'routes':
             contentArea.innerHTML = `
-                <div class="page-header">
-                    <h1>Route Management</h1>
-                    <button class="btn btn-primary">Add New Route</button>
-                </div>
-                
                 <div class="card">
-                    <div class="card-header">
-                        <h2>Available Routes</h2>
-                        <div class="filter-options">
-                            <select class="form-control">
-                                <option>All Regions</option>
-                                <option>North</option>
-                                <option>South</option>
-                                <option>East</option>
-                                <option>West</option>
-                            </select>
-                            <button class="btn btn-secondary">Apply Filters</button>
-                        </div>
-                    </div>
-                    
-                    <div class="map-container">
-                        <div class="map-placeholder">
-                            <p>Map visualization would appear here</p>
-                        </div>
-                    </div>
-                    
-                    <div class="route-list">
-                        <div class="route-card">
-                            <h3>RT-101: New York to Boston</h3>
-                            <div class="route-details">
-                                <p><strong>Distance:</strong> 215 miles</p>
-                                <p><strong>Duration:</strong> 4 hours 30 minutes</p>
-                                <p><strong>Stops:</strong> 3</p>
-                                <p><strong>Status:</strong> <span class="status active">Active</span></p>
-                            </div>
-                            <div class="route-actions">
-                                <button class="btn btn-primary">View Details</button>
-                                <button class="btn btn-secondary">Edit</button>
-                            </div>
-                        </div>
-                        
-                        <div class="route-card">
-                            <h3>RT-102: Chicago to Detroit</h3>
-                            <div class="route-details">
-                                <p><strong>Distance:</strong> 282 miles</p>
-                                <p><strong>Duration:</strong> 5 hours 15 minutes</p>
-                                <p><strong>Stops:</strong> 2</p>
-                                <p><strong>Status:</strong> <span class="status active">Active</span></p>
-                            </div>
-                            <div class="route-actions">
-                                <button class="btn btn-primary">View Details</button>
-                                <button class="btn btn-secondary">Edit</button>
-                            </div>
-                        </div>
-                    </div>
+                 <table>
+                        <thead>
+                            <tr>
+                                <th>Origin</th>
+                                <th>Destination</th>
+                                <th>Distance [km]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>PRD-1001</td>
+                                <td>Electronics Package</td>
+                                <td>Fragile</td>
+                            </tr>
+                            <tr>
+                                <td>PRD-1002</td>
+                                <td>Furniture Set</td>
+                                <td>Bulky</td>
+                            </tr>
+                            <tr>
+                                <td>PRD-1003</td>
+                                <td>Clothing Bundle</td>
+                                <td>32</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             `;
             break;

@@ -60,10 +60,10 @@
             <!-- Navbar -->
             <nav class="navbar">
                 <ul class="nav-links">
-                    <li><a href="#" onclick="loadContent('products')">Products</a></li>
-                    <li><a href="#" onclick="loadContent('routes')">Routes</a></li>
+                    <li><a href="{% url 'product_list'  %}" class="btn btn-secondary">Products</a></li>
+                    <li><a href="{% url 'route_list'  %}" class="btn btn-secondary">Routes</a></li>
                 </ul>
-                <a href="/admin" class="admin-link" target="_blank">Admin</a>
+                <a href="/admin" class="btn btn-secondary" target=" _blank">Admin</a>
 
                 <div class="user-actions">
                     <div class="dark-mode-toggle" id="darkModeToggle">
