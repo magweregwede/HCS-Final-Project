@@ -83,7 +83,33 @@
                         <div class="dropdown-content">
                             {% if user.is_authenticated %}
                             <a href="{% url 'password_change' %}"><i class="icon-password"></i> Change Password</a>
-                            <a href="{% url 'logout' %}"><i class="icon-logout"></i> Log Out</a>
+                            <!-- In your navigation bar or sidebar -->
+                            <div class="logout-container">
+                                <form id="logout-form" action="{% url 'logout' %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="logout-btn">
+                                        <i class="icon-logout"></i> Log Out
+                                    </button>
+                                </form>
+                            </div>
+
+                            <style>
+                                .logout-btn {
+                                    background: none;
+                                    border: none;
+                                    color: var(--text-color);
+                                    cursor: pointer;
+                                    padding: 0;
+                                    font: inherit;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                }
+
+                                .logout-btn:hover {
+                                    color: red;
+                                }
+                            </style>
                             {% else %}
                             <a href="{% url 'login' %}"><i class="icon-logout"></i> Log In</a>
                             {% endif %}
