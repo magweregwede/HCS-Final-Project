@@ -421,6 +421,30 @@ class TripProductCreateView(CreateView):
 class TripRouteListView(ListView):
     model = TripRoute
     template_name = "tripRoute/triproute_list.html"
+    paginate_by = 10
+    context_object_name = 'triproute_list'
+
+    def get_queryset(self):
+        queryset = super().get_queryset().select_related('trip', 'route')
+        search = self.request.GET.get('search')
+        origin = self.request.GET.get('origin')
+        destination = self.request.GET.get('destination')
+
+        if search:
+            queryset = queryset.filter(
+                Q(trip__truck__plate_number__icontains=search) |
+                Q(trip__driver__name__icontains=search) |
+                Q(route__origin__icontains=search) |
+                Q(route__destination__icontains=search)
+            )
+        
+        if origin:
+            queryset = queryset.filter(route__origin__icontains=origin)
+        
+        if destination:
+            queryset = queryset.filter(route__destination__icontains=destination)
+
+        return queryset
 
 class TripRouteDetailView(DetailView):
     model = TripRoute

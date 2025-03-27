@@ -116,10 +116,10 @@
                 </span>
 
                 {% if page_obj.has_next %}
-                <a
-                    href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.departure_date %}&departure_date={{ request.GET.departure_date }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">next</a>
-                <a
-                    href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.departure_date %}&departure_date={{ request.GET.departure_date }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">last
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.departure_date %}&departure_date={{ request.GET.departure_date }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+                    class="btn btn-sm btn-outline-primary">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.departure_date %}&departure_date={{ request.GET.departure_date }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+                    class="btn btn-sm btn-outline-primary">last
                     &raquo;</a>
                 {% endif %}
             </span>
@@ -130,6 +130,7 @@
 
 <style>
     /* [Previous CSS styles remain the same] */
+
 
     .sort-link {
         color: white;
