@@ -109,7 +109,7 @@ class TripProduct(models.Model):
     unit = models.CharField(max_length=50, choices=[("Pallets", "Pallets"), ("Cases", "Cases")])
 
     def __str__(self):
-        return f"{self.product.name} ({self.quantity} {self.unit}) for Trip {self.trip.id}"
+        return f"Trip {self.trip.id} - {self.product.name} [{self.quantity} {self.unit}]"
     
     def get_absolute_url(self):
         return reverse("tripproduct_detail", kwargs={"pk": self.pk})

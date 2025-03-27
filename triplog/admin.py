@@ -16,6 +16,7 @@ class TripAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     inlines = [TripRouteInline]
     list_display = ('truck', 'driver', 'departure_time', 'arrival_time', 'status')
     list_editable = ('arrival_time', 'status')
+    search_fields = ('truck__plate_number', 'driver__name', 'status', 'clerk__username')
 
 class DriverAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = DriverResource
@@ -24,6 +25,7 @@ class DriverAdmin(ImportExportModelAdmin, admin.ModelAdmin):
         "assigned_truck",
         "contact",
     ]
+    search_fields = ('name',)
 
 class ProductAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = ProductResource
@@ -47,15 +49,19 @@ class TruckAdmin(ImportExportModelAdmin, admin.ModelAdmin):
         "truck_company",
         "capacity_kg"
     ]
+    search_fields = ('plate_number','truck_company')
 
 class TripProductAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = TripProductResource
+    search_fields = ('trip__id', 'product__name')
 
 class TripRouteAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = TripRouteResource
+    search_fields = ('trip__id', 'route__origin','route__destination')
 
 class TruckCompanyAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     resource_class = TruckCompanyResource
+    search_fields = ('name',)
 
 
 # Register your models here.

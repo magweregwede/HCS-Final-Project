@@ -3,6 +3,7 @@
 {% block content %}
 <div class="trip">
     <h2>{{ object.truck }} with {{ object.driver }} scheduled {{ object.departure_time }}</h2>
+    <p>Trip ID: {{ object.id }}</p>
     <p>By: {{ object.clerk }}</p>
     <p>Status: {{ object.status }}</p>
     {% if trip.status == "Completed"%}
