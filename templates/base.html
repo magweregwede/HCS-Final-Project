@@ -37,8 +37,10 @@
                     <div class="submenu-item" onclick="toggleSubmenu('logistics-partners-menu')">Logistics Partners
                     </div>
                     <div id="logistics-partners-menu" class="submenu">
-                        <div class="submenu-item" onclick="loadContent('truck-companies')">Truck Companies</div>
-                        <div class="submenu-item" onclick="loadContent('truck-drivers')">Truck Drivers</div>
+                        <div class="submenu-item" onclick="window.open('/app/truckcompany');" style="cursor: pointer;">
+                            Truck Companies</div>
+                        <div class="submenu-item" onclick="window.open('/app/driver');" style="cursor: pointer;">Truck
+                            Drivers</div>
                     </div>
                 </div>
 
@@ -60,10 +62,10 @@
             <!-- Navbar -->
             <nav class="navbar">
                 <ul class="nav-links">
-                    <li><a href="#" onclick="loadContent('products')">Products</a></li>
-                    <li><a href="#" onclick="loadContent('routes')">Routes</a></li>
+                    <li><a href="{% url 'product_list'  %}" class="btn btn-secondary">Products</a></li>
+                    <li><a href="{% url 'route_list'  %}" class="btn btn-secondary">Routes</a></li>
                 </ul>
-                <a href="/admin" class="admin-link" target="_blank">Admin</a>
+                <a href="/admin" class="btn btn-secondary" target="_blank">Admin</a>
 
                 <div class="user-actions">
                     <div class="dark-mode-toggle" id="darkModeToggle">
