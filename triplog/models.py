@@ -1,6 +1,8 @@
 from django.db import models
 from django.conf import settings
 from django.urls import reverse
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
 
@@ -56,7 +58,6 @@ class Route(models.Model):
     def get_absolute_url(self):
         return reverse("route_detail", kwargs={"pk": self.pk})
 
-
 class Trip(models.Model):
     truck = models.ForeignKey(Truck, on_delete=models.CASCADE, related_name="trips")
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name="trips")
@@ -70,7 +71,24 @@ class Trip(models.Model):
     
     def get_absolute_url(self):
         return reverse("trip_detail", kwargs={"pk": self.pk})
+    
+    def save(self, *args, **kwargs):
+        # Update status based on arrival time
+        if self.arrival_time is not None:
+            self.status = "Completed"
+        super().save(*args, **kwargs)
+        # Update all related TripRoutes after saving
+        self.update_related_routes()
 
+    def update_related_routes(self):
+        """Update all related TripRoute actual_time_min values"""
+        for trip_route in self.trip_routes.all():
+            trip_route.calculate_actual_time()
+            trip_route.save(update_fields=['actual_time_min'])
+
+@receiver(post_save, sender=Trip)
+def update_related_trip_routes(sender, instance, **kwargs):
+    instance.update_related_routes()
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
@@ -100,19 +118,23 @@ class TripProduct(models.Model):
 class TripRoute(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name="trip_routes")
     route = models.ForeignKey(Route, on_delete=models.CASCADE)
-    actual_time_min = models.IntegerField(editable=False, null=True, blank=True)  # Auto-calculated field
+    actual_time_min = models.IntegerField(editable=True, null=True, blank=True)  # Auto-calculated field
 
-    def save(self, *args, **kwargs):
+    def calculate_actual_time(self):
+        """Calculate and update the actual time in minutes"""
         if self.trip.arrival_time and self.trip.departure_time:
             time_difference = self.trip.arrival_time - self.trip.departure_time
-            self.actual_time_min = int(time_difference.total_seconds() / 60)  # Convert seconds to minutes
+            self.actual_time_min = int(time_difference.total_seconds() / 60)
         else:
-            self.actual_time_min = None  # If no arrival time, keep it null
+            self.actual_time_min = None
 
-        super().save(*args, **kwargs)  # Call the parent save method
+    def save(self, *args, **kwargs):
+        self.calculate_actual_time()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Route {self.route.origin} => {self.route.destination} for Trip {self.trip.id}"
 
     def get_absolute_url(self):
         return reverse("triproute_detail", kwargs={"pk": self.pk})
+    

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip AI - Login</title>
+    <link rel="stylesheet" href="./login.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <!-- Replace with your actual logo -->
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="var(--primary)" width="60" height="60">
+                <path
+                    d="M8 16l-1.42 1.42L11.17 22l8.59-8.59L18.17 12 11.17 19l-3.17-3.17L8 16zm-4-4l1.41-1.41L7.17 12l-1.41-1.41L4 9l-1.42 1.42L2.83 12l1.42 1.42L4 12zm12-6l-1.41 1.41L16.83 12l-1.41 1.41L14 14l1.42-1.42L17.17 12l-1.42-1.42L14 8z" />
+            </svg>
+            <h1>Trip AI</h1>
+            <p>Log in to access system</p>
+        </div>
+
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <label for="email">Username</label>
+                <input type="text" id="email" name="email" placeholder="Enter username" required>
+                <!-- <div class="error-message" id="email-error">Please enter a valid email address</div> -->
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <span class="toggle-password" id="togglePassword">👁️</span>
+                </div>
+                <div class="error-message" id="password-error">Password must be at least 8 characters</div>
+            </div>
+
+            <div class="options">
+                <!-- <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember">Remember me</label>
+                </div> -->
+                <div class="forgot-password">
+                    <a href="#">Forgot password?</a>
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn">Log In</button>
+
+            <!-- <div class="divider">or continue with</div>
+
+            <div class="social-login">
+                <button type="button" class="social-btn">
+                    <img src="https://www.google.com/favicon.ico" alt="Google">
+                </button>
+                <button type="button" class="social-btn">
+                    <img src="https://www.microsoft.com/favicon.ico" alt="Microsoft">
+                </button>
+                <button type="button" class="social-btn">
+                    <img src="https://www.apple.com/favicon.ico" alt="Apple">
+                </button>
+            </div> -->
+
+            <div class="register-link">
+                Don't have an account? <a href="#">Contact Support</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="./login.js"></script>
+</body>
+
+</html>

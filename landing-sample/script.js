@@ -15,3 +15,4 @@ function toggleDarkMode() {
     
     document.getElementById(pageId).classList.remove('hidden');
   }
+  

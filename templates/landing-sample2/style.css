@@ -1,0 +1,605 @@
+ /* Global Styles */
+ :root {
+    --primary-color: rgb(5, 146, 18);
+    --secondary-color: rgb(6, 208, 1);
+    --accent-color: rgb(155, 236, 0);
+    --highlight-color: rgb(243, 255, 144);
+    --dark-color: #2c3e50;
+    --light-color: #ecf0f1;
+    --text-color: #333;
+    --bg-color: #f5f5f5;
+    --card-bg: white;
+    --footer-bg: var(--dark-color);
+    --footer-text: white;
+}
+
+/* Dark Mode Colors */
+.dark-mode {
+    --primary-color: rgb(155, 236, 0);
+    --secondary-color: rgb(6, 208, 1);
+    --accent-color: rgb(5, 146, 18);
+    --highlight-color: rgb(243, 255, 144);
+    --dark-color: #121212;
+    --light-color: #1e1e1e;
+    --text-color: #f0f0f0;
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --footer-bg: #000;
+    --footer-text: #ccc;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Layout Styles */
+.container {
+    display: flex;
+    flex: 1;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    background-color: var(--dark-color);
+    color: white;
+    padding: 20px 0;
+    transition: all 0.3s;
+}
+
+.sidebar-header {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-header h2 {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.sidebar-header p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.sidebar-menu {
+    padding: 20px 0;
+}
+
+.menu-category {
+    padding: 10px 20px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 10px;
+}
+
+.menu-item {
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu-item.active {
+    background-color: var(--primary-color);
+}
+
+.menu-item i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+.submenu {
+    padding-left: 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.submenu.show {
+    max-height: 500px;
+}
+
+.submenu-item {
+    padding: 10px 20px 10px 40px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s;
+}
+
+.submenu-item:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.submenu-item.active {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Main Content Styles */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: var(--card-bg);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+}
+
+.nav-links li {
+    margin-right: 20px;
+}
+
+.nav-links a {
+    color: var(--text-color);
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--primary-color);
+}
+
+.nav-links a.active {
+    color: var(--primary-color);
+    background-color: rgba(5, 146, 18, 0.1);
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.dark-mode-toggle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: var(--text-color);
+}
+
+.dark-mode-toggle i {
+    margin-right: 5px;
+    font-size: 1.1rem;
+}
+
+.user-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.dropdown-btn i {
+    margin-left: 5px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: var(--card-bg);
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.dropdown-content a {
+    color: var(--text-color);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--light-color);
+    color: var(--primary-color);
+}
+
+.user-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Content Area Styles */
+.content-area {
+    flex: 1;
+    padding: 30px;
+    background-color: var(--bg-color);
+    transition: background-color 0.3s;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    font-size: 1.8rem;
+    color: var(--text-color);
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+}
+
+.btn-secondary {
+    background-color: var(--light-color);
+    color: var(--text-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--accent-color);
+    color: var(--dark-color);
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--light-color);
+}
+
+.card-header h2 {
+    font-size: 1.3rem;
+    color: var(--text-color);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--light-color);
+}
+
+th {
+    background-color: var(--light-color);
+    font-weight: 600;
+}
+
+tr:hover {
+    background-color: var(--light-color);
+}
+
+/* Dashboard Specific Styles */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 1rem;
+    color: var(--text-color);
+    opacity: 0.7;
+    margin-bottom: 10px;
+}
+
+.stat-card .value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.stat-card .change {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+.stat-card .change.negative {
+    color: var(--highlight-color);
+}
+
+/* Footer Styles */
+footer {
+    background-color: var(--footer-bg);
+    color: var(--footer-text);
+    padding: 30px;
+    margin-top: auto;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 250px;
+    margin-bottom: 20px;
+}
+
+.footer-section h3 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    color: var(--highlight-color);
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+.footer-section ul li a {
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s;
+}
+
+.footer-section ul li a:hover {
+    color: var(--highlight-color);
+    padding-left: 5px;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 20px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 70px;
+        overflow: hidden;
+    }
+
+    .sidebar-header h2,
+    .sidebar-header p,
+    .menu-category,
+    .menu-item span,
+    .submenu-item span {
+        display: none;
+    }
+
+    .menu-item {
+        justify-content: center;
+        padding: 15px 0;
+    }
+
+    .menu-item i {
+        margin-right: 0;
+        font-size: 1.3rem;
+    }
+
+    .submenu {
+        padding-left: 0;
+    }
+
+    .submenu-item {
+        padding: 10px 0;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        padding: 10px 0;
+    }
+
+    .sidebar-menu {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 10px 0;
+    }
+
+    .menu-item {
+        padding: 10px 15px;
+    }
+
+    .submenu {
+        position: absolute;
+        background-color: var(--dark-color);
+        width: 200px;
+        z-index: 100;
+    }
+
+    .navbar {
+        padding: 10px 15px;
+    }
+
+    .nav-links li {
+        margin-right: 10px;
+    }
+
+    .content-area {
+        padding: 20px 15px;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-header h1 {
+        margin-bottom: 15px;
+    }
+}
+
+/* Icons (using Unicode as placeholder) */
+.icon-home::before {
+    content: "🏠";
+}
+
+.icon-products::before {
+    content: "📦";
+}
+
+.icon-routes::before {
+    content: "🗺️";
+}
+
+.icon-user::before {
+    content: "👤";
+}
+
+.icon-availability::before {
+    content: "⏱️";
+}
+
+.icon-ai::before {
+    content: "🤖";
+}
+
+.icon-deliveries::before {
+    content: "🚚";
+}
+
+.icon-logistics::before {
+    content: "🤝";
+}
+
+.icon-truck::before {
+    content: "🚛";
+}
+
+.icon-drivers::before {
+    content: "👨‍✈️";
+}
+
+.icon-reporting::before {
+    content: "📊";
+}
+
+.icon-new::before {
+    content: "➕";
+}
+
+.icon-view::before {
+    content: "👀";
+}
+
+.icon-review::before {
+    content: "📝";
+}
+
+.icon-list::before {
+    content: "📋";
+}
+
+.icon-logout::before {
+    content: "🚪";
+}
+
+.icon-password::before {
+    content: "🔒";
+}
+
+.icon-chevron::before {
+    content: "⌄";
+}
+
+.icon-moon::before {
+    content: "🌙";
+}
+
+.icon-sun::before {
+    content: "☀️";
+}

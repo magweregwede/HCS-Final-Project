@@ -4,19 +4,344 @@
 {% block title %}Trip Routes{% endblock %}
 
 {% block content %}
-{% for triproute in triproute_list %}
-<div>
-    <a href="{{ triproute.get_absolute_url }}">{{ triproute.trip }}</a>
-    <span>{{ triproute.route }} </span>
-    <p>Distance: {{ triproute.route.distance_km }} km</p>
-    <p>Actual Time: {{ triproute.actual_time_min|minutes_to_hours }}</p> {# Convert minutes #}
-</div>
-<a href="{% url 'triproute_edit' triproute.pk %}">Edit</a>
-<a href="{% url 'triproute_delete' triproute.pk %}">Delete</a>
-<hr>
+<div class="content-area">
+    <div class="trips-layout">
+        <!-- Left Column - Filters -->
+        <div class="filters-column">
+            <div class="card filter-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-filter"></i> Filters</h2>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="filter-form">
+                        <div class="filter-group">
+                            <label for="search"><i class="fas fa-search"></i> Search</label>
+                            <div class="input-with-icon">
+                                <input type="text" id="search" name="search" placeholder="Truck or driver..."
+                                    value="{{ request.GET.search }}" class="form-control">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
 
-{% endfor %}
-{% if user.is_authenticated %}
-<p><a href="{% url 'triproute_new' %}">+ New</a></p>
-{% endif %}
+                        <div class="filter-group">
+                            <label for="origin"><i class="fas fa-map-marker-alt"></i> Origin</label>
+                            <div class="input-with-icon">
+                                <input type="text" id="origin" name="origin" placeholder="Enter origin..."
+                                    value="{{ request.GET.origin }}" class="form-control">
+                                <i class="fas fa-location-arrow"></i>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="destination"><i class="fas fa-flag-checkered"></i> Destination</label>
+                            <div class="input-with-icon">
+                                <input type="text" id="destination" name="destination"
+                                    placeholder="Enter destination..." value="{{ request.GET.destination }}"
+                                    class="form-control">
+                                <i class="fas fa-map-pin"></i>
+                            </div>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check"></i> Apply Filters
+                            </button>
+                            {% if request.GET.search or request.GET.origin or request.GET.destination %}
+                            <a href="{% url 'triproute_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Clear
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- New Trip Route Button -->
+            {% if user.is_authenticated %}
+            <a href="{% url 'triproute_new' %}" class="btn btn-primary btn-new-trip">
+                <i class="fas fa-plus"></i> New Trip Route
+            </a>
+            {% endif %}
+        </div>
+
+        <!-- Right Column - Table -->
+        <div class="table-column">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="trip-table">
+                            <thead>
+                                <tr>
+                                    <th>Truck</th>
+                                    <th>Driver</th>
+                                    <th>Route</th>
+                                    <th>Distance</th>
+                                    <th>Duration</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for trip_route in triproute_list %}
+                                <tr>
+                                    <td>{{ trip_route.trip.truck|default:"-" }}</td>
+                                    <td>{{ trip_route.trip.driver|default:"-" }}</td>
+                                    <td>
+                                        {{ trip_route.route.origin|default:"-" }}
+                                        <i class="fas fa-arrow-right mx-2 text-muted"></i>
+                                        {{ trip_route.route.destination|default:"-" }}
+                                    </td>
+                                    <td>{{ trip_route.route.distance_km|default:"-" }} km</td>
+                                    <td>{{ trip_route.actual_time_min|minutes_to_hours|default:"-" }}</td>
+                                    <td class="actions">
+                                        <a href="{% url 'triproute_edit' trip_route.pk %}" class="btn btn-sm btn-edit">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="empty-state">
+                                        <i class="fas fa-route fa-3x"></i>
+                                        <p>No trip routes found</p>
+                                        {% if request.GET.search or request.GET.origin or request.GET.destination %}
+                                        <a href="{% url 'triproute_list' %}" class="btn btn-primary mt-2">
+                                            Clear filters
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                    <div class="pagination">
+                        <div class="pagination-links">
+                            {% if page_obj.has_previous %}
+                            <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
+                                class="page-link">
+                                <i class="fas fa-angle-double-left"></i> First
+                            </a>
+                            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
+                                class="page-link">
+                                <i class="fas fa-angle-left"></i> Previous
+                            </a>
+                            {% endif %}
+
+                            <span class="current-page">
+                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
+
+                            {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
+                                class="page-link">
+                                Next <i class="fas fa-angle-right"></i>
+                            </a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
+                                class="page-link">
+                                Last <i class="fas fa-angle-double-right"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Layout Styles */
+    .trips-layout {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 1.5rem;
+    }
+
+    .filters-column {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .table-column {
+        overflow-x: auto;
+    }
+
+    /* Filter Card Styles */
+    .filter-card {
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .filter-card .card-header {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .filter-card .card-header h2 {
+        margin: 0;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filter-card .card-body {
+        padding: 1.25rem;
+    }
+
+    /* Filter Form Styles */
+    .filter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .filter-group {
+        margin-bottom: 0;
+    }
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .input-with-icon {
+        position: relative;
+    }
+
+    .input-with-icon i {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-light);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.5rem 0.75rem 0.5rem 2rem;
+        border: 1px solid var(--light-color);
+        border-radius: 6px;
+        font-size: 0.9rem;
+    }
+
+    /* New Trip Button */
+    .btn-new-trip {
+        width: 100%;
+        padding: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    /* Table Styles */
+    .trip-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .trip-table th {
+        background-color: var(--light-color);
+        padding: 0.75rem 1rem;
+        text-align: left;
+    }
+
+    .trip-table td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--light-color);
+    }
+
+    .trip-table tr:hover {
+        background-color: rgba(5, 146, 18, 0.05);
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    /* Pagination Styles */
+    .pagination {
+        margin-top: 1.5rem;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination-links {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .page-link {
+        padding: 0.5rem 0.75rem;
+        border-radius: 5px;
+        color: var(--primary-color);
+        text-decoration: none;
+        border: 1px solid var(--light-color);
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .page-link:hover {
+        background-color: var(--primary-color);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .current-page {
+        padding: 0 0.5rem;
+        font-weight: 500;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+    }
+
+    /* Action Buttons */
+    .actions {
+        white-space: nowrap;
+    }
+
+    .btn-edit {
+        background-color: var(--accent-color);
+        color: var(--dark-color);
+    }
+
+    .btn-edit:hover {
+        background-color: #c4e600;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+        .trips-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .filters-column {
+            order: -1;
+        }
+    }
+</style>
 {% endblock %}
