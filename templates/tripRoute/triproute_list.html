@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load time_filters %}
 
-{% block title %}Trip Routes{% endblock %}
+{% block title %}Trip Review{% endblock %}
 
 {% block content %}
 <div class="content-area">
@@ -58,8 +58,8 @@
 
             <!-- New Trip Route Button -->
             {% if user.is_authenticated %}
-            <a href="{% url 'triproute_new' %}" class="btn btn-primary btn-new-trip">
-                <i class="fas fa-plus"></i> New Trip Route
+            <a href="{% url 'trip_new' %}" class="btn btn-primary btn-new-trip">
+                <i class="fas fa-plus"></i> New Trip
             </a>
             {% endif %}
         </div>
