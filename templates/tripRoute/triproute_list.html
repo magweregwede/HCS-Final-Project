@@ -13,13 +13,91 @@
         </a>
         {% endif %}
     </div>
+    <!-- STARTING -->
 
+
+
+    <div class="table-responsive">
+        <table class="trip-table">
+            <thead>
+                <tr>
+                    <th>Truck</th>
+                    <th>Driver</th>
+                    <th>Route</th>
+                    <th>Distance</th>
+                    <th>Duration</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for trip_route in triproute_list %}
+                <tr>
+                    <td>{{ trip_route.trip.truck|default:"-" }}</td>
+                    <td>{{ trip_route.trip.driver|default:"-" }}</td>
+                    <td>
+                        {{ trip_route.route.origin|default:"-" }}
+                        <i class="fas fa-arrow-right mx-2 text-muted"></i>
+                        {{ trip_route.route.destination|default:"-" }}
+                    </td>
+                    <td>{{ trip_route.route.distance_km|default:"-" }}</td>
+                    <td>{{ trip_route.actual_time_min|minutes_to_hours|default:"-" }}</td>
+                    <td class="actions">
+                        <a href="{% url 'triproute_edit' trip_route.pk %}" class="btn btn-sm btn-edit">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+
+                        <!-- Uncomment when ready -->
+
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                        <i class="fas fa-route fa-3x text-muted mb-3"></i>
+                        <p class="mb-0">No trip routes found</p>
+                        {% if request.GET.search or request.GET.origin or request.GET.destination %}
+                        <a href="{% url 'triproute_list' %}" class="btn btn-primary mt-3">
+                            Clear filters
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if is_paginated %}
+        <div class="pagination">
+            <span class="page-links">
+                {% if page_obj.has_previous %}
+                <a
+                    href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.departure_date %}&departure_date={{ request.GET.departure_date }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">&laquo;
+                    first</a>
+                <a
+                    href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.departure_date %}&departure_date={{ request.GET.departure_date }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                <a
+                    href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.departure_date %}&departure_date={{ request.GET.departure_date }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">next</a>
+                <a
+                    href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.departure_date %}&departure_date={{ request.GET.departure_date }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">last
+                    &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+        {% endif %}
+    </div>
     <div class="card">
         <div class="card-header">
             <h2>Filters</h2>
         </div>
         <div class="card-body">
-            <form method="get" class="filter-form">
+            <form method="get" class="filter-form" action="{% url 'triproute_list' %}">{% csrf_token %}
                 <div class="form-row">
                     <div class="form-group">
                         <input type="text" name="search" placeholder="Search trips, trucks or drivers"
@@ -47,84 +125,46 @@
             </form>
         </div>
     </div>
+</div>
 
-    <div class="card">
-        <div class="card-header">
-            <h2>Trip Routes</h2>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Trip ID</th>
-                            <th>Truck</th>
-                            <th>Driver</th>
-                            <th>Route</th>
-                            <th>Distance</th>
-                            <th>Duration</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for trip_route in triproute_list %}
-                        <tr>
-                            <td>
-                                <a href="{{ trip_route.get_absolute_url }}" class="text-primary">
-                                    {{ trip_route.trip.id }}
-                                </a>
-                            </td>
-                            <td>{{ trip_route.trip.truck|default:"-" }}</td>
-                            <td>{{ trip_route.trip.driver|default:"-" }}</td>
-                            <td>
-                                {{ trip_route.route.origin|default:"-" }}
-                                <i class="fas fa-arrow-right mx-2 text-muted"></i>
-                                {{ trip_route.route.destination|default:"-" }}
-                            </td>
-                            <td>{{ trip_route.route.distance_km|default:"-" }} km</td>
-                            <td>{{ trip_route.actual_time_min|minutes_to_hours|default:"-" }}</td>
-                            <td class="actions">
-                                <a href="{% url 'triproute_edit' trip_route.pk %}" class="btn btn-sm btn-edit">
-                                    <i class="fas fa-edit"></i> Edit
-                                </a>
-                                <a href="{% url 'triproute_delete' trip_route.pk %}" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash"></i> Delete
-                                </a>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="text-center py-4">
-                                <i class="fas fa-route fa-3x text-muted mb-3"></i>
-                                <p class="mb-0">No trip routes found</p>
-                                {% if request.GET.search or request.GET.origin or request.GET.destination %}
-                                <a href="{% url 'triproute_list' %}" class="btn btn-primary mt-3">
-                                    Clear filters
-                                </a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+<style>
+    /* [Previous CSS styles remain the same] */
 
-            {% if is_paginated %}
-            <div class="pagination mt-4">
-                <div class="pagination-links">
-                    {% if page_obj.has_previous %}
-                    <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
-                        class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-angle-double-left"></i> First
-                    </a>
-                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
-                        class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-angle-left"></i> Previous
-                    </a>
-                    {% endif %}
-                    {% endif %}
+    .sort-link {
+        color: white;
+        margin-left: 5px;
+    }
 
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
 
-                    <span class="current-page">
-                        Page {{ page_obj.number }} of {{ page_obj }}
-                        {% endblock %}
+    .page-links a {
+        margin: 0 5px;
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+
+    .page-links a:hover {
+        text-decoration: underline;
+    }
+
+    .current {
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Removed the default date setting
+        // Only keeping the clear functionality
+        const clearBtn = document.querySelector('.btn-clear');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function (e) {
+                // No need to clear inputs manually since we're redirecting to base URL
+            });
+        }
+    });
+</script>
+{% endblock %}

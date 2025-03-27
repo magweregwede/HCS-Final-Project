@@ -121,7 +121,7 @@
                     </div>
 
                     <div class="stat-card">
-                        <h3>Total Miles</h3>
+                        <h3>Total Kilometres</h3>
                         <div class="value">12,456</div>
                         <div class="change negative">-8% from last week</div>
                     </div>
@@ -140,6 +140,12 @@
 
     <!-- Footer -->
     <footer>
+        <div class="footer-section">
+            {% if user.is_authenticated %}
+            <p>Hi {{ user.first_name }}</p>
+            <p>Logged in at: {{ user.last_login }}</p>
+            {% endif %}
+        </div>
         <div class="footer-section">
             <h3>Support</h3>
             <ul>
