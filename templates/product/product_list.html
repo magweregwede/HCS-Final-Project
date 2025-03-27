@@ -7,6 +7,14 @@
     <div class="card">
         <div class="card-header">
             <h2><i class="fas fa-boxes"></i> Products</h2>
+<<<<<<< HEAD
+=======
+            {% if user.is_authenticated %}
+            <a href="{% url 'product_new' %}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus"></i> New Product
+            </a>
+            {% endif %}
+>>>>>>> frontend
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -16,14 +24,50 @@
                             <th>Name</th>
                             <th>Description</th>
                             <th>Category</th>
+<<<<<<< HEAD
+=======
+                            <th class="actions">Actions</th>
+>>>>>>> frontend
                         </tr>
                     </thead>
                     <tbody>
                         {% for product in product_list %}
                         <tr>
+<<<<<<< HEAD
                             <td>{{ product.name }}</td>
                             <td>{{ product.description|truncatechars:50 }}</td>
                             <td>{{ product.category }}</td>
+=======
+                            <td>
+                                <a href="{{ product.get_absolute_url }}" class="product-link">
+                                    {{ product.name }}
+                                </a>
+                            </td>
+                            <td>{{ product.description|truncatechars:50 }}</td>
+                            <td>{{ product.category }}</td>
+                            <td class="actions">
+                                {% if user.is_authenticated %}
+                                <a href="{% url 'product_edit' product.pk %}" class="btn btn-sm btn-edit">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="{% url 'product_delete' product.pk %}" class="btn btn-sm btn-delete">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="empty-state">
+                                <i class="fas fa-box-open fa-3x"></i>
+                                <p>No products found</p>
+                                {% if user.is_authenticated %}
+                                <a href="{% url 'product_new' %}" class="btn btn-primary mt-2">
+                                    <i class="fas fa-plus"></i> Add First Product
+                                </a>
+                                {% endif %}
+                            </td>
+>>>>>>> frontend
                         </tr>
                         {% endfor %}
                     </tbody>
