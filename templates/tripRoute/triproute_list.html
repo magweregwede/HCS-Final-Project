@@ -5,363 +5,204 @@
 
 {% block content %}
 <div class="content-area">
-    <div class="page-header">
-        <h1>Trip Route Management</h1>
-        {% if user.is_authenticated %}
-        <a href="{% url 'triproute_new' %}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> New Trip Route
-        </a>
-        {% endif %}
-    </div>
-    <!-- STARTING -->
-
-    <div class="card filter-card">
-        <div class="card-header">
-            <h2><i class="fas fa-filter"></i> Filters</h2>
-        </div>
-        <div class="card-body">
-            <form method="get" class="filter-form">
-                <div class="filter-row">
-                    <!-- Search Field -->
-                    <div class="filter-group compact">
-                        <div class="input-with-icon compact">
-                            <input type="text" name="search" placeholder="Truck, driver..."
-                                value="{{ request.GET.search }}" class="form-control compact">
-                            <i class="fas fa-search"></i>
-                        </div>
-                    </div>
-
-                    <!-- Origin Field -->
-                    <div class="filter-group compact">
-                        <div class="input-with-icon compact">
-                            <input type="text" name="origin" placeholder="Origin..." value="{{ request.GET.origin }}"
-                                class="form-control compact">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
-                    </div>
-
-                    <!-- Destination Field -->
-                    <div class="filter-group compact">
-                        <div class="input-with-icon compact">
-                            <input type="text" name="destination" placeholder="Destination..."
-                                value="{{ request.GET.destination }}" class="form-control compact">
-                            <i class="fas fa-flag-checkered"></i>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="filter-actions compact">
-                        <button type="submit" class="btn btn-primary btn-sm">
-                            <i class="fas fa-check"></i> Apply
-                        </button>
-                        {% if request.GET.search or request.GET.origin or request.GET.destination %}
-                        <a href="{% url 'triproute_list' %}" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-times"></i> Clear
-                        </a>
-                        {% endif %}
-                    </div>
+    <div class="trips-layout">
+        <!-- Left Column - Filters -->
+        <div class="filters-column">
+            <div class="card filter-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-filter"></i> Filters</h2>
                 </div>
-            </form>
+                <div class="card-body">
+                    <form method="get" class="filter-form">
+                        <div class="filter-group">
+                            <label for="search"><i class="fas fa-search"></i> Search</label>
+                            <div class="input-with-icon">
+                                <input type="text" id="search" name="search" placeholder="Truck or driver..."
+                                    value="{{ request.GET.search }}" class="form-control">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="origin"><i class="fas fa-map-marker-alt"></i> Origin</label>
+                            <div class="input-with-icon">
+                                <input type="text" id="origin" name="origin" placeholder="Enter origin..."
+                                    value="{{ request.GET.origin }}" class="form-control">
+                                <i class="fas fa-location-arrow"></i>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="destination"><i class="fas fa-flag-checkered"></i> Destination</label>
+                            <div class="input-with-icon">
+                                <input type="text" id="destination" name="destination"
+                                    placeholder="Enter destination..." value="{{ request.GET.destination }}"
+                                    class="form-control">
+                                <i class="fas fa-map-pin"></i>
+                            </div>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check"></i> Apply Filters
+                            </button>
+                            {% if request.GET.search or request.GET.origin or request.GET.destination %}
+                            <a href="{% url 'triproute_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Clear
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- New Trip Route Button -->
+            {% if user.is_authenticated %}
+            <a href="{% url 'triproute_new' %}" class="btn btn-primary btn-new-trip">
+                <i class="fas fa-plus"></i> New Trip Route
+            </a>
+            {% endif %}
         </div>
-    </div>
 
-    <div class="table-responsive">
-        <table class="trip-table">
-            <thead>
-                <tr>
-                    <th>Truck</th>
-                    <th>Driver</th>
-                    <th>Route</th>
-                    <th>Distance</th>
-                    <th>Duration</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for trip_route in triproute_list %}
-                <tr>
-                    <td>{{ trip_route.trip.truck|default:"-" }}</td>
-                    <td>{{ trip_route.trip.driver|default:"-" }}</td>
-                    <td>
-                        {{ trip_route.route.origin|default:"-" }}
-                        <i class="fas fa-arrow-right mx-2 text-muted"></i>
-                        {{ trip_route.route.destination|default:"-" }}
-                    </td>
-                    <td>{{ trip_route.route.distance_km|default:"-" }}</td>
-                    <td>{{ trip_route.actual_time_min|minutes_to_hours|default:"-" }}</td>
-                    <td class="actions">
-                        <a href="{% url 'triproute_edit' trip_route.pk %}" class="btn btn-sm btn-edit">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
+        <!-- Right Column - Table -->
+        <div class="table-column">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="trip-table">
+                            <thead>
+                                <tr>
+                                    <th>Truck</th>
+                                    <th>Driver</th>
+                                    <th>Route</th>
+                                    <th>Distance</th>
+                                    <th>Duration</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for trip_route in triproute_list %}
+                                <tr>
+                                    <td>{{ trip_route.trip.truck|default:"-" }}</td>
+                                    <td>{{ trip_route.trip.driver|default:"-" }}</td>
+                                    <td>
+                                        {{ trip_route.route.origin|default:"-" }}
+                                        <i class="fas fa-arrow-right mx-2 text-muted"></i>
+                                        {{ trip_route.route.destination|default:"-" }}
+                                    </td>
+                                    <td>{{ trip_route.route.distance_km|default:"-" }} km</td>
+                                    <td>{{ trip_route.actual_time_min|minutes_to_hours|default:"-" }}</td>
+                                    <td class="actions">
+                                        <a href="{% url 'triproute_edit' trip_route.pk %}" class="btn btn-sm btn-edit">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="empty-state">
+                                        <i class="fas fa-route fa-3x"></i>
+                                        <p>No trip routes found</p>
+                                        {% if request.GET.search or request.GET.origin or request.GET.destination %}
+                                        <a href="{% url 'triproute_list' %}" class="btn btn-primary mt-2">
+                                            Clear filters
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
 
-                        <!-- Uncomment when ready -->
+                    <!-- Pagination -->
+                    {% if is_paginated %}
+                    <div class="pagination">
+                        <div class="pagination-links">
+                            {% if page_obj.has_previous %}
+                            <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
+                                class="page-link">
+                                <i class="fas fa-angle-double-left"></i> First
+                            </a>
+                            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
+                                class="page-link">
+                                <i class="fas fa-angle-left"></i> Previous
+                            </a>
+                            {% endif %}
 
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="7" class="text-center py-4">
-                        <i class="fas fa-route fa-3x text-muted mb-3"></i>
-                        <p class="mb-0">No trip routes found</p>
-                        {% if request.GET.search or request.GET.origin or request.GET.destination %}
-                        <a href="{% url 'triproute_list' %}" class="btn btn-primary mt-3">
-                            Clear filters
-                        </a>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                            <span class="current-page">
+                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                            </span>
 
-        {% if is_paginated %}
-        <div class="pagination mt-4">
-            <div class="pagination-links">
-                {% if page_obj.has_previous %}
-                <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
-                    class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-angle-double-left"></i> First
-                </a>
-                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
-                    class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-angle-left"></i> Previous
-                </a>
-                {% endif %}
-
-                <span class="current-page">
-                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                </span>
-
-                {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
-                    class="btn btn-sm btn-outline-primary">
-                    Next <i class="fas fa-angle-right"></i>
-                </a>
-                <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
-                    class="btn btn-sm btn-outline-primary">
-                    Last <i class="fas fa-angle-double-right"></i>
-                </a>
-                {% endif %}
+                            {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
+                                class="page-link">
+                                Next <i class="fas fa-angle-right"></i>
+                            </a>
+                            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
+                                class="page-link">
+                                Last <i class="fas fa-angle-double-right"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
-        {% endif %}
     </div>
-</div>
 </div>
 
 <style>
-    /* [Previous CSS styles remain the same] */
-
-    /* Compact Filter Styles */
-    .filter-card {
-        margin-bottom: 1.5rem;
-        border-radius: 8px;
-    }
-
-    .filter-card .card-header {
-        padding: 0.75rem 1.25rem;
-        background-color: var(--primary-color);
-        color: white;
-    }
-
-    .filter-card .card-header h2 {
-        font-size: 1.1rem;
-        margin: 0;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .filter-row {
-        display: flex;
-        gap: 0.75rem;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    .filter-group.compact {
-        flex: 1 0 180px;
-        margin-bottom: 0;
-    }
-
-    .input-with-icon.compact {
-        position: relative;
-    }
-
-    .form-control.compact {
-        padding: 0.5rem 0.75rem 0.5rem 2rem;
-        font-size: 0.9rem;
-        height: calc(1.5em + 1rem);
-        border: 1px solid var(--light-color);
-        border-radius: 6px;
-        background-color: var(--card-bg);
-        transition: all 0.2s ease;
-    }
-
-    .form-control.compact:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 2px rgba(5, 146, 18, 0.2);
-    }
-
-    .input-with-icon.compact i {
-        position: absolute;
-        left: 0.75rem;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 0.9rem;
-        color: var(--text-light);
-    }
-
-    .filter-actions.compact {
-        display: flex;
-        gap: 0.5rem;
-        margin-left: auto;
-    }
-
-    .btn-sm {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.85rem;
-        border-radius: 5px;
-    }
-
-    /* Enhanced Pagination Styles */
-    .pagination {
-        margin-top: 1.5rem;
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-
-    .pagination a,
-    .pagination span {
-        padding: 0.5rem 0.75rem;
-        border-radius: 5px;
-        text-decoration: none;
-        transition: all 0.2s ease;
-    }
-
-    .pagination a {
-        color: var(--primary-color);
-        border: 1px solid var(--light-color);
-        background-color: var(--card-bg);
-    }
-
-    .pagination a:hover {
-        background-color: var(--primary-color);
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .pagination .current {
-        background-color: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
-    }
-
-    .pagination .disabled {
-        color: var(--text-light);
-        pointer-events: none;
-    }
-
-    @media (max-width: 768px) {
-        .filter-row {
-            gap: 0.5rem;
-        }
-
-        .filter-group.compact {
-            flex: 1 0 100%;
-        }
-
-        .filter-actions.compact {
-            margin-left: 0;
-            width: 100%;
-            justify-content: flex-end;
-        }
-
-        .pagination {
-            flex-wrap: wrap;
-        }
-    }
-
-    .sort-link {
-        color: white;
-        margin-left: 5px;
-    }
-
-    .pagination {
-        margin-top: 20px;
-        text-align: center;
-    }
-
-    .page-links a {
-        margin: 0 5px;
-        color: var(--primary-color);
-        text-decoration: none;
-    }
-
-    .page-links a:hover {
-        text-decoration: underline;
-    }
-
-    .current {
-        font-weight: bold;
-    }
-
-    .filter-form {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        align-items: flex-end;
-    }
-
-    .form-group {
-        flex: 1;
-        min-width: 200px;
-    }
-
-    .trip-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    /* Filter Card Styling */
-    .filter-card {
-        margin-bottom: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        border: 1px solid var(--light-color);
-    }
-
-    .filter-card .card-header {
-        background-color: var(--primary-color);
-        color: white;
-        border-radius: 8px 8px 0 0 !important;
-        padding: 1rem 1.5rem;
-        margin: 1px !important;
-    }
-
-    .filter-card .card-header h2 {
-        margin: 0;
-        font-size: 1.2rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    /* Filter Grid Layout */
-    .filter-grid {
+    /* Layout Styles */
+    .trips-layout {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: 300px 1fr;
         gap: 1.5rem;
-        align-items: end;
     }
 
-    /* Filter Group Styling */
+    .filters-column {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .table-column {
+        overflow-x: auto;
+    }
+
+    /* Filter Card Styles */
+    .filter-card {
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .filter-card .card-header {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .filter-card .card-header h2 {
+        margin: 0;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .filter-card .card-body {
+        padding: 1.25rem;
+    }
+
+    /* Filter Form Styles */
+    .filter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
     .filter-group {
         margin-bottom: 0;
     }
@@ -369,85 +210,138 @@
     .filter-group label {
         display: block;
         margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: var(--text-color);
+        font-weight: 500;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 0.5rem;
     }
 
-    /* Input Field Styling */
     .input-with-icon {
         position: relative;
     }
 
-    .form-control {
-        width: 100%;
-        padding: 0.75rem 1rem 0.75rem 2.5rem;
-        border: 1px solid var(--light-color);
-        border-radius: 6px;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-        background-color: var(--card-bg);
-        color: var(--text-color);
-    }
-
-    .form-control:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(5, 146, 18, 0.2);
-        outline: none;
-    }
-
-    .input-icon {
+    .input-with-icon i {
         position: absolute;
-        left: 1rem;
+        left: 0.75rem;
         top: 50%;
         transform: translateY(-50%);
         color: var(--text-light);
     }
 
-    /* Button Styling */
-    .filter-actions {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
+    .form-control {
+        width: 100%;
+        padding: 0.5rem 0.75rem 0.5rem 2rem;
+        border: 1px solid var(--light-color);
+        border-radius: 6px;
+        font-size: 0.9rem;
     }
 
-    .btn-apply {
-        padding: 0.75rem 1.5rem;
-        background-color: var(--primary-color);
-        border: none;
+    /* New Trip Button */
+    .btn-new-trip {
+        width: 100%;
+        padding: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    /* Table Styles */
+    .trip-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .trip-table th {
+        background-color: var(--light-color);
+        padding: 0.75rem 1rem;
+        text-align: left;
+    }
+
+    .trip-table td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--light-color);
+    }
+
+    .trip-table tr:hover {
+        background-color: rgba(5, 146, 18, 0.05);
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
         font-weight: 500;
     }
 
-    .btn-clear {
-        padding: 0.75rem 1.5rem;
+    /* Pagination Styles */
+    .pagination {
+        margin-top: 1.5rem;
+        display: flex;
+        justify-content: center;
     }
 
-    /* Responsive Adjustments */
-    @media (max-width: 768px) {
-        .filter-grid {
+    .pagination-links {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .page-link {
+        padding: 0.5rem 0.75rem;
+        border-radius: 5px;
+        color: var(--primary-color);
+        text-decoration: none;
+        border: 1px solid var(--light-color);
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .page-link:hover {
+        background-color: var(--primary-color);
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .current-page {
+        padding: 0 0.5rem;
+        font-weight: 500;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+    }
+
+    /* Action Buttons */
+    .actions {
+        white-space: nowrap;
+    }
+
+    .btn-edit {
+        background-color: var(--accent-color);
+        color: var(--dark-color);
+    }
+
+    .btn-edit:hover {
+        background-color: #c4e600;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 992px) {
+        .trips-layout {
             grid-template-columns: 1fr;
         }
 
-        .filter-actions {
-            justify-content: flex-end;
+        .filters-column {
+            order: -1;
         }
     }
-
-    /* Add any additional styles you need */
 </style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Removed the default date setting
-        // Only keeping the clear functionality
-        const clearBtn = document.querySelector('.btn-clear');
-        if (clearBtn) {
-            clearBtn.addEventListener('click', function (e) {
-                // No need to clear inputs manually since we're redirecting to base URL
-            });
-        }
-    });
-</script>
 {% endblock %}
