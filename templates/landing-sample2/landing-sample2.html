@@ -5,8 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Trip AI{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Trip AI</title>
+    <link rel="stylesheet" href="{% static 'css/style.css'' %}">
 </head>
 
 <body>
@@ -34,11 +34,10 @@
                 <div id="trip-ai-menu" class="submenu">
                     <div class="submenu-item" onclick="loadContent('deliveries')">Deliveries</div>
                     <div class="submenu-item" onclick="toggleSubmenu('logistics-partners-menu')">Logistics Partners
-                    </div>
-                    <div id="logistics-partners-menu" class="submenu">
                         <div class="submenu-item" onclick="loadContent('truck-companies')">Truck Companies</div>
                         <div class="submenu-item" onclick="loadContent('truck-drivers')">Truck Drivers</div>
                     </div>
+                    <!-- <div id="logistics-partners-menu" class="submenu"></div> -->
                 </div>
 
                 <div class="menu-item" onclick="loadContent('driver-availability')">
@@ -62,7 +61,9 @@
                     <li><a href="#" onclick="loadContent('products')">Products</a></li>
                     <li><a href="#" onclick="loadContent('routes')">Routes</a></li>
                 </ul>
-                <a href="/admin" class="admin-link" target="_blank">Admin</a>
+                <a href="/admin"
+                    style="list-style: none; color: var(--text-color);font-weight: 500;padding: 5px 10px;border-radius: 4px;transition: all 0.3s;color: var(--primary-color);color: var(--primary-color);background-color: rgba(5, 146, 18, 0.1);"
+                    target="_blank">Admin</a>
 
                 <div class="user-actions">
                     <div class="dark-mode-toggle" id="darkModeToggle">
@@ -72,21 +73,12 @@
 
                     <div class="user-dropdown">
                         <button class="dropdown-btn">
-                            <i class="icon-user"></i>
-                            {% if user.is_authenticated %}
-                            {{ user.username }}
-                            {% else %}
-                            Guest
-                            {% endif %}
-                            <i class="icon-chevron"></i>
+                            <i class="icon-user"></i> {{ user.username }} <i class="icon-chevron"></i>
                         </button>
                         <div class="dropdown-content">
-                            {% if user.is_authenticated %}
-                            <a href="{% url 'password_change' %}"><i class="icon-password"></i> Change Password</a>
-                            <a href="{% url 'logout' %}"><i class="icon-logout"></i> Log Out</a>
-                            {% else %}
-                            <a href="{% url 'login' %}"><i class="icon-logout"></i> Log In</a>
-                            {% endif %}
+                            <a href="http://127.0.0.1:8000/admin/password_change/"><i class="icon-password"></i> Change
+                                Password</a>
+                            <a href="{% url 'logout'  %}"><i class="icon-logout"></i> Log Out</a>
                         </div>
                     </div>
                 </div>
@@ -94,7 +86,6 @@
 
             <!-- Content Area -->
             <div class="content-area" id="content-area">
-                {% block content %}
                 <!-- Default Dashboard Content -->
                 <div class="page-header">
                     <h1>Dashboard</h1>
@@ -127,24 +118,54 @@
                     </div>
                 </div>
 
-                <div class="card">
+                <!-- <div class="card">
                     <div class="card-header">
                         <h2>Recent Activities</h2>
                     </div>
                     <p>Content for recent activities will go here...</p>
-                </div>
-                {% endblock %}
+                </div> -->
             </div>
         </main>
     </div>
 
     <!-- Footer -->
     <footer>
+        <!-- <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Logistics Management System provides comprehensive solutions for transportation and delivery
+                    management.</p>
+            </div> -->
+
+        <!-- <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#" onclick="loadContent('dashboard')">Home</a></li>
+                    <li><a href="#" onclick="loadContent('products')">Products</a></li>
+                    <li><a href="#" onclick="loadContent('routes')">Routes</a></li>
+                    <li><a href="#">Documentation</a></li>
+                </ul>
+            </div> -->
+
         <div class="footer-section">
             <h3>Support</h3>
             <ul>
                 <li><a href="#">Contact Us</a></li>
+                <!-- <li><a href="#">Feedback</a></li> -->
+                <!-- <li><a href="#">Help Center</a></li> -->
+                <!-- <li><a href="#">System Status</a></li> -->
             </ul>
+        </div>
+
+        <!-- <div class="footer-section">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                    <li><a href="#">GDPR Compliance</a></li>
+                </ul> -->
+        </div>
         </div>
 
         <div class="footer-bottom">

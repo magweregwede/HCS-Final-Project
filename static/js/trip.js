@@ -1,13 +1,8 @@
- // Toggle submenus
- function toggleSubmenu(menuId) {
+// Toggle submenus
+function toggleSubmenu(menuId) {
     const submenu = document.getElementById(menuId);
     submenu.classList.toggle('show');
-
-    // Update active menu item
-    document.querySelectorAll('.menu-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    event.currentTarget.classList.add('active');
+    event.stopPropagation();
 }
 
 // Load content dynamically
@@ -17,8 +12,7 @@ function loadContent(page) {
     // Update active nav link
     document.querySelectorAll('.nav-links a').forEach(link => {
         link.classList.remove('active');
-        if (link.textContent.toLowerCase() === page.toLowerCase() ||
-            (page !== 'dashboard' && link.textContent === 'Home')) {
+        if (link.textContent.toLowerCase() === page.toLowerCase()) {
             link.classList.add('active');
         }
     });
@@ -34,97 +28,29 @@ function loadContent(page) {
     // Clear previous content
     contentArea.innerHTML = '';
 
-    // Create container for delivery buttons (will be shown only for deliveries section)
+    // Create delivery navigation (shown only for deliveries section)
     const deliveryNav = document.createElement('div');
-    deliveryNav.className = 'nav-bar';
-    deliveryNav.style.display = 'none'; // Hidden by default
-    deliveryNav.style.marginBottom = '20px';
-    deliveryNav.style.padding = '10px';
-    // deliveryNav.style.backgroundColor = '#f5f5f5';
-    deliveryNav.style.borderRadius = '5px';
+    deliveryNav.className = 'delivery-nav';
+    deliveryNav.style.display = 'none';
+    
+    const deliveryButtons = [
+        { text: 'New Trips', url: '/new-trips/' },
+        { text: 'Ongoing Trips', url: '/ongoing-trips/' },
+        { text: 'Review Trips', url: '/review-trips/' }
+    ];
 
-    // Create delivery navigation buttons
-    const buttonNames = ['New Trip', 'View Trips', 'Trip Review'];
-    buttonNames.forEach(btnName => {
-        const button = document.createElement('button');
-        button.textContent = btnName;
+    deliveryButtons.forEach(btn => {
+        const button = document.createElement('a');
+        button.textContent = btn.text;
         button.className = 'btn btn-primary';
+        button.href = btn.url;
         button.style.marginRight = '10px';
-        button.onclick = () => loadContent(btnName.toLowerCase().replace(' ', '-'));
         deliveryNav.appendChild(button);
     });
 
-    const iframeContainer = document.createElement('div');
-    iframeContainer.style.width = '100%';
-    iframeContainer.style.height = '100%';
-    iframeContainer.style.overflow = 'hidden';
-
-    // Create iframe
-    const iframe = document.createElement('iframe');
-    iframe.id = 'content-iframe';
-    iframe.style.width = '100%';
-    iframe.style.height = '100px'; // Initial small height
-    iframe.style.border = 'none';
-    iframe.style.overflow = 'hidden';
-
-    // Auto-resize function
-    function resizeIframe() {
-        try {
-            const body = iframe.contentDocument.body;
-            const html = iframe.contentDocument.documentElement;
-            const height = Math.max(
-                body.scrollHeight,
-                body.offsetHeight,
-                html.clientHeight,
-                html.scrollHeight,
-                html.offsetHeight
-            );
-            iframe.style.height = height + 'px';
-        } catch (e) {
-            console.log('Resize error:', e);
-        }
-    }
-
-    // Set up iframe load event
-    iframe.onload = function() {
-        // Initial resize
-        resizeIframe();
-        
-        // Periodic checks for dynamic content
-        const resizeInterval = setInterval(resizeIframe, 100);
-        
-        // Clean up when iframe unloads
-        iframe.contentWindow.addEventListener('unload', () => {
-            clearInterval(resizeInterval);
-        });
-    };
-
-
-    // Set iframe source based on page
-    switch (page) {
-        case 'deliveries':
-            deliveryNav.style.display = 'block'; // Show delivery navigation
-            // iframe.src = '#'; // Replace with your deliveries.html path
-            break;
-            
-        case 'new-trip':
-            deliveryNav.style.display = 'block'; // Show delivery navigation
-            iframe.src = './login.html'; // Replace with your new-trip.html path
-            break;
-            
-        case 'view-trips':
-            deliveryNav.style.display = 'block'; // Show delivery navigation
-            iframe.src = './login.html'; // Replace with your view-trips.html path
-            break;
-            
-        case 'trip-review':
-            deliveryNav.style.display = 'block'; // Show delivery navigation
-            iframe.src = './login.html'; // Replace with your trip-review.html path
-            break;
-            
-        // Other cases remain the same
+    // Set content based on page
+    switch (page.toLowerCase()) {
         case 'dashboard':
-            // iframe.src = '#'; // Replace with your dashboard.html path
             contentArea.innerHTML = `
                 <div class="page-header">
                     <h1>Dashboard</h1>
@@ -165,24 +91,155 @@ function loadContent(page) {
                 </div>
             `;
             break;
+
+        case 'deliveries':
+            deliveryNav.style.display = 'block';
+            contentArea.innerHTML = `
+                <div class="page-header">
+                    <h1>Deliveries Management</h1>
+                    <p>Select an action below to manage deliveries</p>
+                </div>
+                <div class="deliveries-content">
+                    <!-- Delivery buttons will be inserted here -->
+                </div>
+            `;
+            contentArea.querySelector('.deliveries-content').appendChild(deliveryNav);
+            break;
+
         case 'products':
-            iframe.src = './login.html'; // Replace with your products.html path
+            contentArea.innerHTML = `
+                <div class="page-header">
+                    <h1>Product Management</h1>
+                    <button class="btn btn-primary">Add New Product</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Product Inventory</h2>
+                        <div class="search-bar">
+                            <input type="text" placeholder="Search products..." class="search-input">
+                            <button class="btn btn-secondary">Search</button>
+                        </div>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>PRD-1001</td>
+                                <td>Electronics Package</td>
+                                <td>Fragile</td>
+                                <td>15</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-secondary">Edit</button>
+                                    <button class="btn btn-danger">Delete</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>PRD-1002</td>
+                                <td>Furniture Set</td>
+                                <td>Bulky</td>
+                                <td>8</td>
+                                <td><span class="status active">Active</span></td>
+                                <td>
+                                    <button class="btn btn-secondary">Edit</button>
+                                    <button class="btn btn-danger">Delete</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>PRD-1003</td>
+                                <td>Clothing Bundle</td>
+                                <td>Standard</td>
+                                <td>32</td>
+                                <td><span class="status inactive">Inactive</span></td>
+                                <td>
+                                    <button class="btn btn-secondary">Edit</button>
+                                    <button class="btn btn-danger">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="pagination">
+                        <button class="btn btn-secondary">Previous</button>
+                        <span>Page 1 of 3</span>
+                        <button class="btn btn-secondary">Next</button>
+                    </div>
+                </div>
+            `;
             break;
+
         case 'routes':
-            iframe.src = './login.html'; // Replace with your routes.html path
+            contentArea.innerHTML = `
+                <div class="page-header">
+                    <h1>Route Management</h1>
+                    <button class="btn btn-primary">Add New Route</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Available Routes</h2>
+                        <div class="filter-options">
+                            <select class="form-control">
+                                <option>All Regions</option>
+                                <option>North</option>
+                                <option>South</option>
+                                <option>East</option>
+                                <option>West</option>
+                            </select>
+                            <button class="btn btn-secondary">Apply Filters</button>
+                        </div>
+                    </div>
+                    
+                    <div class="map-container">
+                        <div class="map-placeholder">
+                            <p>Map visualization would appear here</p>
+                        </div>
+                    </div>
+                    
+                    <div class="route-list">
+                        <div class="route-card">
+                            <h3>RT-101: New York to Boston</h3>
+                            <div class="route-details">
+                                <p><strong>Distance:</strong> 215 miles</p>
+                                <p><strong>Duration:</strong> 4 hours 30 minutes</p>
+                                <p><strong>Stops:</strong> 3</p>
+                                <p><strong>Status:</strong> <span class="status active">Active</span></p>
+                            </div>
+                            <div class="route-actions">
+                                <button class="btn btn-primary">View Details</button>
+                                <button class="btn btn-secondary">Edit</button>
+                            </div>
+                        </div>
+                        
+                        <div class="route-card">
+                            <h3>RT-102: Chicago to Detroit</h3>
+                            <div class="route-details">
+                                <p><strong>Distance:</strong> 282 miles</p>
+                                <p><strong>Duration:</strong> 5 hours 15 minutes</p>
+                                <p><strong>Stops:</strong> 2</p>
+                                <p><strong>Status:</strong> <span class="status active">Active</span></p>
+                            </div>
+                            <div class="route-actions">
+                                <button class="btn btn-primary">View Details</button>
+                                <button class="btn btn-secondary">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
             break;
-        case 'driver-availability':
-            iframe.src = './login.html'; // Replace with your driver-availability.html path
-            break;
-        case 'truck-companies':
-            iframe.src = './login.html'; // Replace with your truck-companies.html path
-            break;
-        case 'truck-drivers':
-            iframe.src = './login.html'; // Replace with your truck-drivers.html path
-            break;
-        case 'reporting':
-            iframe.src = './login.html'; // Replace with your reporting.html path
-            break;
+
         default:
             contentArea.innerHTML = `
                 <div class="page-header">
@@ -193,15 +250,7 @@ function loadContent(page) {
                     <p>The requested page could not be found.</p>
                 </div>
             `;
-            return;
     }
-
-    // Add elements to content area
-    if (page === 'deliveries' || page === 'new-trip' || page === 'view-trips' || page === 'trip-review') {
-        contentArea.appendChild(deliveryNav);
-    }
-    iframeContainer.appendChild(iframe);
-    contentArea.appendChild(iframeContainer);
 }
 
 // Dark Mode Toggle
@@ -220,7 +269,7 @@ function toggleDarkMode() {
 }
 
 // Initialize the page
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     // Check for saved dark mode preference
     if (localStorage.getItem('darkMode') === 'enabled') {
         document.body.classList.add('dark-mode');
@@ -230,28 +279,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set up dark mode toggle
     document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
 
-    // Set up event listeners for nav links
-    document.querySelectorAll('.nav-links a').forEach(link => {
-        link.addEventListener('click', function (e) {
-            e.preventDefault();
-            document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
+    // Close submenus when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.submenu').forEach(submenu => {
+            submenu.classList.remove('show');
         });
     });
 
-    // Set up event listeners for sidebar menu items
-    document.querySelectorAll('.menu-item').forEach(item => {
-        item.addEventListener('click', function () {
-            document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
+    // Prevent submenu from closing when clicking inside it
+    document.querySelectorAll('.submenu').forEach(submenu => {
+        submenu.addEventListener('click', function(e) {
+            e.stopPropagation();
         });
     });
 
-    // Set up event listeners for submenu items
-    document.querySelectorAll('.submenu-item').forEach(item => {
-        item.addEventListener('click', function () {
-            document.querySelectorAll('.submenu-item').forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
+    // Initialize with dashboard content
+    loadContent('dashboard');
 });
