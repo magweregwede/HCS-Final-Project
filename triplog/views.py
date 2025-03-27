@@ -245,6 +245,10 @@ class TripListView(ListView):
                 queryset = queryset.filter(departure_time__date=date_obj)
             except ValueError:
                 pass
+
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status__iexact=status)  # case insensitive
         
         # Default sorting
         if self.request.GET.get('sort') == 'departure_time':
