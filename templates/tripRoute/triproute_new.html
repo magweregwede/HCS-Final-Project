@@ -1,9 +1,29 @@
 {% extends "base.html" %}
+{% load static %}
+{% block title %}New Trip{% endblock %}
+
+{% block headOptional %}
+<link rel="stylesheet" href="{% static 'css/inputs.css' %}">{% endblock %}
 
 {% block content %}
-<h1>New Trip Route</h1>
-<form action="" method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save</button>
-</form>
-{% endblock content %}
+<div class="form-container">
+    <div class="card">
+        <div class="card-header">
+            <h1><i class="fas fa-route"></i> New Trip Route</h1>
+        </div>
+        <div class="card-body">
+            <form action="" method="post" class="styled-form">
+                {% csrf_token %}
+                <div class="form-fields">
+                    {{ form.as_p }}
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

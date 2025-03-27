@@ -245,6 +245,10 @@ class TripListView(ListView):
                 queryset = queryset.filter(departure_time__date=date_obj)
             except ValueError:
                 pass
+
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status__iexact=status)  # case insensitive
         
         # Default sorting
         if self.request.GET.get('sort') == 'departure_time':
@@ -280,6 +284,18 @@ class TripDeleteView(DeleteView):
     model = Trip
     template_name = "trip/trip_delete.html"
     success_url = reverse_lazy("trip_list")
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        # Delete related TripRoute if it exists
+        try:
+            trip_route = self.object.triproute  # related_name defaults to lowercase model name
+            trip_route.delete()
+        except TripRoute.DoesNotExist:
+            pass  # No TripRoute linked, do nothing
+
+        return super().delete(request, *args, **kwargs)
 
     def form_valid(self, form):
         response = super().form_valid(form)

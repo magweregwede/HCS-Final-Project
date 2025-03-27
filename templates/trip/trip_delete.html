@@ -3,7 +3,20 @@
 {% block content %}
 <h1>Delete</h1>
 <form action="" method="post">{% csrf_token %}
-    <p>Are you sure you want to cancel "{{ trip.truck }} with {{ trip.driver }} scheduled {{ departure_time }} "?</p>
-    <button type="submit">Confirm</button>
+    <p>Are you sure you want to cancel "{{ trip.truck }}, {{ trip.driver }} scheduled {{ departure_time }} "?</p>
+    <button type="submit" class="btn delete-btn">Confirm</button>
 </form>
+<button id="back-btn" onclick="history.back()" class="back-btn btn btn-secondary">← Back</button>
+
+<style>
+    .delete-btn:hover {
+        background-color: red !important;
+        color: black;
+    }
+
+    .delete-btn {
+        color: red;
+        background-color: black;
+    }
+</style>
 {% endblock content %}

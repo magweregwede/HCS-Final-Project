@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load time_filters %}
 
-{% block title %}Trip Routes{% endblock %}
+{% block title %}Trip Review{% endblock %}
 
 {% block content %}
 <div class="content-area">
@@ -58,8 +58,8 @@
 
             <!-- New Trip Route Button -->
             {% if user.is_authenticated %}
-            <a href="{% url 'triproute_new' %}" class="btn btn-primary btn-new-trip">
-                <i class="fas fa-plus"></i> New Trip Route
+            <a href="{% url 'trip_new' %}" class="btn btn-primary btn-new-trip">
+                <i class="fas fa-plus"></i> New Trip
             </a>
             {% endif %}
         </div>
@@ -77,12 +77,12 @@
                                     <th>Route</th>
                                     <th>Distance</th>
                                     <th>Duration</th>
-                                    <th>Actions</th>
+                                    <!-- <th>Actions</th> -->
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for trip_route in triproute_list %}
-                                <tr>
+                                <tr class="clickable-row" data-href="{% url 'trip_detail' trip_route.trip.pk %}">
                                     <td>{{ trip_route.trip.truck|default:"-" }}</td>
                                     <td>{{ trip_route.trip.driver|default:"-" }}</td>
                                     <td>
@@ -92,11 +92,11 @@
                                     </td>
                                     <td>{{ trip_route.route.distance_km|default:"-" }} km</td>
                                     <td>{{ trip_route.actual_time_min|minutes_to_hours|default:"-" }}</td>
-                                    <td class="actions">
+                                    <!-- <td class="actions">
                                         <a href="{% url 'triproute_edit' trip_route.pk %}" class="btn btn-sm btn-edit">
                                             <i class="fas fa-edit"></i> Edit
                                         </a>
-                                    </td>
+                                    </td> -->
                                 </tr>
                                 {% empty %}
                                 <tr>
@@ -343,5 +343,25 @@
             order: -1;
         }
     }
+
+    .clickable-row {
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .clickable-row:hover {
+        background-color: #f5f5f5;
+    }
 </style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rows = document.querySelectorAll(".clickable-row");
+        rows.forEach(row => {
+            row.addEventListener("click", () => {
+                window.location.href = row.dataset.href;
+            });
+        });
+    });
+</script>
 {% endblock %}

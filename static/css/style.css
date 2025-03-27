@@ -45,6 +45,14 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
+#back-btn:hover {
+    background-color: #24a0ed;
+}
+
+#delete-btn:hover {
+    background-color: red;
+}
+
 a {
     text-decoration: none;
     color: inherit;

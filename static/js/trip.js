@@ -34,9 +34,9 @@ function loadContent(page) {
     deliveryNav.style.display = 'none';
     
     const deliveryButtons = [
-        { text: 'New Trips', url: '/new-trips/' },
-        { text: 'Ongoing Trips', url: '/ongoing-trips/' },
-        { text: 'Review Trips', url: '/review-trips/' }
+        { text: 'New Trips', url: '/app/trip/new' },
+        { text: 'Ongoing Trips', url: '/app/trip/?status=ongoing' },
+        { text: 'Review Trips', url: '/app/triproute' }
     ];
 
     deliveryButtons.forEach(btn => {
@@ -260,10 +260,10 @@ function toggleDarkMode() {
     const isDarkMode = document.body.classList.contains('dark-mode');
 
     if (isDarkMode) {
-        darkModeToggle.innerHTML = '<i class="icon-sun"></i><span>Light Mode</span>';
+        darkModeToggle.innerHTML = '<i class="icon-sun"></i><span></span>';
         localStorage.setItem('darkMode', 'enabled');
     } else {
-        darkModeToggle.innerHTML = '<i class="icon-moon"></i><span>Dark Mode</span>';
+        darkModeToggle.innerHTML = '<i class="icon-moon"></i><span></span>';
         localStorage.setItem('darkMode', 'disabled');
     }
 }
@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check for saved dark mode preference
     if (localStorage.getItem('darkMode') === 'enabled') {
         document.body.classList.add('dark-mode');
-        document.getElementById('darkModeToggle').innerHTML = '<i class="icon-sun"></i><span>Light Mode</span>';
+        document.getElementById('darkModeToggle').innerHTML = '<i class="icon-sun"></i><span></span>';
     }
 
     // Set up dark mode toggle
