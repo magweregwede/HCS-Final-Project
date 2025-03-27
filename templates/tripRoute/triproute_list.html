@@ -4,44 +4,127 @@
 {% block title %}Trip Routes{% endblock %}
 
 {% block content %}
-{% for triproute in triproute_list %}
-<div>
-    <a href="{{ triproute.get_absolute_url }}">{{ triproute.trip }}</a>
-    <span>{{ triproute.route }} </span>
-    <p>Distance: {{ triproute.route.distance_km }} km</p>
-    <p>Actual Time: {{ triproute.actual_time_min|minutes_to_hours }}</p> {# Convert minutes #}
-    <p>{{ triproute.trip.driver }}</p>
-</div>
-<a href="{% url 'triproute_edit' triproute.pk %}">Edit</a>
-<a href="{% url 'triproute_delete' triproute.pk %}">Delete</a>
-<hr>
+<div class="content-area">
+    <div class="page-header">
+        <h1>Trip Route Management</h1>
+        {% if user.is_authenticated %}
+        <a href="{% url 'triproute_new' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> New Trip Route
+        </a>
+        {% endif %}
+    </div>
 
-{% endfor %}
+    <div class="card">
+        <div class="card-header">
+            <h2>Filters</h2>
+        </div>
+        <div class="card-body">
+            <form method="get" class="filter-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" name="search" placeholder="Search trips, trucks or drivers"
+                            value="{{ request.GET.search }}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="origin" placeholder="Origin" value="{{ request.GET.origin }}"
+                            class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="destination" placeholder="Destination"
+                            value="{{ request.GET.destination }}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                        {% if request.GET.origin or request.GET.destination or request.GET.search %}
+                        <a href="{% url 'triproute_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Clear
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Trip ID</th>
-            <th>Truck</th>
-            <th>Driver</th>
-            <th>Route</th>
-            <th>Duration (min)</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for trip_route in trip_routes %}
-        <tr>
-            <td>{{ trip_route.trip.id }}</td>
-            <td>{{ trip_route.trip.truck }}</td>
-            <td>{{ trip_route.driver }}</td>
-            <td>{{ trip_route.route.origin }} to {{ trip_route.route.destination }}</td>
-            <td>{{ trip_route.actual_time_min|default:"-" }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div class="card">
+        <div class="card-header">
+            <h2>Trip Routes</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Trip ID</th>
+                            <th>Truck</th>
+                            <th>Driver</th>
+                            <th>Route</th>
+                            <th>Distance</th>
+                            <th>Duration</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for trip_route in triproute_list %}
+                        <tr>
+                            <td>
+                                <a href="{{ trip_route.get_absolute_url }}" class="text-primary">
+                                    {{ trip_route.trip.id }}
+                                </a>
+                            </td>
+                            <td>{{ trip_route.trip.truck|default:"-" }}</td>
+                            <td>{{ trip_route.trip.driver|default:"-" }}</td>
+                            <td>
+                                {{ trip_route.route.origin|default:"-" }}
+                                <i class="fas fa-arrow-right mx-2 text-muted"></i>
+                                {{ trip_route.route.destination|default:"-" }}
+                            </td>
+                            <td>{{ trip_route.route.distance_km|default:"-" }} km</td>
+                            <td>{{ trip_route.actual_time_min|minutes_to_hours|default:"-" }}</td>
+                            <td class="actions">
+                                <a href="{% url 'triproute_edit' trip_route.pk %}" class="btn btn-sm btn-edit">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a href="{% url 'triproute_delete' trip_route.pk %}" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <i class="fas fa-route fa-3x text-muted mb-3"></i>
+                                <p class="mb-0">No trip routes found</p>
+                                {% if request.GET.search or request.GET.origin or request.GET.destination %}
+                                <a href="{% url 'triproute_list' %}" class="btn btn-primary mt-3">
+                                    Clear filters
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-{% if user.is_authenticated %}
-<p><a href="{% url 'triproute_new' %}">+ New</a></p>
-{% endif %}
-{% endblock %}
+            {% if is_paginated %}
+            <div class="pagination mt-4">
+                <div class="pagination-links">
+                    {% if page_obj.has_previous %}
+                    <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
+                        class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-angle-double-left"></i> First
+                    </a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.origin %}&origin={{ request.GET.origin }}{% endif %}{% if request.GET.destination %}&destination={{ request.GET.destination }}{% endif %}"
+                        class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-angle-left"></i> Previous
+                    </a>
+                    {% endif %}
+                    {% endif %}
+
+
+                    <span class="current-page">
+                        Page {{ page_obj.number }} of {{ page_obj }}
+                        {% endblock %}

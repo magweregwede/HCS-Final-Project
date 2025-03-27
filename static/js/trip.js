@@ -294,5 +294,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initialize with dashboard content
-    loadContent('dashboard');
+    // loadContent('dashboard');
 });
