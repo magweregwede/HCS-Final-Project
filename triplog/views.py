@@ -6,11 +6,14 @@ from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
 from django.views.generic.edit import UpdateView, DeleteView
+
+from django.views.generic.base import TemplateView
 from .forms import TripForm, TripProductForm
 from .models import TruckCompany, Truck, Route, Driver, Trip, Product, TripProduct, TripRoute
-from .utils import log_change
+from .utils.utils import log_change
 from django.db.models import Q
 from datetime import datetime
+from .utils.analytics import get_fleet_stats
 
 # Create your views here.
 

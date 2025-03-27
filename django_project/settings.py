@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     # Third Party
     "import_export",
     "simple_history",
+    "mathfilters"
 ]
 
 MIDDLEWARE = [
