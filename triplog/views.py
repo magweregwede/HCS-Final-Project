@@ -281,6 +281,18 @@ class TripDeleteView(DeleteView):
     template_name = "trip/trip_delete.html"
     success_url = reverse_lazy("trip_list")
 
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        # Delete related TripRoute if it exists
+        try:
+            trip_route = self.object.triproute  # related_name defaults to lowercase model name
+            trip_route.delete()
+        except TripRoute.DoesNotExist:
+            pass  # No TripRoute linked, do nothing
+
+        return super().delete(request, *args, **kwargs)
+
     def form_valid(self, form):
         response = super().form_valid(form)
         log_change(self.request, self.object, message="deleted", action_flag=DELETION)
