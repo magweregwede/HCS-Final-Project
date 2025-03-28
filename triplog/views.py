@@ -13,7 +13,6 @@ from .models import TruckCompany, Truck, Route, Driver, Trip, Product, TripProdu
 from .utils.utils import log_change
 from django.db.models import Q
 from datetime import datetime
-from .utils.analytics import get_fleet_stats
 
 # Create your views here.
 
