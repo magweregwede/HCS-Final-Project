@@ -66,6 +66,12 @@ class Trip(models.Model):
     status = models.CharField(max_length=20, choices=[("Ongoing", "Ongoing"), ("Completed", "Completed")], default="Ongoing")
     clerk = models.ForeignKey("auth.User",on_delete=models.CASCADE)
 
+    def get_driver_assigned_truck(self):
+        try:
+            return self.driver.assigned_truck
+        except AttributeError:
+            return None
+
     def __str__(self):
         return f"Trip {self.id} - {self.truck.plate_number} ({self.status})"
     

@@ -17,6 +17,16 @@
                 <div class="form-fields">
                     {{ form.as_p }}
                 </div>
+                {% if assigned_truck %}
+                <div class="alert alert-info">
+                    <strong>Assigned Truck:</strong>
+                    {{ assigned_truck.plate_number }} (Capacity: {{ assigned_truck.capacity_kg }}kg)
+                </div>
+                {% else %}
+                <div class="alert alert-warning">
+                    No truck assigned to selected driver
+                </div>
+                {% endif %}
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i> Save
@@ -51,6 +61,21 @@
                 statusField.value = "Completed";  // Set status to 'Completed'
             }
         });
+    });
+    document.getElementById("id_driver").addEventListener("change", function () {
+        const form = document.getElementById("trip-form");
+        const url = new URL(window.location.href);
+        url.searchParams.set('driver', this.value);
+        window.location.href = url.toString();
+    });
+
+    // Initialize with selected driver if coming from a redirect
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const driverId = urlParams.get('driver');
+        if (driverId) {
+            document.getElementById("id_driver").value = driverId;
+        }
     });
 </script>
 

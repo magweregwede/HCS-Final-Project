@@ -14,7 +14,7 @@
     <div class="container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="sidebar-header">
+            <div onclick="window.location.href='./';" style="cursor: pointer;" class="sidebar-header">
                 <h2>Trip AI</h2>
                 <p>Logistics Management</p>
             </div>
@@ -28,13 +28,15 @@
 
                 <div class="menu-category">Operations</div>
                 <div class="menu-item" onclick="toggleSubmenu('trip-ai-menu')">
-                    <i class="icon-ai"></i>
+                    <i class="icon-chevron"></i>
                     <span>Trip AI</span>
                 </div>
 
                 <div id="trip-ai-menu" class="submenu">
-                    <div class="submenu-item" onclick="loadContent('deliveries')">Deliveries</div>
-                    <div class="submenu-item" onclick="toggleSubmenu('logistics-partners-menu')">Logistics Partners
+                    <div class="submenu-item" onclick="loadContent('deliveries')" style="cursor: pointer;">Deliveries
+                    </div>
+                    <div class="submenu-item" onclick="toggleSubmenu('logistics-partners-menu')"
+                        style="cursor: pointer;">Logistics Partners
                     </div>
                     <div id="logistics-partners-menu" class="submenu">
                         <div class="submenu-item" onclick="window.open('/app/truckcompany');" style="cursor: pointer;">
