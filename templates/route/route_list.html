@@ -8,14 +8,11 @@
     <div class="card">
         <div class="card-header">
             <h2><i class="fas fa-route"></i> Routes</h2>
-<<<<<<< HEAD
-=======
             {% if user.is_authenticated %}
             <a href="{% url 'route_new' %}" class="btn btn-primary btn-sm">
                 <i class="fas fa-plus"></i> New Route
             </a>
             {% endif %}
->>>>>>> frontend
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -25,21 +22,12 @@
                             <th>Route</th>
                             <th>Distance</th>
                             <th>Estimated Time</th>
-<<<<<<< HEAD
-=======
                             <th class="actions">Actions</th>
->>>>>>> frontend
                         </tr>
                     </thead>
                     <tbody>
                         {% for route in route_list %}
                         <tr>
-<<<<<<< HEAD
-                            <td>{{ route.origin }} to {{ route.destination }}</td>
-                            <td>{{ route.distance_km }} km</td>
-                            <td>{{ route.estimated_time_min|minutes_to_hours|default:"-" }} min</td>
-                            <!-- trip_route.actual_time_min|minutes_to_hours|default:"-" -->
-=======
                             <td>
                                 <a href="{{ route.get_absolute_url }}" class="route-link">
                                     <i class="fas fa-map-marker-alt text-danger"></i> {{ route.origin }}
@@ -71,7 +59,6 @@
                                 </a>
                                 {% endif %}
                             </td>
->>>>>>> frontend
                         </tr>
                         {% endfor %}
                     </tbody>
