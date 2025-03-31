@@ -51,6 +51,9 @@ def get_trip_stats():
         trip__status="Completed", actual_time_min__isnull=False
     ).aggregate(longest_time=Max('actual_time_min'))['longest_time']/60 or 0
 
+    # Total number of completed trips
+    total_completed_trips = Trip.objects.filter(status="Completed").count()
+
     # Number of trips completed within estimated time
     stats['trips_within_estimated_time'] = TripRoute.objects.filter(
         trip__status="Completed", actual_time_min__lte=F('route__estimated_time_min')
@@ -61,8 +64,11 @@ def get_trip_stats():
         trip__status="Completed", actual_time_min__gt=F('route__estimated_time_min')
     ).count()
 
+    # On-time rate (percentage of trips completed within the estimated time)
+    on_time_trips = stats['trips_within_estimated_time']
+    stats['on_time_rate'] = (on_time_trips / total_completed_trips * 100) if total_completed_trips > 0 else 0
+
     # Percentage of delayed trips
-    total_completed_trips = Trip.objects.filter(status="Completed").count()
     delayed_trips = stats['delayed_trips']
     stats['percentage_delayed_trips'] = (delayed_trips / total_completed_trips * 100) if total_completed_trips > 0 else 0
 
