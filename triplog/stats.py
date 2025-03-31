@@ -42,16 +42,11 @@ def get_trip_stats():
     ).aggregate(avg=Avg('total_trips'))['avg'] or 0
 
     # Longest trip distance (in completed trips)
-    # stats['longest_trip_distance'] = TripRoute.objects.filter(
-        # trip__status="Completed"
-    # ).aggregate(longest_distance=max('route__distance_km'))['longest_distance'] or 0
-
-    # Longest trip distance (in completed trips)
     stats['longest_trip_distance'] = TripRoute.objects.filter(
         trip__status="Completed"
     ).aggregate(longest_distance=Max('route__distance_km'))['longest_distance'] or 0
 
-    # Longest trip time (in minutes)
+    # Longest trip time (in hrs)
     stats['longest_trip_time(hrs)'] = TripRoute.objects.filter(
         trip__status="Completed", actual_time_min__isnull=False
     ).aggregate(longest_time=Max('actual_time_min'))['longest_time']/60 or 0
@@ -65,5 +60,58 @@ def get_trip_stats():
     stats['delayed_trips'] = TripRoute.objects.filter(
         trip__status="Completed", actual_time_min__gt=F('route__estimated_time_min')
     ).count()
+
+    # Percentage of delayed trips
+    total_completed_trips = Trip.objects.filter(status="Completed").count()
+    delayed_trips = stats['delayed_trips']
+    stats['percentage_delayed_trips'] = (delayed_trips / total_completed_trips * 100) if total_completed_trips > 0 else 0
+
+    # Driver with most completed trips
+    top_driver = Trip.objects.filter(
+        status="Completed"
+    ).values('driver__name').annotate(
+        completed_trips=Count('id')
+    ).order_by('-completed_trips').first()
+    stats['top_driver'] = {
+        'name': top_driver['driver__name'] if top_driver else None,
+        'completed_trips': top_driver['completed_trips'] if top_driver else 0
+    }
+
+    # Truck with most trips
+    top_truck = Trip.objects.values('truck__plate_number').annotate(
+        total_trips=Count('id')
+    ).order_by('-total_trips').first()
+    stats['top_truck'] = {
+        'plate_number': top_truck['truck__plate_number'] if top_truck else None,
+        'total_trips': top_truck['total_trips'] if top_truck else 0
+    }
+
+    # Average delay time (in minutes) for delayed trips
+    stats['total_delayed_time'] = TripRoute.objects.filter(
+        trip__status="Completed", actual_time_min__gt=F('route__estimated_time_min')
+    ).aggregate(total_delay=Sum(F('actual_time_min') - F('route__estimated_time_min')))['total_delay'] or 0
+    delayed_trip_count = TripRoute.objects.filter(
+        trip__status="Completed", actual_time_min__gt=F('route__estimated_time_min')
+    ).count()
+    stats['average_delay_time'] = (stats['total_delayed_time'] / delayed_trip_count) if delayed_trip_count > 0 else 0
+
+    # Average delay time (in hours) for delayed trips
+    stats['total_delayed_time(hrs)'] = (stats['total_delayed_time'] / 60) if stats['total_delayed_time'] > 0 else 0
+    stats['average_delay_time(hrs)'] = (stats['average_delay_time'] / 60) if stats['average_delay_time'] > 0 else 0
+
+    # Trips by status
+    trips_by_status = Trip.objects.values('status').annotate(
+        count=Count('id')
+    )
+    stats['trips_by_status'] = {
+        status['status']: status['count'] for status in trips_by_status
+    }
+
+    # Most frequent Destination
+    stats['most_frequent_route'] = str(TripRoute.objects.filter(
+        trip__status="Completed"
+    ).values('route__destination').annotate(
+        trip_count=Count('id')
+    ).order_by('-trip_count').first())
 
     return stats

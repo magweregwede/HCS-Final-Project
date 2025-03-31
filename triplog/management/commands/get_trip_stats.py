@@ -9,3 +9,5 @@ class Command(BaseCommand):
         self.stdout.write("\nTrip Statistics:\n")
         for key, value in stats.items():
             self.stdout.write(f"{key.replace('_', ' ').title()}: {value}")
+
+# run with python manage.py get_trip_stats
