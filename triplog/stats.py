@@ -1,4 +1,4 @@
-from django.db.models import Sum, Avg, Count, F, Max
+from django.db.models import Sum, Avg, Count, F, Max, Q
 from .models import Trip, TripRoute, Route, Driver, Truck
 
 def get_trip_stats():
@@ -8,8 +8,9 @@ def get_trip_stats():
     stats['active_deliveries'] = Trip.objects.filter(status="Ongoing").count()
 
     # Available drivers (Drivers without any ongoing trips)
+
     stats['available_drivers'] = Driver.objects.annotate(
-        ongoing_trips=Count('trips', filter=F('trips__status') == "Ongoing")
+        ongoing_trips=Count('trips', filter=Q(trips__status="Ongoing"))
     ).filter(ongoing_trips=0).count()
 
     # Total kilometers covered from completed trips
