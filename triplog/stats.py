@@ -1,4 +1,6 @@
 from django.db.models import Sum, Avg, Count, F, Max, Q
+from django.utils.timezone import now
+from datetime import timedelta
 from .models import Trip, TripRoute, Route, Driver, Truck
 
 def get_trip_stats():
@@ -121,4 +123,89 @@ def get_trip_stats():
         trip_count=Count('id')
     ).order_by('-trip_count').first())
 
+     # Weekly stats
+    one_week_ago = now() - timedelta(days=7)
+
+    # Weekly completed trips
+    stats['weekly_completed_trips'] = Trip.objects.filter(
+        status="Completed", departure_time__gte=one_week_ago
+    ).count()
+
+    # Weekly ongoing trips
+    stats['weekly_ongoing_trips'] = Trip.objects.filter(
+        status="Ongoing", departure_time__gte=one_week_ago
+    ).count()
+
+    # Weekly total kilometers covered
+    stats['weekly_total_kilometres'] = TripRoute.objects.filter(
+        trip__status="Completed", trip__departure_time__gte=one_week_ago
+    ).aggregate(total_distance=Sum('route__distance_km'))['total_distance'] or 0
+
+    # Weekly average trip time
+    stats['weekly_average_trip_time'] = TripRoute.objects.filter(
+        trip__status="Completed", trip__departure_time__gte=one_week_ago, actual_time_min__isnull=False
+    ).aggregate(avg_time=Avg('actual_time_min'))['avg_time'] or 0
+
+    # Weekly delayed trips
+    stats['weekly_delayed_trips'] = TripRoute.objects.filter(
+        trip__status="Completed", trip__departure_time__gte=one_week_ago,
+        actual_time_min__gt=F('route__estimated_time_min')
+    ).count()
+
+    # Weekly on-time rate (percentage of trips completed within the estimated time)
+    weekly_on_time_trips = TripRoute.objects.filter(
+        trip__status="Completed", trip__departure_time__gte=one_week_ago,
+        actual_time_min__lte=F('route__estimated_time_min')
+    ).count()
+    weekly_total_completed_trips = Trip.objects.filter(
+        status="Completed", departure_time__gte=one_week_ago
+    ).count()
+    stats['weekly_on_time_rate'] = (weekly_on_time_trips / weekly_total_completed_trips * 100) if weekly_total_completed_trips > 0 else 0
+
+ # Monthly stats
+    one_month_ago = now() - timedelta(days=30)
+
+    stats['monthly_completed_trips'] = Trip.objects.filter(
+        status="Completed", departure_time__gte=one_month_ago
+    ).count()
+
+    stats['monthly_ongoing_trips'] = Trip.objects.filter(
+        status="Ongoing", departure_time__gte=one_month_ago
+    ).count()
+
+    stats['monthly_total_kilometres'] = TripRoute.objects.filter(
+        trip__status="Completed", trip__departure_time__gte=one_month_ago
+    ).aggregate(total_distance=Sum('route__distance_km'))['total_distance'] or 0
+
+    stats['monthly_average_trip_time'] = TripRoute.objects.filter(
+        trip__status="Completed", trip__departure_time__gte=one_month_ago, actual_time_min__isnull=False
+    ).aggregate(avg_time=Avg('actual_time_min'))['avg_time'] or 0
+
+    stats['monthly_delayed_trips'] = TripRoute.objects.filter(
+        trip__status="Completed", trip__departure_time__gte=one_month_ago,
+        actual_time_min__gt=F('route__estimated_time_min')
+    ).count()
+
+    monthly_on_time_trips = TripRoute.objects.filter(
+        trip__status="Completed", trip__departure_time__gte=one_month_ago,
+        actual_time_min__lte=F('route__estimated_time_min')
+    ).count()
+    monthly_total_completed_trips = Trip.objects.filter(
+        status="Completed", departure_time__gte=one_month_ago
+    ).count()
+    stats['monthly_on_time_rate'] = (monthly_on_time_trips / monthly_total_completed_trips * 100) if monthly_total_completed_trips > 0 else 0
+
+# Top 3 monthly drivers with completed trips
+    top_monthly_drivers = Trip.objects.filter(
+        status="Completed", departure_time__gte=one_month_ago
+    ).values(
+        'driver__name', 'driver__assigned_truck__truck_company__name'
+    ).annotate(
+        completed_trips=Count('id')
+    ).order_by('-completed_trips')[:3]
+
+    stats['top_monthly_drivers'] = [
+        f"{driver['driver__name']} ({driver['completed_trips']} trips) - {driver['driver__assigned_truck__truck_company__name'] or 'No Company'}"
+        for driver in top_monthly_drivers
+    ]
     return stats

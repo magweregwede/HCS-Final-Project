@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Dashboard</h1>
+    <!-- <button class="btn btn-primary" id="refresh-stats">Refresh Data</button> -->
+    <a href="/app/" class="btn btn-primary">Refresh Data</a>
+</div>
+
+<div class="dashboard-grid">
+    <div class="stat-card">
+        <h3>Active Deliveries</h3>
+        <div class="value">
+            <p class="card-text" id="active-deliveries">{{ stats.active_deliveries }}</p>
+        </div>
+        <div class="change">+5% from last week</div>
+    </div>
+
+    <div class="stat-card">
+        <h3>Available Drivers</h3>
+        <div class="value">
+            <p class="card-text" id="available-drivers">{{ stats.available_drivers }}</p>
+        </div>
+        <div class="change negative">-2 from yesterday</div>
+    </div>
+
+    <div class="stat-card">
+        <h3>Monthly On-time Rate</h3>
+        <div class="value">
+            <p class="card-text" id="on-time-rate">{{ stats.monthly_on_time_rate|floatformat:2 }}%</p>
+        </div>
+        <div class="change">+3% from last month</div>
+    </div>
+
+    <div class="stat-card">
+        <h3>Monthly Total Kilometres</h3>
+        <div class="value">
+            <p class="card-text" id="total-kilometres">{{ stats.monthly_total_kilometres|intspace }} km</p>
+        </div>
+        <div class="change negative">-8% from last week</div>
+    </div>
+
+    <div class="stat-card">
+        <h3>Weekly Completed Trips</h3>
+        <div class="value">
+            <p class="card-text" id="weekly-completed">{{ stats.weekly_completed_trips }}</p>
+        </div>
+        <div class="change">48% from last week</div>
+    </div>
+
+    <div class="stat-card">
+        <h3>Top Monthly Drivers</h3>
+        <div>
+            <ul>
+                {% for driver in stats.top_monthly_drivers %}
+                <li>{{ driver }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+<br>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Trip AI</h2>
+    </div>
+    <p>#Content for ML predictions.</p>
+</div>
+
+
+
+{% endblock %}

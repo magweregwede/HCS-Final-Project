@@ -49,9 +49,15 @@ from .views import (
     TripRouteUpdateView,
     TripRouteDeleteView,
     TripRouteCreateView,
+    # Dashboard
+    DashboardView,
 )
 
 urlpatterns = [
+
+    # dashboard
+    path("", DashboardView.as_view(), name="dashboard"),
+
     # truck company
     path("truckcompany/", TruckCompanyListView.as_view(), name="truckcompany_list"),
     path("truckcompany/<int:pk>/", TruckCompanyDetailView.as_view(), name="truckcompany_detail"),

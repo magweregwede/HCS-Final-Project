@@ -13,8 +13,24 @@ from .models import TruckCompany, Truck, Route, Driver, Trip, Product, TripProdu
 from .utils.utils import log_change
 from django.db.models import Q
 from datetime import datetime
+from triplog.stats import get_trip_stats
+from django.http import JsonResponse
 
 # Create your views here.
+
+# Dashboard View
+class DashboardView(TemplateView):
+    template_name = "dashboard.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Fetching stats from the utility function
+        context['stats'] = get_trip_stats()
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        stats = get_trip_stats()
+        return JsonResponse(stats, safe=False)
 
 # Truck Company Views
 class TruckCompanyListView(ListView):
@@ -175,6 +191,18 @@ class RouteCreateView(CreateView):
 class DriverListView(ListView):
     model = Driver
     template_name = "driver/driver_list.html"
+    context_object_name = "driver_list"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.GET.get('search', '')
+        if search_query:
+            queryset = queryset.filter(
+                Q(name__icontains=search_query) |
+                Q(assigned_truck__plate_number__icontains=search_query) |
+                Q(assigned_truck__truck_company__name__icontains=search_query)
+            )
+        return queryset.select_related('assigned_truck__truck_company')
 
 class DriverDetailView(DetailView):
     model = Driver
@@ -231,6 +259,9 @@ class TripListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         
+        # Filter for ongoing trips only
+        queryset = queryset.filter(status="Ongoing")
+        
         # Search functionality (works independently of date filter)
         search_query = self.request.GET.get('search')
         if search_query:
@@ -248,10 +279,6 @@ class TripListView(ListView):
             except ValueError:
                 pass
 
-        status = self.request.GET.get('status')
-        if status:
-            queryset = queryset.filter(status__iexact=status)  # case insensitive
-        
         # Default sorting
         if self.request.GET.get('sort') == 'departure_time':
             queryset = queryset.order_by('departure_time')
@@ -260,12 +287,21 @@ class TripListView(ListView):
         
         return queryset.select_related('truck', 'driver')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add the status parameter to the context for pagination links
+        context['status'] = "ongoing"
+        return context
+
 class TripDetailView(DetailView):
     model = Trip
     template_name = "trip/trip_detail.html"
+    context_object_name = "trip"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Fetch TripRoute objects related to this Trip
+        context['trip_routes'] = TripRoute.objects.filter(trip=self.object)
         context['tripproducts'] = TripProduct.objects.filter(trip=self.object)
         return context
 

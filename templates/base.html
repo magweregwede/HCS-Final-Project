@@ -21,7 +21,7 @@
 
             <div class="sidebar-menu">
                 <div class="menu-category">Main</div>
-                <div class="menu-item active" onclick="loadContent('dashboard')">
+                <div class="menu-item active" onclick="window.location.href='/app'">
                     <i class="icon-home"></i>
                     <span>Dashboard</span>
                 </div>
@@ -128,44 +128,6 @@
             <!-- Content Area -->
             <div class="content-area" id="content-area">
                 {% block content %}
-                <!-- Default Dashboard Content -->
-                <div class="page-header">
-                    <h1>Dashboard</h1>
-                    <button class="btn btn-primary">Refresh Data</button>
-                </div>
-
-                <div class="dashboard-grid">
-                    <div class="stat-card">
-                        <h3>Active Deliveries</h3>
-                        <div class="value">42</div>
-                        <div class="change">+5% from last week</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <h3>Available Drivers</h3>
-                        <div class="value">18</div>
-                        <div class="change">-2 from yesterday</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <h3>On-time Rate</h3>
-                        <div class="value">94%</div>
-                        <div class="change">+3% from last month</div>
-                    </div>
-
-                    <div class="stat-card">
-                        <h3>Total Kilometres</h3>
-                        <div class="value">12,456</div>
-                        <div class="change negative">-8% from last week</div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Recent Activities</h2>
-                    </div>
-                    <p>Content for recent activities will go here...</p>
-                </div>
                 {% endblock %}
             </div>
         </main>

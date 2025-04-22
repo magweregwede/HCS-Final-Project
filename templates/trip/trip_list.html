@@ -355,4 +355,44 @@
     });
 </script>
 
+<h1>Ongoing Trips</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Truck</th>
+            <th>Driver</th>
+            <th>Departure Time</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for trip in trip_list %}
+        <tr>
+            <td>{{ trip.truck.plate_number }}</td>
+            <td>{{ trip.driver.name }}</td>
+            <td>{{ trip.departure_time }}</td>
+            <td>{{ trip.status }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if trip_list.has_previous %}
+        <a href="?page=1&status=ongoing">First</a>
+        <a href="?page={{ trip_list.previous_page_number }}&status=ongoing">Previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ trip_list.number }} of {{ trip_list.paginator.num_pages }}
+        </span>
+
+        {% if trip_list.has_next %}
+        <a href="?page={{ trip_list.next_page_number }}&status=ongoing">Next</a>
+        <a href="?page={{ trip_list.paginator.num_pages }}&status=ongoing">Last</a>
+        {% endif %}
+    </span>
+</div>
 {% endblock %}

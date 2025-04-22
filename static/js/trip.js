@@ -181,7 +181,7 @@ function loadContent(page) {
             contentArea.innerHTML = `
                 <div class="page-header">
                     <h1>Page Not Found</h1>
-                    <button class="btn btn-primary" onclick="loadContent('dashboard')">Back to Dashboard</button>
+                    <button class="btn btn-primary" onclick="window.location.href='/app'">Back to Dashboard</button>
                 </div>
                 <div class="card">
                     <p>The requested page could not be found.</p>

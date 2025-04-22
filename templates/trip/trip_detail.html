@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load time_filters %}
 
 {% block content %}
 <div class="trip">
@@ -6,10 +7,19 @@
     <p>Trip ID: {{ object.id }}</p>
     <p>By: {{ object.clerk }}</p>
     <p>Status: {{ object.status }}</p>
-    {% if trip.status == "Completed"%}
+    {% if trip_routes %}
+    {% for route in trip_routes %}
+    <p>Route: {{ route.route.origin }} => {{ route.route.destination }} ({{ route.route.distance_km }} km)</p>
+    {% if object.status == "Completed" %}
+    <p>Trip Duration: {{ route.actual_time_min|minutes_to_hours|default:"-" }} Hrs </p>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% if object.status == "Completed" %}
     <p>Arrived: {{ object.arrival_time }}</p>
     {% endif %}
 </div>
+
 <div>
     <h2>Trip Products</h2>
     {% if tripproducts %}
@@ -31,6 +41,7 @@
     <p>No products assigned to this trip yet.</p>
     {% endif %}
 </div>
+
 <div>
     <br>
     <a href="{% url 'trip_edit' trip.pk %}" class="btn btn-secondary">Edit</a>
