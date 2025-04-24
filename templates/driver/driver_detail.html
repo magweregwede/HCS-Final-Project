@@ -1,14 +1,33 @@
 {% extends "base.html" %}
 
+{% block headOptional %}
+<style>
+    .delete-btn:hover {
+        background-color: red !important;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        text-decoration: none;
+        color: white;
+        margin-right: 8px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="driver">
     <h2>{{ object.name }} | Contact: {{ object.contact }}</h2>
-    <p>by {{ object.license_number }} | {{ object.assigned_truck }}</p>
+    <p>License Number: {{ object.license_number }}</p>
+    <p>Assigned Truck: {{ object.assigned_truck }}</p>
 </div>
 <div>
-    <p><a href="{% url 'driver_edit' driver.pk %}">Edit</a>
-        <a href="{% url 'driver_delete' driver.pk %}">Delete</a>
+    <br>
+    <a href="{% url 'driver_edit' driver.pk %}" class="btn btn-secondary">Edit</a>
+    <a href="{% url 'driver_delete' driver.pk %}" class="btn btn-secondary delete-btn">Delete</a>
     </p>
-    <p>Back to <a href="{% url 'driver_list' %}">All Drivers</a>.</p>
+    <br>
+    <button id="back-btn" onclick="history.back()" class="back-btn btn btn-secondary">← Back</button>
 </div>
 {% endblock content %}

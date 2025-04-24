@@ -3,13 +3,17 @@
 {% block content %}
 <div class="truckcompany-entry">
     <h2>{{ object.name }}</h2>
-    <p>by {{ object.contact }} | {{ object.email }}</p>
-    <p>{{ object.address }}</p>
+    <h4>Contact Details</h4>
+    <p>Tel: {{ object.contact }}</p>
+    <p>email: {{ object.email }}</p>
+    <p>Address: {{ object.address }}</p>
 </div>
 <div>
-    <p><a href="{% url 'truckcompany_edit' truckcompany.pk %}">Edit</a>
-        <a href="{% url 'truckcompany_delete' truckcompany.pk %}">Delete</a>
+    <br>
+    <a href="{% url 'truckcompany_edit' truckcompany.pk %}" class="btn btn-secondary">Edit</a>
+    <a href="{% url 'truckcompany_delete' truckcompany.pk %}" class="btn btn-secondary delete-btn">Delete</a>
     </p>
-    <p>Back to <a href="{% url 'truckcompany_list' %}">All Truck Companies</a>.</p>
+    <br>
+    <button id="back-btn" onclick="history.back()" class="back-btn btn btn-secondary">← Back</button>
 </div>
 {% endblock content %}
