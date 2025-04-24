@@ -52,13 +52,20 @@
     </div>
 
     <div class="stat-card">
+        <h3>Top Monthly Route</h3>
+        <div class="value" style="font-size: large;">
+            <p class="card-text" id="frequent-route">{{ stats.most_frequent_monthly_route }}</p>
+        </div>
+    </div>
+
+    <div class="stat-card">
         <h3>Top Monthly Drivers</h3>
-        <div>
-            <ul>
+        <div class="value" style="font-size: medium;">
+            <ol>
                 {% for driver in stats.top_monthly_drivers %}
                 <li>{{ driver }}</li>
                 {% endfor %}
-            </ul>
+            </ol>
         </div>
     </div>
 </div>

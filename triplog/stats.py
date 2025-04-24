@@ -1,6 +1,6 @@
 from django.db.models import Sum, Avg, Count, F, Max, Q
 from django.utils.timezone import now
-from datetime import timedelta
+from datetime import timedelta, datetime
 from .models import Trip, TripRoute, Route, Driver, Truck
 
 def get_trip_stats():
@@ -10,7 +10,6 @@ def get_trip_stats():
     stats['active_deliveries'] = Trip.objects.filter(status="Ongoing").count()
 
     # Available drivers (Drivers without any ongoing trips)
-
     stats['available_drivers'] = Driver.objects.annotate(
         ongoing_trips=Count('trips', filter=Q(trips__status="Ongoing"))
     ).filter(ongoing_trips=0).count()
@@ -162,7 +161,58 @@ def get_trip_stats():
     ).count()
     stats['weekly_on_time_rate'] = (weekly_on_time_trips / weekly_total_completed_trips * 100) if weekly_total_completed_trips > 0 else 0
 
- # Monthly stats
+    # Weekly stats (Monday to Sunday)
+    today = now().date() 
+    # weekday() returns an integer Monday=0 through Sunday=6
+    start_of_week = today - timedelta(days=today.weekday())  # Monday
+    end_of_week = start_of_week + timedelta(days=6)  # Sunday
+
+    # Convert to datetime with time=00:00 and time=23:59:59
+    start_of_week_dt = datetime.combine(start_of_week, datetime.min.time())
+    end_of_week_dt = datetime.combine(end_of_week, datetime.max.time())
+
+    stats['weekly_completed_trips'] = Trip.objects.filter(
+        status="Completed",
+        departure_time__range=(start_of_week_dt, end_of_week_dt)
+    ).count()
+
+    stats['weekly_ongoing_trips'] = Trip.objects.filter(
+        status="Ongoing",
+        departure_time__range=(start_of_week_dt, end_of_week_dt)
+    ).count()
+
+    stats['weekly_total_kilometres'] = TripRoute.objects.filter(
+        trip__status="Completed",
+        trip__departure_time__range=(start_of_week_dt, end_of_week_dt)
+    ).aggregate(total_distance=Sum('route__distance_km'))['total_distance'] or 0
+
+    stats['weekly_average_trip_time'] = TripRoute.objects.filter(
+        trip__status="Completed",
+        trip__departure_time__range=(start_of_week_dt, end_of_week_dt),
+        actual_time_min__isnull=False
+    ).aggregate(avg_time=Avg('actual_time_min'))['avg_time'] or 0
+
+    stats['weekly_delayed_trips'] = TripRoute.objects.filter(
+        trip__status="Completed",
+        trip__departure_time__range=(start_of_week_dt, end_of_week_dt),
+        actual_time_min__gt=F('route__estimated_time_min')
+    ).count()
+
+    weekly_on_time_trips = TripRoute.objects.filter(
+        trip__status="Completed",
+        trip__departure_time__range=(start_of_week_dt, end_of_week_dt),
+        actual_time_min__lte=F('route__estimated_time_min')
+    ).count()
+    weekly_total_completed_trips = Trip.objects.filter(
+        status="Completed",
+        departure_time__range=(start_of_week_dt, end_of_week_dt)
+    ).count()
+    stats['weekly_on_time_rate'] = (
+        (weekly_on_time_trips / weekly_total_completed_trips) * 100
+        if weekly_total_completed_trips > 0 else 0
+    )
+
+    # Monthly stats
     one_month_ago = now() - timedelta(days=30)
 
     stats['monthly_completed_trips'] = Trip.objects.filter(
@@ -195,7 +245,72 @@ def get_trip_stats():
     ).count()
     stats['monthly_on_time_rate'] = (monthly_on_time_trips / monthly_total_completed_trips * 100) if monthly_total_completed_trips > 0 else 0
 
-# Top 3 monthly drivers with completed trips
+    # Monthly stats (current calendar month)
+    start_of_month = now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    # end_of_month is optional if you want to limit exactly to the month,
+    # but typically you can go up to 'now()'. If needed, you could do:
+    # _, last_day = calendar.monthrange(start_of_month.year, start_of_month.month)
+    # end_of_month = start_of_month.replace(day=last_day, hour=23, minute=59, second=59)
+    # For simplicity, we’ll just go from start_of_month to now().
+    end_of_month = now()
+
+    stats['monthly_completed_trips'] = Trip.objects.filter(
+        status="Completed",
+        departure_time__range=(start_of_month, end_of_month)
+    ).count()
+
+    stats['monthly_ongoing_trips'] = Trip.objects.filter(
+        status="Ongoing",
+        departure_time__range=(start_of_month, end_of_month)
+    ).count()
+
+    stats['monthly_total_kilometres'] = TripRoute.objects.filter(
+        trip__status="Completed",
+        trip__departure_time__range=(start_of_month, end_of_month)
+    ).aggregate(total_distance=Sum('route__distance_km'))['total_distance'] or 0
+
+    stats['monthly_average_trip_time'] = TripRoute.objects.filter(
+        trip__status="Completed",
+        trip__departure_time__range=(start_of_month, end_of_month),
+        actual_time_min__isnull=False
+    ).aggregate(avg_time=Avg('actual_time_min'))['avg_time'] or 0
+
+    stats['monthly_delayed_trips'] = TripRoute.objects.filter(
+        trip__status="Completed",
+        trip__departure_time__range=(start_of_month, end_of_month),
+        actual_time_min__gt=F('route__estimated_time_min')
+    ).count()
+
+    monthly_on_time_trips = TripRoute.objects.filter(
+        trip__status="Completed",
+        trip__departure_time__range=(start_of_month, end_of_month),
+        actual_time_min__lte=F('route__estimated_time_min')
+    ).count()
+    monthly_total_completed_trips = Trip.objects.filter(
+        status="Completed",
+        departure_time__range=(start_of_month, end_of_month)
+    ).count()
+    stats['monthly_on_time_rate'] = (
+        (monthly_on_time_trips / monthly_total_completed_trips) * 100
+        if monthly_total_completed_trips > 0 else 0
+    )
+
+    # Most frequent route in the past month
+    most_frequent_monthly_route = TripRoute.objects.filter(
+        trip__status="Completed", trip__departure_time__gte=one_month_ago
+    ).values(
+        'route__origin', 'route__destination'
+    ).annotate(
+        trip_count=Count('id')
+    ).order_by('-trip_count').first()
+
+    stats['most_frequent_monthly_route'] = (
+        f"{most_frequent_monthly_route['route__origin']} to {most_frequent_monthly_route['route__destination']} "
+        f"({most_frequent_monthly_route['trip_count']} trips)"
+        if most_frequent_monthly_route else "No data"
+    )
+
+    # Top 3 monthly drivers with completed trips
     top_monthly_drivers = Trip.objects.filter(
         status="Completed", departure_time__gte=one_month_ago
     ).values(
@@ -208,4 +323,34 @@ def get_trip_stats():
         f"{driver['driver__name']} ({driver['completed_trips']} trips) - {driver['driver__assigned_truck__truck_company__name'] or 'No Company'}"
         for driver in top_monthly_drivers
     ]
+
+    most_frequent_monthly_route = TripRoute.objects.filter(
+        trip__status="Completed",
+        trip__departure_time__range=(start_of_month, end_of_month)
+    ).values(
+        'route__origin', 'route__destination'
+    ).annotate(
+        trip_count=Count('id')
+    ).order_by('-trip_count').first()
+
+    stats['most_frequent_monthly_route'] = (
+        f"{most_frequent_monthly_route['route__origin']} to {most_frequent_monthly_route['route__destination']} "
+        f"({most_frequent_monthly_route['trip_count']} trips)"
+        if most_frequent_monthly_route else "No data"
+    )
+
+    top_monthly_drivers = Trip.objects.filter(
+        status="Completed",
+        departure_time__range=(start_of_month, end_of_month)
+    ).values(
+        'driver__name', 'driver__assigned_truck__truck_company__name'
+    ).annotate(
+        completed_trips=Count('id')
+    ).order_by('-completed_trips')[:3]
+
+    stats['top_monthly_drivers'] = [
+        f"{driver['driver__name']} ({driver['completed_trips']} trips) - {driver['driver__assigned_truck__truck_company__name'] or 'No Company'}"
+        for driver in top_monthly_drivers
+    ]
+
     return stats
