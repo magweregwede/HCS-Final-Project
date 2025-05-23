@@ -276,39 +276,46 @@ def get_stats_for_date_range(start_date, end_date=None):
 
     return stats
 
-def generate_historical_stats(start_date=date(2025, 2, 1)):
+def generate_historical_stats(start_date=date(2024, 2, 1)):
     """Generate weekly and monthly stats from start_date to now"""
     end_date = now().date()
     current_date = start_date
     all_stats = []
-    
-    # Generate monthly stats
+
+    # Align the start date to the nearest Monday
+    if current_date.weekday() != 0:  # If not Monday
+        current_date = current_date - timedelta(days=current_date.weekday())  # Move to the previous Monday
+
+    # Generate stats
     while current_date <= end_date:
-        # Calculate month end
+        # Calculate the start of the next month
         if current_date.month == 12:
-            next_month = current_date.replace(year=current_date.year+1, month=1)
+            next_month = current_date.replace(year=current_date.year + 1, month=1, day=1)
         else:
-            next_month = current_date.replace(month=current_date.month+1)
-        
+            next_month = current_date.replace(month=current_date.month + 1, day=1)
+
+        # Calculate the end of the current month
         month_end = min(next_month - timedelta(days=1), end_date)
-        
+
         # Get monthly stats
         monthly_stats = get_stats_for_date_range(current_date, month_end)
         monthly_stats['period_type'] = 'monthly'
         all_stats.append(monthly_stats)
-        
+
         # Generate weekly stats within this month
         week_start = current_date
         while week_start <= month_end:
-            week_end = min(week_start + timedelta(days=6), month_end)
-            
+            week_end = min(week_start + timedelta(days=6), month_end)  # End on Sunday or the end of the month
+
             # Get weekly stats
             weekly_stats = get_stats_for_date_range(week_start, week_end)
             weekly_stats['period_type'] = 'weekly'
             all_stats.append(weekly_stats)
-            
+
+            # Move to the next Monday
             week_start = week_end + timedelta(days=1)
-        
+
+        # Move to the next month
         current_date = next_month
-    
+
     return all_stats
