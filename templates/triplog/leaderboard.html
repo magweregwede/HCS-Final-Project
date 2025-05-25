@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}Driver Leaderboard{% endblock %}
+
+{% block content %}
+<h1>Driver Leaderboard</h1>
+<div class="container">
+
+    <!-- Overall Leaderboard -->
+    <div class="card mb-5" style="border : 2px solid #9dff00;">
+        <div class="card-header bg-primary text-white">
+            <h3>Overall Rankings - Top 10</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Rank</th>
+                        <th>Driver Name</th>
+                        <th>Total Points</th>
+                        <th>1st Place</th>
+                        <th>2nd Place</th>
+                        <th>3rd Place</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for driver in leaderboard %}
+                    <tr>
+                        <td>
+                            {% if forloop.counter == 1 %}🥇
+                            {% elif forloop.counter == 2 %}🥈
+                            {% elif forloop.counter == 3 %}🥉
+                            {% else %}{{ forloop.counter }}
+                            {% endif %}
+                        </td>
+                        <td><strong>{{ driver.driver_name }}</strong></td>
+                        <td><span class="badge bg-success">{{ driver.total_points }}</span></td>
+                        <td>{{ driver.rank_1_count }}</td>
+                        <td>{{ driver.rank_2_count }}</td>
+                        <td>{{ driver.rank_3_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Spacer -->
+    <div class="mb-5"></div>
+
+    <!-- Recent Monthly Rankings -->
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h3>Recent Monthly Rankings (Last 3 Months)</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Month</th>
+                        <th>Rank</th>
+                        <th>Driver Name</th>
+                        <th>Trips Completed</th>
+                        <th>Points Earned</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% regroup recent_rankings by month as monthly_groups %}
+                    {% for month_group in monthly_groups %}
+                    {% if forloop.counter <= 3 %} {% for ranking in month_group.list %} <tr
+                        class="{% if forloop.first and not forloop.parentloop.first %}month-border{% endif %}">
+                        {% if forloop.first %}
+                        <td rowspan="{{ month_group.list|length }}" class="rank-cell align-middle">
+                            <strong>{{ ranking.month|date:"F Y" }}</strong>
+                        </td>
+                        {% endif %}
+                        <td class="rank-cell">
+                            {% if ranking.rank == 1 %}🥇
+                            {% elif ranking.rank == 2 %}🥈
+                            {% elif ranking.rank == 3 %}🥉
+                            {% endif %}
+                            {{ ranking.rank }}
+                        </td>
+                        <td>{{ ranking.driver_name }}</td>
+                        <td>{{ ranking.trips_completed }}</td>
+                        <td><span class="badge bg-primary">{{ ranking.points_earned }}</span></td>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                        {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Increased gap between tables */
+    .mb-5 {
+        margin-bottom: 3rem !important;
+    }
+
+    /* Month border styling */
+    .month-border {
+        border-top: 3px solid #9dff00 !important;
+    }
+
+    /* Month cell styling */
+    .month-cell {
+        background-color: #f8f9fa !important;
+        border-right: 2px solid #007bff !important;
+        font-weight: bold;
+        text-align: center;
+        vertical-align: middle !important;
+    }
+
+    /* Rank cell styling */
+    .rank-cell {
+        text-align: center;
+        font-weight: bold;
+    }
+
+    /* Table hover effects */
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+    }
+
+    /* Header styling */
+    .card-header h3 {
+        margin: 0;
+        font-size: 1.25rem;
+    }
+
+    /* Badge styling */
+    .badge {
+        font-size: 0.875rem;
+    }
+
+    /* Top 3 highlighting */
+    .table-warning {
+        background-color: rgba(255, 193, 7, 0.2) !important;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 10px;
+        }
+
+        .table {
+            font-size: 0.875rem;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
