@@ -1,329 +1,216 @@
+import csv
+import os
+from datetime import datetime, timedelta, date
+from django.conf import settings
 from django.db.models import Sum, Avg, Count, F, Max, Q
-from django.utils.timezone import now
-from datetime import timedelta, datetime
+from django.utils.timezone import now, make_aware
 from .models import Trip, TripRoute, Route, Driver, Truck
 
+def get_previous_week_stats():
+    """Get stats from the previous week using historical CSV data"""
+    csv_file_path = os.path.join(settings.BASE_DIR, 'historical_trip_stats_full.csv')
+    
+    if not os.path.exists(csv_file_path):
+        return {}
+    
+    # Calculate previous week date range (Monday to Sunday)
+    today = now().date()
+    current_week_start = today - timedelta(days=today.weekday())  # Current Monday
+    previous_week_start = current_week_start - timedelta(days=7)  # Previous Monday
+    previous_week_end = previous_week_start + timedelta(days=6)   # Previous Sunday
+    
+    previous_week_stats = {}
+    
+    try:
+        with open(csv_file_path, 'r') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                if (row['period_type'] == 'weekly' and 
+                    row['period_start'] == previous_week_start.strftime('%Y-%m-%d') and
+                    row['period_end'] == previous_week_end.strftime('%Y-%m-%d')):
+                    
+                    # Convert string values to appropriate types
+                    previous_week_stats = {
+                        'completed_trips': int(row['completed_trips']) if row['completed_trips'] else 0,
+                        'ongoing_trips': int(row['ongoing_trips']) if row['ongoing_trips'] else 0,
+                        'total_kilometres': float(row['total_kilometres']) if row['total_kilometres'] else 0,
+                        'average_trip_time': float(row['average_trip_time']) if row['average_trip_time'] else 0,
+                        'delayed_trips': int(row['delayed_trips']) if row['delayed_trips'] else 0,
+                        'on_time_rate': float(row['on_time_rate']) if row['on_time_rate'] else 0,
+                        'available_drivers': int(row['available_drivers']) if row['available_drivers'] else 0,
+                        'active_deliveries': int(row['active_deliveries']) if row['active_deliveries'] else 0,
+                    }
+                    break
+    except Exception as e:
+        print(f"Error reading historical stats: {e}")
+    
+    return previous_week_stats
+
+def get_previous_month_stats():
+    """Get stats from the previous month using historical CSV data"""
+    csv_file_path = os.path.join(settings.BASE_DIR, 'historical_trip_stats_full.csv')
+    
+    if not os.path.exists(csv_file_path):
+        return {}
+    
+    # Calculate previous month date
+    today = now().date()
+    first_of_current_month = today.replace(day=1)
+    
+    if first_of_current_month.month == 1:
+        previous_month_start = first_of_current_month.replace(year=first_of_current_month.year - 1, month=12)
+    else:
+        previous_month_start = first_of_current_month.replace(month=first_of_current_month.month - 1)
+    
+    # Calculate end of previous month
+    if previous_month_start.month == 12:
+        next_month = previous_month_start.replace(year=previous_month_start.year + 1, month=1)
+    else:
+        next_month = previous_month_start.replace(month=previous_month_start.month + 1)
+    
+    previous_month_end = next_month - timedelta(days=1)
+    
+    previous_month_stats = {}
+    
+    try:
+        with open(csv_file_path, 'r') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                if (row['period_type'] == 'monthly' and 
+                    row['period_start'] == previous_month_start.strftime('%Y-%m-%d') and
+                    row['period_end'] == previous_month_end.strftime('%Y-%m-%d')):
+                    
+                    previous_month_stats = {
+                        'monthly_on_time_rate': float(row['monthly_on_time_rate']) if row['monthly_on_time_rate'] else 0,
+                        'monthly_total_kilometres': float(row['monthly_total_kilometres']) if row['monthly_total_kilometres'] else 0,
+                    }
+                    break
+    except Exception as e:
+        print(f"Error reading historical monthly stats: {e}")
+    
+    return previous_month_stats
+
+def calculate_change(current_value, previous_value):
+    """Calculate percentage change between current and previous values"""
+    if previous_value == 0:
+        return 100 if current_value > 0 else 0
+    
+    change = ((current_value - previous_value) / previous_value) * 100
+    return round(change, 1)
+
+def get_change_indicator(change):
+    """Get appropriate indicator for the change"""
+    if change > 0:
+        return "↗"  # Up arrow
+    elif change < 0:
+        return "↘"  # Down arrow
+    else:
+        return "→"  # Right arrow (no change)
+
+def get_change_class(change):
+    """Get CSS class for styling the change"""
+    if change > 0:
+        return "text-success"  # Green for positive
+    elif change < 0:
+        return "text-danger"   # Red for negative
+    else:
+        return "text-muted"    # Gray for no change
+
 def get_trip_stats():
+    """Get comprehensive trip statistics with comparisons"""
+    # Get current week stats
+    today = now().date()
+    start_of_week = today - timedelta(days=today.weekday())
+    end_of_week = start_of_week + timedelta(days=6)
+    
+    start_of_week_dt = make_aware(datetime.combine(start_of_week, datetime.min.time()))
+    end_of_week_dt = make_aware(datetime.combine(end_of_week, datetime.max.time()))
+    
+    # Get current month stats
+    start_of_month = now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    end_of_month = now()
+    
     stats = {}
-
-    # Active deliveries (Ongoing trips)
-    stats['active_deliveries'] = Trip.objects.filter(status="Ongoing").count()
-
-    # Available drivers (Drivers without any ongoing trips)
-    stats['available_drivers'] = Driver.objects.annotate(
-        ongoing_trips=Count('trips', filter=Q(trips__status="Ongoing"))
-    ).filter(ongoing_trips=0).count()
-
-    # Total kilometers covered from completed trips
-    stats['total_kilometres'] = TripRoute.objects.filter(
-        trip__status="Completed"
-    ).aggregate(total_distance=Sum('route__distance_km'))['total_distance'] or 0
-
-    # Average actual time of completed trips
-    stats['average_trip_time'] = TripRoute.objects.filter(
-        trip__status="Completed", actual_time_min__isnull=False
-    ).aggregate(avg_time=Avg('actual_time_min'))['avg_time'] or 0
-
-    # Number of completed trips
-    stats['completed_trips'] = Trip.objects.filter(status="Completed").count()
-
-    # Number of ongoing trips
-    stats['ongoing_trips'] = Trip.objects.filter(status="Ongoing").count()
-
-     # Average number of trips per driver
-    stats['avg_trips_per_driver'] = Trip.objects.values('driver').annotate(
-        total_trips=Count('id')
-    ).aggregate(avg=Avg('total_trips'))['avg'] or 0
-
-    # Total number of trucks
-    stats['total_trucks'] = Truck.objects.count()
-
-    # Average number of trips per truck
-    stats['avg_trips_per_truck'] = Trip.objects.values('truck').annotate(
-        total_trips=Count('id')
-    ).aggregate(avg=Avg('total_trips'))['avg'] or 0
-
-    # Longest trip distance (in completed trips)
-    stats['longest_trip_distance'] = TripRoute.objects.filter(
-        trip__status="Completed"
-    ).aggregate(longest_distance=Max('route__distance_km'))['longest_distance'] or 0
-
-    # Longest trip time (in hrs)
-    stats['longest_trip_time(hrs)'] = TripRoute.objects.filter(
-        trip__status="Completed", actual_time_min__isnull=False
-    ).aggregate(longest_time=Max('actual_time_min'))['longest_time']/60 or 0
-
-    # Total number of completed trips
-    total_completed_trips = Trip.objects.filter(status="Completed").count()
-
-    # Number of trips completed within estimated time
-    stats['trips_within_estimated_time'] = TripRoute.objects.filter(
-        trip__status="Completed", actual_time_min__lte=F('route__estimated_time_min')
-    ).count()
-
-    # Number of delayed trips (actual time exceeds estimated time)
-    stats['delayed_trips'] = TripRoute.objects.filter(
-        trip__status="Completed", actual_time_min__gt=F('route__estimated_time_min')
-    ).count()
-
-    # On-time rate (percentage of trips completed within the estimated time)
-    on_time_trips = stats['trips_within_estimated_time']
-    stats['on_time_rate'] = (on_time_trips / total_completed_trips * 100) if total_completed_trips > 0 else 0
-
-    # Percentage of delayed trips
-    delayed_trips = stats['delayed_trips']
-    stats['percentage_delayed_trips'] = (delayed_trips / total_completed_trips * 100) if total_completed_trips > 0 else 0
-
-    # Driver with most completed trips
-    top_driver = Trip.objects.filter(
-        status="Completed"
-    ).values('driver__name').annotate(
-        completed_trips=Count('id')
-    ).order_by('-completed_trips').first()
-    stats['top_driver'] = {
-        'name': top_driver['driver__name'] if top_driver else None,
-        'completed_trips': top_driver['completed_trips'] if top_driver else 0
-    }
-
-    # Truck with most trips
-    top_truck = Trip.objects.values('truck__plate_number').annotate(
-        total_trips=Count('id')
-    ).order_by('-total_trips').first()
-    stats['top_truck'] = {
-        'plate_number': top_truck['truck__plate_number'] if top_truck else None,
-        'total_trips': top_truck['total_trips'] if top_truck else 0
-    }
-
-    # Average delay time (in minutes) for delayed trips
-    stats['total_delayed_time'] = TripRoute.objects.filter(
-        trip__status="Completed", actual_time_min__gt=F('route__estimated_time_min')
-    ).aggregate(total_delay=Sum(F('actual_time_min') - F('route__estimated_time_min')))['total_delay'] or 0
-    delayed_trip_count = TripRoute.objects.filter(
-        trip__status="Completed", actual_time_min__gt=F('route__estimated_time_min')
-    ).count()
-    stats['average_delay_time'] = (stats['total_delayed_time'] / delayed_trip_count) if delayed_trip_count > 0 else 0
-
-    # Average delay time (in hours) for delayed trips
-    stats['total_delayed_time(hrs)'] = (stats['total_delayed_time'] / 60) if stats['total_delayed_time'] > 0 else 0
-    stats['average_delay_time(hrs)'] = (stats['average_delay_time'] / 60) if stats['average_delay_time'] > 0 else 0
-
-    # Trips by status
-    trips_by_status = Trip.objects.values('status').annotate(
-        count=Count('id')
-    )
-    stats['trips_by_status'] = {
-        status['status']: status['count'] for status in trips_by_status
-    }
-
-    # Most frequent Destination
-    stats['most_frequent_route'] = str(TripRoute.objects.filter(
-        trip__status="Completed"
-    ).values('route__destination').annotate(
-        trip_count=Count('id')
-    ).order_by('-trip_count').first())
-
-     # Weekly stats
-    one_week_ago = now() - timedelta(days=7)
-
-    # Weekly completed trips
-    stats['weekly_completed_trips'] = Trip.objects.filter(
-        status="Completed", departure_time__gte=one_week_ago
-    ).count()
-
-    # Weekly ongoing trips
-    stats['weekly_ongoing_trips'] = Trip.objects.filter(
-        status="Ongoing", departure_time__gte=one_week_ago
-    ).count()
-
-    # Weekly total kilometers covered
-    stats['weekly_total_kilometres'] = TripRoute.objects.filter(
-        trip__status="Completed", trip__departure_time__gte=one_week_ago
-    ).aggregate(total_distance=Sum('route__distance_km'))['total_distance'] or 0
-
-    # Weekly average trip time
-    stats['weekly_average_trip_time'] = TripRoute.objects.filter(
-        trip__status="Completed", trip__departure_time__gte=one_week_ago, actual_time_min__isnull=False
-    ).aggregate(avg_time=Avg('actual_time_min'))['avg_time'] or 0
-
-    # Weekly delayed trips
-    stats['weekly_delayed_trips'] = TripRoute.objects.filter(
-        trip__status="Completed", trip__departure_time__gte=one_week_ago,
-        actual_time_min__gt=F('route__estimated_time_min')
-    ).count()
-
-    # Weekly on-time rate (percentage of trips completed within the estimated time)
-    weekly_on_time_trips = TripRoute.objects.filter(
-        trip__status="Completed", trip__departure_time__gte=one_week_ago,
-        actual_time_min__lte=F('route__estimated_time_min')
-    ).count()
-    weekly_total_completed_trips = Trip.objects.filter(
-        status="Completed", departure_time__gte=one_week_ago
-    ).count()
-    stats['weekly_on_time_rate'] = (weekly_on_time_trips / weekly_total_completed_trips * 100) if weekly_total_completed_trips > 0 else 0
-
-    # Weekly stats (Monday to Sunday)
-    today = now().date() 
-    # weekday() returns an integer Monday=0 through Sunday=6
-    start_of_week = today - timedelta(days=today.weekday())  # Monday
-    end_of_week = start_of_week + timedelta(days=6)  # Sunday
-
-    # Convert to datetime with time=00:00 and time=23:59:59
-    start_of_week_dt = datetime.combine(start_of_week, datetime.min.time())
-    end_of_week_dt = datetime.combine(end_of_week, datetime.max.time())
-
+    
+    # Current week stats
     stats['weekly_completed_trips'] = Trip.objects.filter(
         status="Completed",
         departure_time__range=(start_of_week_dt, end_of_week_dt)
     ).count()
-
+    
     stats['weekly_ongoing_trips'] = Trip.objects.filter(
         status="Ongoing",
         departure_time__range=(start_of_week_dt, end_of_week_dt)
     ).count()
-
+    
     stats['weekly_total_kilometres'] = TripRoute.objects.filter(
         trip__status="Completed",
         trip__departure_time__range=(start_of_week_dt, end_of_week_dt)
     ).aggregate(total_distance=Sum('route__distance_km'))['total_distance'] or 0
-
+    
     stats['weekly_average_trip_time'] = TripRoute.objects.filter(
         trip__status="Completed",
         trip__departure_time__range=(start_of_week_dt, end_of_week_dt),
         actual_time_min__isnull=False
     ).aggregate(avg_time=Avg('actual_time_min'))['avg_time'] or 0
-
+    
     stats['weekly_delayed_trips'] = TripRoute.objects.filter(
         trip__status="Completed",
         trip__departure_time__range=(start_of_week_dt, end_of_week_dt),
         actual_time_min__gt=F('route__estimated_time_min')
     ).count()
-
+    
     weekly_on_time_trips = TripRoute.objects.filter(
         trip__status="Completed",
         trip__departure_time__range=(start_of_week_dt, end_of_week_dt),
         actual_time_min__lte=F('route__estimated_time_min')
     ).count()
-    weekly_total_completed_trips = Trip.objects.filter(
-        status="Completed",
-        departure_time__range=(start_of_week_dt, end_of_week_dt)
-    ).count()
+    weekly_total_completed_trips = stats['weekly_completed_trips']
     stats['weekly_on_time_rate'] = (
         (weekly_on_time_trips / weekly_total_completed_trips) * 100
         if weekly_total_completed_trips > 0 else 0
     )
-
+    
+    # Current available drivers and active deliveries
+    stats['available_drivers'] = Driver.objects.annotate(
+        ongoing_trips=Count('trips', filter=Q(trips__status="Ongoing"))
+    ).filter(ongoing_trips=0).count()
+    
+    stats['active_deliveries'] = Trip.objects.filter(status="Ongoing").count()
+    
     # Monthly stats
-    one_month_ago = now() - timedelta(days=30)
-
-    stats['monthly_completed_trips'] = Trip.objects.filter(
-        status="Completed", departure_time__gte=one_month_ago
-    ).count()
-
-    stats['monthly_ongoing_trips'] = Trip.objects.filter(
-        status="Ongoing", departure_time__gte=one_month_ago
-    ).count()
-
-    stats['monthly_total_kilometres'] = TripRoute.objects.filter(
-        trip__status="Completed", trip__departure_time__gte=one_month_ago
-    ).aggregate(total_distance=Sum('route__distance_km'))['total_distance'] or 0
-
-    stats['monthly_average_trip_time'] = TripRoute.objects.filter(
-        trip__status="Completed", trip__departure_time__gte=one_month_ago, actual_time_min__isnull=False
-    ).aggregate(avg_time=Avg('actual_time_min'))['avg_time'] or 0
-
-    stats['monthly_delayed_trips'] = TripRoute.objects.filter(
-        trip__status="Completed", trip__departure_time__gte=one_month_ago,
-        actual_time_min__gt=F('route__estimated_time_min')
-    ).count()
-
-    monthly_on_time_trips = TripRoute.objects.filter(
-        trip__status="Completed", trip__departure_time__gte=one_month_ago,
-        actual_time_min__lte=F('route__estimated_time_min')
-    ).count()
-    monthly_total_completed_trips = Trip.objects.filter(
-        status="Completed", departure_time__gte=one_month_ago
-    ).count()
-    stats['monthly_on_time_rate'] = (monthly_on_time_trips / monthly_total_completed_trips * 100) if monthly_total_completed_trips > 0 else 0
-
-    # Monthly stats (current calendar month)
-    start_of_month = now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    # end_of_month is optional if you want to limit exactly to the month,
-    # but typically you can go up to 'now()'. If needed, you could do:
-    # _, last_day = calendar.monthrange(start_of_month.year, start_of_month.month)
-    # end_of_month = start_of_month.replace(day=last_day, hour=23, minute=59, second=59)
-    # For simplicity, we’ll just go from start_of_month to now().
-    end_of_month = now()
-
     stats['monthly_completed_trips'] = Trip.objects.filter(
         status="Completed",
         departure_time__range=(start_of_month, end_of_month)
     ).count()
-
+    
     stats['monthly_ongoing_trips'] = Trip.objects.filter(
         status="Ongoing",
         departure_time__range=(start_of_month, end_of_month)
     ).count()
-
-    stats['monthly_total_kilometres'] = TripRoute.objects.filter(
-        trip__status="Completed",
-        trip__departure_time__range=(start_of_month, end_of_month)
-    ).aggregate(total_distance=Sum('route__distance_km'))['total_distance'] or 0
-
-    stats['monthly_average_trip_time'] = TripRoute.objects.filter(
-        trip__status="Completed",
-        trip__departure_time__range=(start_of_month, end_of_month),
-        actual_time_min__isnull=False
-    ).aggregate(avg_time=Avg('actual_time_min'))['avg_time'] or 0
-
-    stats['monthly_delayed_trips'] = TripRoute.objects.filter(
-        trip__status="Completed",
-        trip__departure_time__range=(start_of_month, end_of_month),
-        actual_time_min__gt=F('route__estimated_time_min')
-    ).count()
-
-    monthly_on_time_trips = TripRoute.objects.filter(
+    
+    stats['monthly_on_time_rate'] = TripRoute.objects.filter(
         trip__status="Completed",
         trip__departure_time__range=(start_of_month, end_of_month),
         actual_time_min__lte=F('route__estimated_time_min')
     ).count()
-    monthly_total_completed_trips = Trip.objects.filter(
+    
+    monthly_total_completed = Trip.objects.filter(
         status="Completed",
         departure_time__range=(start_of_month, end_of_month)
     ).count()
-    stats['monthly_on_time_rate'] = (
-        (monthly_on_time_trips / monthly_total_completed_trips) * 100
-        if monthly_total_completed_trips > 0 else 0
-    )
-
-    # Most frequent route in the past month
-    most_frequent_monthly_route = TripRoute.objects.filter(
-        trip__status="Completed", trip__departure_time__gte=one_month_ago
-    ).values(
-        'route__origin', 'route__destination'
-    ).annotate(
-        trip_count=Count('id')
-    ).order_by('-trip_count').first()
-
-    stats['most_frequent_monthly_route'] = (
-        f"{most_frequent_monthly_route['route__origin']} to {most_frequent_monthly_route['route__destination']} "
-        f"({most_frequent_monthly_route['trip_count']} trips)"
-        if most_frequent_monthly_route else "No data"
-    )
-
-    # Top 3 monthly drivers with completed trips
-    top_monthly_drivers = Trip.objects.filter(
-        status="Completed", departure_time__gte=one_month_ago
-    ).values(
-        'driver__name', 'driver__assigned_truck__truck_company__name'
-    ).annotate(
-        completed_trips=Count('id')
-    ).order_by('-completed_trips')[:3]
-
-    stats['top_monthly_drivers'] = [
-        f"{driver['driver__name']} ({driver['completed_trips']} trips) - {driver['driver__assigned_truck__truck_company__name'] or 'No Company'}"
-        for driver in top_monthly_drivers
-    ]
-
+    
+    if monthly_total_completed > 0:
+        stats['monthly_on_time_rate'] = (stats['monthly_on_time_rate'] / monthly_total_completed) * 100
+    else:
+        stats['monthly_on_time_rate'] = 0
+    
+    stats['monthly_total_kilometres'] = TripRoute.objects.filter(
+        trip__status="Completed",
+        trip__departure_time__range=(start_of_month, end_of_month)
+    ).aggregate(total_distance=Sum('route__distance_km'))['total_distance'] or 0
+    
+    # Top monthly route
     most_frequent_monthly_route = TripRoute.objects.filter(
         trip__status="Completed",
         trip__departure_time__range=(start_of_month, end_of_month)
@@ -338,19 +225,59 @@ def get_trip_stats():
         f"({most_frequent_monthly_route['trip_count']} trips)"
         if most_frequent_monthly_route else "No data"
     )
-
-    top_monthly_drivers = Trip.objects.filter(
+    
+    # Top monthly drivers
+    top_drivers = Trip.objects.filter(
         status="Completed",
         departure_time__range=(start_of_month, end_of_month)
-    ).values(
-        'driver__name', 'driver__assigned_truck__truck_company__name'
-    ).annotate(
-        completed_trips=Count('id')
-    ).order_by('-completed_trips')[:3]
-
+    ).values('driver__name').annotate(
+        trips=Count('id')
+    ).order_by('-trips')[:3]
+    
     stats['top_monthly_drivers'] = [
-        f"{driver['driver__name']} ({driver['completed_trips']} trips) - {driver['driver__assigned_truck__truck_company__name'] or 'No Company'}"
-        for driver in top_monthly_drivers
+        {'name': driver['driver__name'], 'trips': driver['trips']}
+        for driver in top_drivers
     ]
-
+    
+    # Get previous week and month stats for comparison
+    previous_stats = get_previous_week_stats()
+    previous_month_stats = get_previous_month_stats()
+    
+    # Calculate changes and add to stats
+    current_stats_for_comparison = {
+        'completed_trips': stats['weekly_completed_trips'],
+        'ongoing_trips': stats['weekly_ongoing_trips'],
+        'total_kilometres': stats['weekly_total_kilometres'],
+        'average_trip_time': stats['weekly_average_trip_time'],
+        'delayed_trips': stats['weekly_delayed_trips'],
+        'on_time_rate': stats['weekly_on_time_rate'],
+        'available_drivers': stats['available_drivers'],
+        'active_deliveries': stats['active_deliveries'],
+    }
+    
+    # Add change information to stats
+    for key, current_value in current_stats_for_comparison.items():
+        previous_value = previous_stats.get(key, 0)
+        change = calculate_change(current_value, previous_value)
+        
+        stats[f'{key}_change'] = change
+        stats[f'{key}_change_indicator'] = get_change_indicator(change)
+        stats[f'{key}_change_class'] = get_change_class(change)
+        stats[f'{key}_previous'] = previous_value
+    
+    # Monthly change calculations
+    monthly_stats_for_comparison = {
+        'monthly_on_time_rate': stats['monthly_on_time_rate'],
+        'monthly_total_kilometres': stats['monthly_total_kilometres'],
+    }
+    
+    for key, current_value in monthly_stats_for_comparison.items():
+        previous_value = previous_month_stats.get(key, 0)
+        change = calculate_change(current_value, previous_value)
+        
+        stats[f'{key}_change'] = change
+        stats[f'{key}_change_indicator'] = get_change_indicator(change)
+        stats[f'{key}_change_class'] = get_change_class(change)
+        stats[f'{key}_previous'] = previous_value
+    
     return stats
