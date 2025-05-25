@@ -143,4 +143,33 @@ class TripRoute(models.Model):
 
     def get_absolute_url(self):
         return reverse("triproute_detail", kwargs={"pk": self.pk})
+
+
+class DriverLeaderboard(models.Model):
+    driver_name = models.CharField(max_length=100)
+    total_points = models.IntegerField(default=0)
+    rank_1_count = models.IntegerField(default=0)  # Number of times ranked #1
+    rank_2_count = models.IntegerField(default=0)  # Number of times ranked #2
+    rank_3_count = models.IntegerField(default=0)  # Number of times ranked #3
+    last_updated = models.DateTimeField(auto_now=True)
     
+    class Meta:
+        ordering = ['-total_points', '-rank_1_count', '-rank_2_count']
+    
+    def __str__(self):
+        return f"{self.driver_name} - {self.total_points} points"
+
+class MonthlyDriverRanking(models.Model):
+    driver_name = models.CharField(max_length=100)
+    month = models.DateField()  # First day of the month
+    rank = models.IntegerField()  # 1, 2, or 3
+    trips_completed = models.IntegerField()
+    points_earned = models.IntegerField()
+    
+    class Meta:
+        unique_together = ['driver_name', 'month']
+        ordering = ['-month', 'rank']
+    
+    def __str__(self):
+        return f"{self.driver_name} - {self.month.strftime('%B %Y')} - Rank {self.rank}"
+

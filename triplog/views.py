@@ -15,6 +15,7 @@ from django.db.models import Q
 from datetime import datetime
 from triplog.stats import get_trip_stats
 from django.http import JsonResponse
+from .models import DriverLeaderboard, MonthlyDriverRanking
 
 # Create your views here.
 
@@ -568,3 +569,14 @@ class TripRouteCreateView(CreateView):
     
     def get_success_url(self):
         return reverse('trip_detail', kwargs={'pk': self.object.trip.id})  # Redirect to trip details page
+
+def driver_leaderboard(request):
+    """Display the overall driver leaderboard"""
+    leaderboard = DriverLeaderboard.objects.all()[:10]  # Top 10 drivers
+    recent_rankings = MonthlyDriverRanking.objects.select_related().order_by('-month', 'rank')[:15]
+    
+    context = {
+        'leaderboard': leaderboard,
+        'recent_rankings': recent_rankings,
+    }
+    return render(request, 'triplog/leaderboard.html', context)

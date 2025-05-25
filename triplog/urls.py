@@ -1,5 +1,6 @@
 from django.urls import path
 
+from . import views
 from .views import (
     # Truck Company
     TruckCompanyListView,
@@ -109,4 +110,6 @@ urlpatterns = [
     path("triproute/<int:pk>/delete", TripRouteDeleteView.as_view(), name="triproute_delete"),
     path("triproute/new/", TripRouteCreateView.as_view(), name="triproute_new"),
     path('trip/<int:trip_id>/route/new/', TripRouteCreateView.as_view(), name='triproute_new'),  # Accepts trip_id
+    # leaderboard
+    path('leaderboard/', views.driver_leaderboard, name='driver_leaderboard'),
 ]
