@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from environs import Env
+
+env = Env()
+env.read_env()  # Read .env file if it exists
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-qd5cz!!*6xn2rr&co8f_wy1vswyjop+ujlws5ffngceip$rp@k"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG")
 
 ALLOWED_HOSTS = []
 
@@ -45,7 +49,8 @@ INSTALLED_APPS = [
     # Third Party
     "import_export",
     "simple_history",
-    "mathfilters"
+    "mathfilters",
+    "django_crontab",
 ]
 
 MIDDLEWARE = [
@@ -150,17 +155,20 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'mark.magweregwede@students.uz.ac.zw'
-EMAIL_HOST_PASSWORD = 'wmux ugyl thdr idju'
+EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")  # Set in .env
 
 DEFAULT_FROM_EMAIL = 'Trip AI Reporting <mark.magweregwede@students.uz.ac.zw>'
 
 # Monthly report configuration
-MONTHLY_REPORT_RECIPIENTS = [
-    'magweregwede10@gmail.com',
-    'manager@company.com',
-    'logistics@company.com',
-    'admin@company.com',
-]
+MONTHLY_REPORT_RECIPIENTS = env.list("MONTHLY_REPORT_RECIPIENTS")
 
 # Optional: Delete report file after sending
-DELETE_REPORT_AFTER_EMAIL = False  # Set to True in production if you want to clean up files
+DELETE_REPORT_AFTER_EMAIL = False  # Set to True in production to clean up files
+
+# Crontab settings for monthly report generation
+CRONJOBS = [
+    # Test every minute
+    ('* * * * *', 'triplog.management.commands.test_cron_email.Command'),
+    # Original job
+    # ('0 9 25 * *', 'triplog.management.commands.send_monthly_report.Command'),
+]
