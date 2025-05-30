@@ -12,6 +12,7 @@ from django.core.management.base import BaseCommand
 from triplog.models import Trip, TripRoute, Route, Driver, Truck, Product, TripProduct
 import numpy as np
 from collections import defaultdict
+from django.core.mail import EmailMessage
 
 class TripReportGenerator:
     def __init__(self):
@@ -885,100 +886,60 @@ Active Drivers: {summary_stats['active_drivers']}
         pdf.savefig(fig, bbox_inches='tight')
         plt.close()
 
-def _create_ongoing_deliveries_summary(self, pdf):
-    """Create ongoing deliveries summary with properly sized table"""
-    fig = plt.figure(figsize=(11, 8.5))  # Landscape
-    
-    # Create main title
-    fig.suptitle('ONGOING DELIVERIES SUMMARY', fontsize=20, fontweight='bold', y=0.95)
-    
-    # Ongoing deliveries count (big number display)
-    ax1 = plt.subplot2grid((4, 2), (0, 0), colspan=2)
-    ax1.axis('off')
-    
-    ongoing_trips = Trip.objects.filter(status="Ongoing")
-    total_ongoing = ongoing_trips.count()
-    
-    ax1.text(0.5, 0.5, str(total_ongoing), fontsize=48, fontweight='bold', 
-            ha='center', va='center', color='#FF6B35')
-    ax1.text(0.5, 0.1, 'ONGOING DELIVERIES', fontsize=16, fontweight='bold', 
-            ha='center', va='center')
-    
-    # Main table showing individual ongoing deliveries
-    ax2 = plt.subplot2grid((4, 2), (1, 0), colspan=2, rowspan=3)
-    ax2.axis('off')
-    
-    if total_ongoing > 0:
-        # Get individual ongoing deliveries with their details - FIXED APPROACH
-        ongoing_deliveries = Trip.objects.filter(status="Ongoing").select_related(
-            'driver', 'truck__truck_company'
-        )[:15]  # Limit to 15 entries
+    def send_monthly_report_email(self, filepath, recipients=None):
+        """Send the generated report via email"""
+        if recipients is None:
+            recipients = getattr(settings, 'MONTHLY_REPORT_RECIPIENTS', [])
         
-        # Prepare table data
-        table_data = []
-        headers = ['#', 'Route', 'Driver', 'Company', 'Time']  # Shortened headers
+        if not recipients:
+            raise ValueError("No email recipients configured")
         
-        for i, trip in enumerate(ongoing_deliveries, 1):
-            # Get the route information using TripRoute model directly
-            try:
-                trip_route = TripRoute.objects.filter(trip=trip).select_related('route').first()
-                if trip_route and trip_route.route:
-                    route_name = f"{trip_route.route.origin} → {trip_route.route.destination}"
-                else:
-                    route_name = "Route not assigned"
-            except:
-                route_name = "Route not available"
-            
-            # Handle case where truck_company might be None
-            company_name = trip.truck.truck_company.name if trip.truck.truck_company else "Unknown"
-            
-            # Format departure time
-            departure_str = trip.departure_time.strftime('%m/%d %H:%M') if trip.departure_time else "Not set"
-            
-            table_data.append([
-                str(i),
-                route_name[:35],  # Truncate long route names
-                trip.driver.name[:20],  # Truncate long names
-                company_name[:20],  # Truncate long company names
-                departure_str
-            ])
+        print("=" * 50)
+        print("SENDING EMAIL VIA CONSOLE BACKEND")
+        print("=" * 50)
         
-        # Create the table
-        if table_data:
-            table = ax2.table(cellText=table_data, colLabels=headers, cellLoc='center', loc='center',
-                            bbox=[0, 0.1, 1, 0.85])
-            
-            # Style the table
-            table.auto_set_font_size(False)
-            table.set_fontsize(9)
-            table.scale(1, 1.8)
-            
-            # Style header
-            for i in range(len(headers)):
-                table[(0, i)].set_facecolor('#4ECDC4')
-                table[(0, i)].set_text_props(weight='bold', color='white')
-            
-            # Alternate row colors
-            for i in range(1, len(table_data) + 1):
-                base_color = '#F8F9FA' if i % 2 == 0 else '#FFFFFF'
-                for j in range(len(headers)):
-                    table[(i, j)].set_facecolor(base_color)
-            
-            # Add summary at bottom
-            if total_ongoing > 15:
-                ax2.text(0.5, 0.02, f'Showing top 15 of {total_ongoing} ongoing deliveries', 
-                        ha='center', va='bottom', transform=ax2.transAxes, 
-                        fontsize=10, style='italic')
-        else:
-            ax2.text(0.5, 0.5, 'No ongoing delivery data available', 
-                    ha='center', va='center', fontsize=14, transform=ax2.transAxes)
-    else:
-        ax2.text(0.5, 0.5, 'No ongoing deliveries found', 
-                ha='center', va='center', fontsize=16, transform=ax2.transAxes)
-    
-    plt.tight_layout()
-    pdf.savefig(fig, bbox_inches='tight')
-    plt.close()
+        subject = f'Monthly Logistics Report - {self.report_date.strftime("%B %Y")}'
+        
+        body = f"""
+Dear Team,
+
+Please find attached the monthly logistics analytics report for {self.report_date.strftime("%B %Y")}.
+
+This report includes:
+• Route performance analysis
+• Driver performance metrics
+• Company performance statistics
+• On-time delivery trends
+• Delayed trips analysis
+• Product distribution insights
+
+Best regards,
+Logistics Analytics System
+        """
+        
+        email = EmailMessage(
+            subject=subject,
+            body=body,
+            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@company.com'),
+            to=recipients,
+        )
+        
+        # Attach the PDF file
+        with open(filepath, 'rb') as f:
+            email.attach(
+                f'logistics_report_{self.report_date.strftime("%Y_%m_%d")}.pdf',
+                f.read(),
+                'application/pdf'
+            )
+        
+        # This will output to the runserver console
+        email.send()
+        
+        print("=" * 50)
+        print("EMAIL SENT TO CONSOLE")
+        print("=" * 50)
+        
+        return True
 
 # Django management command
 class Command(BaseCommand):
