@@ -45,6 +45,9 @@ class TripReportGenerator:
             # Monthly trips per route
             self._create_monthly_trips_per_route(pdf)
             
+            # Monthly total kilometres trend
+            self._create_monthly_kilometres_trend(pdf)
+
             # Monthly product distribution
             self._create_monthly_product_distribution(pdf)
             
@@ -65,9 +68,6 @@ class TripReportGenerator:
             
             # Delayed trips list
             self._create_delayed_trips_list(pdf)
-            
-            # Monthly total kilometres trend
-            self._create_monthly_kilometres_trend(pdf)
             
         return filepath
 
