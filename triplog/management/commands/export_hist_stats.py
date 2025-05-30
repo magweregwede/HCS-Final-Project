@@ -20,7 +20,7 @@ class Command(BaseCommand):
             return
         
         # Define CSV file path
-        csv_file_path = os.path.join(settings.BASE_DIR, 'historical_trip_stats_full.csv')
+        csv_file_path = os.path.join(settings.BASE_DIR, 'reports/historical_trip_stats_full.csv')
         
         # Prepare fieldnames and flatten nested structures
         flat_stats = []

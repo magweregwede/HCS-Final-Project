@@ -8,7 +8,7 @@ from .models import Trip, TripRoute, Route, Driver, Truck
 
 def get_previous_week_stats():
     """Get stats from the previous week using historical CSV data"""
-    csv_file_path = os.path.join(settings.BASE_DIR, 'historical_trip_stats_full.csv')
+    csv_file_path = os.path.join(settings.BASE_DIR, 'reports/historical_trip_stats_full.csv')
     
     if not os.path.exists(csv_file_path):
         return {}

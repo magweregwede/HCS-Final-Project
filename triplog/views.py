@@ -17,6 +17,13 @@ from triplog.stats import get_trip_stats
 from django.http import JsonResponse
 from .models import DriverLeaderboard, MonthlyDriverRanking
 
+import os
+import glob
+from django.http import FileResponse, Http404, JsonResponse
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.apps import apps
+
 # Create your views here.
 
 # Dashboard View
@@ -32,6 +39,11 @@ class DashboardView(TemplateView):
     def post(self, request, *args, **kwargs):
         stats = get_trip_stats()
         return JsonResponse(stats, safe=False)
+    
+    
+class ReportingView(TemplateView):
+    template_name = "reporting/reporting.html"
+
 
 # Truck Company Views
 class TruckCompanyListView(ListView):
@@ -579,4 +591,75 @@ def driver_leaderboard(request):
         'leaderboard': leaderboard,
         'recent_rankings': recent_rankings,
     }
-    return render(request, 'triplog/leaderboard.html', context)
+    return render(request, 'reporting/leaderboard.html', context)
+
+@login_required
+def latest_report_download(request):
+    """Download the latest report from the reports folder in BASE_DIR"""
+    
+    # Since reports is in BASE_DIR/reports
+    reports_dir = os.path.join(settings.BASE_DIR, 'reports')
+    
+    if not os.path.exists(reports_dir):
+        return JsonResponse({'error': 'Reports directory not found'}, status=404)
+    
+    # Get all PDF files in reports directory
+    pdf_files = glob.glob(os.path.join(reports_dir, '*.pdf'))
+    
+    if not pdf_files:
+        return JsonResponse({'error': 'No reports available'}, status=404)
+    
+    # Get the most recent file by modification time
+    latest_file = max(pdf_files, key=os.path.getmtime)
+    
+    try:
+        # Return file response
+        response = FileResponse(
+            open(latest_file, 'rb'),
+            content_type='application/pdf',
+            as_attachment=True,
+            filename=os.path.basename(latest_file)
+        )
+        return response
+    except Exception as e:
+        return JsonResponse({'error': f'Error serving file: {str(e)}'}, status=500)
+
+@login_required
+def reports_info(request):
+    """Get information about available reports"""
+    
+    # Get the triplog app directory
+    triplog_config = apps.get_app_config('triplog')
+    app_path = triplog_config.path
+    reports_dir = os.path.join(app_path, 'reports')
+    
+    if not os.path.exists(reports_dir):
+        return JsonResponse({'error': 'Reports directory not found'}, status=404)
+    
+    # Get all PDF files in reports directory
+    pdf_files = glob.glob(os.path.join(reports_dir, '*.pdf'))
+    
+    if not pdf_files:
+        return JsonResponse({'reports': [], 'latest': None})
+    
+    # Get file information
+    reports_info = []
+    for file_path in pdf_files:
+        file_stat = os.stat(file_path)
+        reports_info.append({
+            'filename': os.path.basename(file_path),
+            'size': file_stat.st_size,
+            'modified': file_stat.st_mtime,
+            'path': file_path
+        })
+    
+    # Sort by modification time (newest first)
+    reports_info.sort(key=lambda x: x['modified'], reverse=True)
+    
+    latest_report = reports_info[0] if reports_info else None
+    
+    return JsonResponse({
+        'reports': reports_info,
+        'latest': latest_report,
+        'total_count': len(reports_info)
+    })

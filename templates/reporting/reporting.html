@@ -1,0 +1,385 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Reporting{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <a href="/app/reporting/leaderboard" class="card-link">
+        <div class="stat-card clickable-card">
+            <h3>Driver Leaderboards</h3>
+            <div class="value">
+                <i class="fas fa-trophy card-icon"></i>
+            </div>
+            <div class="mt-2">
+                <small>
+                    View top performing drivers
+                </small>
+            </div>
+        </div>
+    </a>
+
+    <a href="javascript:void(0);" class="card-link" onclick="downloadLatestReport()">
+        <div class="stat-card clickable-card">
+            <h3>Generate Latest Report</h3>
+            <div class="value">
+                <i class="fas fa-file-pdf card-icon"></i>
+            </div>
+            <div class="mt-2">
+                <small class="">
+                    Download latest Logistics Report
+                </small>
+            </div>
+            <div class="loading-spinner" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i>
+            </div>
+        </div>
+    </a>
+
+    <a href="#predictive-analytics" class="card-link">
+        <div class="stat-card clickable-card">
+            <h3>Predictive Analytics</h3>
+            <div class="value">
+                <i class="fas fa-brain card-icon"></i>
+            </div>
+            <div class="mt-2">
+                <small class="">
+                    AI powered insights for future planning
+                </small>
+            </div>
+        </div>
+    </a>
+</div>
+
+<!-- ML Insights Section -->
+<div class="ml-insights-section mt-5">
+    <h2 class="section-title mb-4">Machine Learning Insights</h2>
+    <div class="row">
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="insight-card">
+                <div class="insight-icon">
+                    <i class="fas fa-route"></i>
+                </div>
+                <h5>Route Optimization</h5>
+                <p class="text-muted">AI-powered route suggestions for optimal delivery paths</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="insight-card">
+                <div class="insight-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h5>Demand Forecasting</h5>
+                <p class="text-muted">Predict future delivery demands using historical data</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="insight-card">
+                <div class="insight-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h5>Anomaly Detection</h5>
+                <p class="text-muted">Identify unusual patterns in delivery operations</p>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="insight-card">
+                <div class="insight-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h5>Performance Analysis</h5>
+                <p class="text-muted">Driver and fleet performance optimization insights</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    function downloadLatestReport() {
+        const reportCard = document.querySelector('.card-link[onclick="downloadLatestReport()"] .stat-card');
+        const icon = reportCard.querySelector('.card-icon');
+        const spinner = reportCard.querySelector('.loading-spinner');
+        const smallText = reportCard.querySelector('small');
+
+        // Show loading state
+        icon.style.display = 'none';
+        spinner.style.display = 'block';
+        smallText.textContent = 'Searching for latest report...';
+
+        // Make request to get latest report - FIX: Add leading slash
+        fetch('/app/api/latest-report/', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error || 'Failed to fetch report');
+                    });
+                }
+
+                // Update loading message
+                smallText.textContent = 'Preparing download...';
+
+                return response.blob();
+            })
+            .then(blob => {
+                // Create download link
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+
+                // Generate filename with current date
+                const today = new Date().toISOString().split('T')[0];
+                a.download = `logistics_report_${today}.pdf`;
+
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                // Reset UI
+                icon.style.display = 'block';
+                spinner.style.display = 'none';
+                smallText.textContent = 'Download latest Logistics Report';
+
+                // Show success message
+                showNotification('Latest report downloaded successfully!', 'success');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+
+                // Reset UI
+                icon.style.display = 'block';
+                spinner.style.display = 'none';
+                smallText.textContent = 'Download latest Logistics Report';
+
+                // Show specific error message
+                const errorMessage = error.message.includes('No reports available')
+                    ? 'No reports found. Please generate a report first.'
+                    : 'Failed to download report. Please try again.';
+
+                showNotification(errorMessage, 'error');
+            });
+    }
+
+    function showNotification(message, type) {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.zIndex = '9999';
+        notification.style.minWidth = '300px';
+
+        notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+        document.body.appendChild(notification);
+
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    }
+</script>
+
+<style>
+    /* Card link styling */
+    .card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .card-link:hover {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    /* Clickable card transitions */
+    .clickable-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .clickable-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        border-color: #007bff;
+    }
+
+    .clickable-card:active {
+        transform: translateY(-4px);
+        transition: all 0.1s ease;
+    }
+
+    /* Card icon styling */
+    .card-icon {
+        font-size: 2.5rem;
+        color: #007bff;
+        transition: all 0.3s ease;
+    }
+
+    .clickable-card:hover .card-icon {
+        transform: scale(1.1);
+        color: #0056b3;
+    }
+
+    /* Loading spinner */
+    .loading-spinner {
+        font-size: 2.5rem;
+        color: #007bff;
+    }
+
+    .loading-spinner i {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* ML Insights Section */
+    .ml-insights-section {
+        margin-top: 3rem;
+        padding: 2rem 0;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .insight-card {
+        background: #fff;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .insight-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        border-color: #007bff;
+    }
+
+    .insight-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .insight-icon i {
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .insight-card:hover .insight-icon {
+        transform: scale(1.1);
+    }
+
+    .insight-card h5 {
+        color: #2c3e50;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+    }
+
+    .insight-card p {
+        font-size: 0.9rem;
+        margin-bottom: 0;
+    }
+
+    /* Add ripple effect on click */
+    .clickable-card::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(0, 123, 255, 0.1);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .clickable-card:active::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    /* Dark mode support */
+    [data-theme="dark"] .section-title {
+        color: #e9ecef;
+    }
+
+    [data-theme="dark"] .insight-card {
+        background: #2d3748;
+        border-color: #4a5568;
+        color: #e9ecef;
+    }
+
+    [data-theme="dark"] .insight-card:hover {
+        background: #374151;
+        border-color: #60a5fa;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="dark"] .insight-card h5 {
+        color: #f7fafc;
+    }
+
+    [data-theme="dark"] .insight-card p {
+        color: #cbd5e0;
+    }
+
+    [data-theme="dark"] .insight-icon {
+        background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    }
+
+    [data-theme="dark"] .clickable-card:hover {
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+        border-color: #60a5fa;
+    }
+
+    [data-theme="dark"] .card-icon {
+        color: #60a5fa;
+    }
+
+    [data-theme="dark"] .clickable-card:hover .card-icon {
+        color: #3b82f6;
+    }
+
+    [data-theme="dark"] .loading-spinner {
+        color: #60a5fa;
+    }
+</style>
+{% endblock %}

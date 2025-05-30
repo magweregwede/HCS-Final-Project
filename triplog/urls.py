@@ -52,6 +52,8 @@ from .views import (
     TripRouteCreateView,
     # Dashboard
     DashboardView,
+    # Reporting
+    ReportingView,
 )
 
 urlpatterns = [
@@ -111,5 +113,9 @@ urlpatterns = [
     path("triproute/new/", TripRouteCreateView.as_view(), name="triproute_new"),
     path('trip/<int:trip_id>/route/new/', TripRouteCreateView.as_view(), name='triproute_new'),  # Accepts trip_id
     # leaderboard
-    path('leaderboard/', views.driver_leaderboard, name='driver_leaderboard'),
+    path('reporting/leaderboard/', views.driver_leaderboard, name='driver_leaderboard'),
+    # reporting
+    path('reporting/', ReportingView.as_view(), name="reporting"),
+    # API
+    path('api/latest-report/', views.latest_report_download, name='latest_report_download'),
 ]

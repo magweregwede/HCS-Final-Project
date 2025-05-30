@@ -19,7 +19,7 @@ class Command(BaseCommand):
         stats = get_trip_stats()
         
         # Define the CSV file path (in the project's root directory)
-        csv_file_path = os.path.join(settings.BASE_DIR, 'trip_stats_weekly.csv')
+        csv_file_path = os.path.join(settings.BASE_DIR, 'reports/trip_stats_weekly.csv')
         
         # Prepare the data row with a timestamp
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

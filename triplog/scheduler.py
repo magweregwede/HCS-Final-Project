@@ -22,6 +22,24 @@ def run_monthly_report():
     except Exception as e:
         logger.error(f"Monthly report job failed: {e}")
 
+def export_historical_stats():
+    """Function to export historical statistics"""
+    try:
+        logger.info("Running export historical stats job...")
+        call_command('export_hist_stats')
+        logger.info("Export historical stats job completed successfully")
+    except Exception as e:
+        logger.error(f"Export historical stats job failed: {e}")
+
+def update_leaderboard():
+    """Function to update driver leaderboard"""
+    try:
+        logger.info("Running update leaderboard job...")
+        call_command('update_leaderboard')
+        logger.info("Update leaderboard job completed successfully")
+    except Exception as e:
+        logger.error(f"Update leaderboard job failed: {e}")
+
 def start_scheduler():
     """Start the background scheduler"""
     scheduler = BackgroundScheduler()
@@ -30,8 +48,25 @@ def start_scheduler():
     scheduler.add_job(
         func=run_monthly_report,
         trigger="interval",
-        minutes=2,
+        # minutes=2,
+        hours=1,
         id='test_monthly_report'
+    )
+    
+    # Export historical stats - every 15 minutes
+    scheduler.add_job(
+        func=export_historical_stats,
+        trigger="interval",
+        minutes=15,
+        id='export_hist_stats'
+    )
+    
+    # Update leaderboard - every 15 minutes
+    scheduler.add_job(
+        func=update_leaderboard,
+        trigger="interval",
+        minutes=15,
+        id='update_leaderboard'
     )
     
     # Production job - 25th of every month at 9 AM
@@ -50,5 +85,9 @@ def start_scheduler():
     atexit.register(lambda: scheduler.shutdown())
     
     logger.info("Scheduler started successfully")
+    logger.info("Jobs scheduled:")
+    logger.info("- Monthly report: Every 1 hour (test mode)")
+    logger.info("- Export historical stats: Every 15 minutes")
+    logger.info("- Update leaderboard: Every 15 minutes")
     
     return scheduler

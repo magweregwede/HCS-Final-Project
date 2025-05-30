@@ -10,7 +10,7 @@ class Command(BaseCommand):
     help = 'Updates driver leaderboard from historical stats CSV'
     
     def handle(self, *args, **options):
-        csv_file_path = os.path.join(settings.BASE_DIR, 'historical_trip_stats_full.csv')
+        csv_file_path = os.path.join(settings.BASE_DIR, 'reports/historical_trip_stats_full.csv')
         
         if not os.path.exists(csv_file_path):
             self.stdout.write(self.style.ERROR('CSV file not found'))
