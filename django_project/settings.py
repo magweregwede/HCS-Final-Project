@@ -167,8 +167,9 @@ DELETE_REPORT_AFTER_EMAIL = False  # Set to True in production to clean up files
 
 # Crontab settings for monthly report generation
 CRONJOBS = [
-    # Test every minute
-    ('* * * * *', 'triplog.management.commands.test_cron_email.Command'),
-    # Original job
+    # Test job - runs every 2 minutes for testing
+    ('*/2 * * * *', 'triplog.management.commands.send_monthly_report.Command', ['--force']),
+    
+    # Production job - runs on 25th of every month at 9 AM
     # ('0 9 25 * *', 'triplog.management.commands.send_monthly_report.Command'),
 ]
