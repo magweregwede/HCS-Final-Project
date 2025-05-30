@@ -142,20 +142,21 @@ SIMPLE_HISTORY_HISTORY_CHANGE_REASON_USE_TEXTFIELD = True
 SIMPLE_HISTORY_DELETE = False  # Keeps history after deletion
 
 # Email configuration for testing (console backend)
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # For production, use SMTP backend:
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'your-email@gmail.com'
-# EMAIL_HOST_PASSWORD = 'your-app-password'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'mark.magweregwede@students.uz.ac.zw'
+EMAIL_HOST_PASSWORD = 'wmux ugyl thdr idju'
 
-DEFAULT_FROM_EMAIL = 'logistics@company.com'
+DEFAULT_FROM_EMAIL = 'Trip AI Reporting <mark.magweregwede@students.uz.ac.zw>'
 
 # Monthly report configuration
 MONTHLY_REPORT_RECIPIENTS = [
+    'magweregwede10@gmail.com',
     'manager@company.com',
     'logistics@company.com',
     'admin@company.com',

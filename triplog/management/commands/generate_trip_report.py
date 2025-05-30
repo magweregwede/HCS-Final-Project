@@ -903,7 +903,7 @@ Active Drivers: {summary_stats['active_drivers']}
         body = f"""
 Dear Team,
 
-Please find attached the monthly logistics analytics report for {self.report_date.strftime("%B %Y")}.
+Please find attached the monthly Logistics Analytics report for {self.report_date.strftime("%B %Y")}.
 
 This report includes:
 • Route performance analysis
@@ -915,6 +915,8 @@ This report includes:
 
 Best regards,
 Logistics Analytics System
+
+This is an automatically generated email. Please do not reply to this email as the email address is not monitored.
         """
         
         email = EmailMessage(
