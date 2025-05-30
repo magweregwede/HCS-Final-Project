@@ -37,9 +37,9 @@
         "seasonal_pattern": "High seasonality"
       },
       "Schweppes Still Water 500ml": {
-        "current_weekly_avg": 0,
-        "trend_percentage": -100.0,
-        "next_week_prediction": 0,
+        "current_weekly_avg": 7.5,
+        "trend_percentage": -71.7,
+        "next_week_prediction": 7.5,
         "confidence_level": "Medium",
         "seasonal_pattern": "High seasonality"
       },
@@ -51,25 +51,25 @@
         "seasonal_pattern": "High seasonality"
       },
       "Minute Maid": {
-        "current_weekly_avg": 11.0,
-        "trend_percentage": 633.33,
-        "next_week_prediction": 80.67,
+        "current_weekly_avg": 14.75,
+        "trend_percentage": 883.33,
+        "next_week_prediction": 145.04,
         "confidence_level": "Medium",
         "seasonal_pattern": "High seasonality"
       }
     },
     "top_growth_products": {
+      "Minute Maid": {
+        "current_weekly_avg": 14.75,
+        "trend_percentage": 883.33,
+        "next_week_prediction": 145.04,
+        "confidence_level": "Medium",
+        "seasonal_pattern": "High seasonality"
+      },
       "Bonaqua 5L Water": {
         "current_weekly_avg": 9.5,
         "trend_percentage": 850.0,
         "next_week_prediction": 90.25,
-        "confidence_level": "Medium",
-        "seasonal_pattern": "High seasonality"
-      },
-      "Minute Maid": {
-        "current_weekly_avg": 11.0,
-        "trend_percentage": 633.33,
-        "next_week_prediction": 80.67,
         "confidence_level": "Medium",
         "seasonal_pattern": "High seasonality"
       },
@@ -96,7 +96,7 @@
         "confidence_level": "Medium",
         "seasonal_pattern": "High seasonality"
       },
-      "Schweppes Still Water 500ml": {
+      "Mazoe Cream Soda": {
         "current_weekly_avg": 0,
         "trend_percentage": -100.0,
         "next_week_prediction": 0,
@@ -115,17 +115,17 @@
     ]
   },
   "delivery_time_analysis": {
-    "overall_efficiency": 121.16,
-    "average_delay_minutes": 1905.32,
+    "overall_efficiency": 122.57,
+    "average_delay_minutes": 1780.06,
     "best_delivery_hours": {
       "19": 3.92,
       "7": 1.97,
       "5": 1.32
     },
     "worst_delivery_hours": {
+      "15": 0.75,
       "9": 0.6,
-      "20": 0.53,
-      "15": 0.51
+      "20": 0.53
     },
     "daily_patterns": {
       "Thursday": {
@@ -145,12 +145,12 @@
         "delay_minutes": 7479.83
       },
       "Friday": {
-        "efficiency_ratio": 0.92,
-        "delay_minutes": 6667.71
+        "efficiency_ratio": 1.07,
+        "delay_minutes": 5498.88
       },
       "Sunday": {
         "efficiency_ratio": 1.14,
-        "delay_minutes": -35.55
+        "delay_minutes": -34.25
       },
       "Monday": {
         "efficiency_ratio": 1.15,
@@ -159,26 +159,26 @@
     },
     "distance_impact": {
       "Very Long": {
-        "efficiency_ratio": 1.23,
-        "delay_minutes": 2112.24,
-        "actual_time_min": 2503.13
+        "efficiency_ratio": 1.24,
+        "delay_minutes": 2008.5,
+        "actual_time_min": 2397.41
       },
       "Long": {
-        "efficiency_ratio": 1.02,
-        "delay_minutes": 43.0,
-        "actual_time_min": 203.0
+        "efficiency_ratio": 1.08,
+        "delay_minutes": 28.67,
+        "actual_time_min": 188.67
       }
     },
     "predictions": {
-      "next_week_avg_delay": 1905.32,
+      "next_week_avg_delay": 1780.06,
       "efficiency_trend": "Declining"
     }
   },
   "weather_impact_assessment": {
     "weather_impact_analysis": {
       "Normal": {
-        "avg_delay": 646.25,
-        "count": 4
+        "avg_delay": -19.67,
+        "count": 6
       },
       "Low Visibility": {
         "avg_delay": -13.0,
@@ -212,9 +212,9 @@
   },
   "capacity_planning": {
     "current_drivers": 30,
-    "current_weekly_trips": 3.5,
-    "predicted_weekly_trips": 3.9,
-    "required_drivers": 0.8,
+    "current_weekly_trips": 3.0,
+    "predicted_weekly_trips": 3.3,
+    "required_drivers": 0.7,
     "capacity_status": "adequate",
     "recommendation": "Current capacity is sufficient"
   },
@@ -222,13 +222,13 @@
     "route_efficiency_scores": {
       "Harare \u2192 Bulawayo": 1.61,
       "Harare \u2192 Masvingo": 0.03,
-      "Harare \u2192 Mutare": 0.88,
+      "Harare \u2192 Mutare": 0.91,
       "Harare \u2192 Gweru": 0.99,
       "Bulawayo \u2192 Gweru": 0.49,
       "Harare \u2192 Victoria Falls": 1.18,
       "Bulawayo \u2192 Masvingo": 1.21,
-      "Harare \u2192 Chinhoyi": 0.79,
-      "Bulawayo \u2192 Victoria Falls": 0.15
+      "Harare \u2192 Chinhoyi": 0.85,
+      "Bulawayo \u2192 Victoria Falls": 0.87
     },
     "best_performing_routes": {
       "Harare \u2192 Bulawayo": {
@@ -251,17 +251,17 @@
       }
     },
     "worst_performing_routes": {
+      "Harare \u2192 Chinhoyi": {
+        "actual_time_min": 188.67,
+        "estimated_time_min": 160.0,
+        "distance_km": 130.0,
+        "efficiency_score": 0.85
+      },
       "Bulawayo \u2192 Gweru": {
         "actual_time_min": 408.2,
         "estimated_time_min": 200.0,
         "distance_km": 250.0,
         "efficiency_score": 0.49
-      },
-      "Bulawayo \u2192 Victoria Falls": {
-        "actual_time_min": 3182.0,
-        "estimated_time_min": 470.0,
-        "distance_km": 440.0,
-        "efficiency_score": 0.15
       },
       "Harare \u2192 Masvingo": {
         "actual_time_min": 11954.75,
@@ -274,10 +274,8 @@
       "Use Harare \u2192 Bulawayo route as benchmark - excellent efficiency",
       "Optimize Harare \u2192 Masvingo route - efficiency below 80%",
       "Optimize Bulawayo \u2192 Gweru route - efficiency below 80%",
-      "Use Bulawayo \u2192 Masvingo route as benchmark - excellent efficiency",
-      "Optimize Harare \u2192 Chinhoyi route - efficiency below 80%",
-      "Optimize Bulawayo \u2192 Victoria Falls route - efficiency below 80%"
+      "Use Bulawayo \u2192 Masvingo route as benchmark - excellent efficiency"
     ]
   },
-  "generated_at": "2025-05-30T23:07:55.426232"
+  "generated_at": "2025-05-30T23:47:27.485600"
 }
