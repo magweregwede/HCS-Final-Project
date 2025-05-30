@@ -54,6 +54,9 @@ from .views import (
     DashboardView,
     # Reporting
     ReportingView,
+    # predictive analytics
+    predictive_analytics_dashboard, 
+    predictive_analysis_api
 )
 
 urlpatterns = [
@@ -118,4 +121,7 @@ urlpatterns = [
     path('reporting/', ReportingView.as_view(), name="reporting"),
     # API
     path('api/latest-report/', views.latest_report_download, name='latest_report_download'),
+    # predictive analytics
+    path('predictive-analytics/', predictive_analytics_dashboard, name='predictive_analytics_dashboard'),
+    path('api/predictive-analysis/', predictive_analysis_api, name='predictive_analysis_api'),
 ]

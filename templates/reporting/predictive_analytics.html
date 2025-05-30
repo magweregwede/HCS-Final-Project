@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Predictive Analytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <h1 class="h3 mb-4 text-gray-800">Predictive Analytics Dashboard</h1>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Product Distribution
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {% if analysis_data.product_distribution_forecast.predictions %}
+                                {{ analysis_data.product_distribution_forecast.predictions|length }} Products Analyzed
+                                {% else %}
+                                No Data
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-boxes fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Delivery Efficiency
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {% if analysis_data.delivery_time_analysis.overall_efficiency %}
+                                {{ analysis_data.delivery_time_analysis.overall_efficiency }}%
+                                {% else %}
+                                N/A
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Weather Impact
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {% if analysis_data.weather_impact_assessment.weather_delay_factors %}
+                                4 Factors Analyzed
+                                {% else %}
+                                No Data
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-cloud-rain fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Capacity Status
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {% if analysis_data.capacity_planning.capacity_status %}
+                                {{ analysis_data.capacity_planning.capacity_status|title }}
+                                {% else %}
+                                Unknown
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Distribution Forecast -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Product Distribution Forecast</h6>
+                </div>
+                <div class="card-body">
+                    {% if analysis_data.product_distribution_forecast.predictions %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Current Avg</th>
+                                    <th>Trend</th>
+                                    <th>Next Week Prediction</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product, data in analysis_data.product_distribution_forecast.predictions.items %}
+                                <tr>
+                                    <td>{{ product }}</td>
+                                    <td>{{ data.current_weekly_avg }}</td>
+                                    <td>
+                                        {% if data.trend_percentage > 0 %}
+                                        <span class="text-success">+{{ data.trend_percentage }}%</span>
+                                        {% elif data.trend_percentage < 0 %} <span class="text-danger">{{ data.trend_percentage }}%</span>
+                                            {% else %}
+                                            <span class="text-secondary">0%</span>
+                                            {% endif %}
+                                    </td>
+                                    <td>{{ data.next_week_prediction }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No product distribution data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Weather Impact Assessment -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Weather Impact on Delivery Times</h6>
+                </div>
+                <div class="card-body">
+                    {% if analysis_data.weather_impact_assessment.weather_delay_factors %}
+                    {% for condition, impact in analysis_data.weather_impact_assessment.weather_delay_factors.items %}
+                    <div class="mb-3 p-3 border-left-info border rounded">
+                        <h6 class="font-weight-bold text-capitalize">{{ condition|title }}</h6>
+                        <p class="mb-1"><strong>Impact:</strong> {{ impact.impact }}</p>
+                        <p class="mb-0 text-muted"><strong>Recommendation:</strong> {{ impact.recommendation }}</p>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-muted">No weather impact data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivery Time Analysis -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Delivery Time Analysis & Predictions</h6>
+                </div>
+                <div class="card-body">
+                    {% if analysis_data.delivery_time_analysis %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="font-weight-bold">Best Delivery Hours</h6>
+                            {% for hour, efficiency in analysis_data.delivery_time_analysis.best_delivery_hours.items %}
+                            <div class="d-flex justify-content-between">
+                                <span>{{ hour }}:00</span>
+                                <span class="text-success">{{ efficiency }}% efficiency</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="font-weight-bold">Performance Metrics</h6>
+                            <div class="d-flex justify-content-between">
+                                <span>Overall Efficiency:</span>
+                                <span class="font-weight-bold">{{ analysis_data.delivery_time_analysis.overall_efficiency }}%</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Average Delay:</span>
+                                <span class="text-warning">{{ analysis_data.delivery_time_analysis.average_delay_minutes }} minutes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if analysis_data.delivery_time_analysis.predictions %}
+                    <hr>
+                    <h6 class="font-weight-bold">Next Week Predictions</h6>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <strong>Predicted Average Delay:</strong>
+                        {{ analysis_data.delivery_time_analysis.predictions.next_week_avg_delay }} minutes
+                        <br>
+                        <strong>Efficiency Trend:</strong>
+                        {{ analysis_data.delivery_time_analysis.predictions.efficiency_trend }}
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <p class="text-muted">No delivery time analysis data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Capacity Planning -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Capacity Planning</h6>
+                </div>
+                <div class="card-body">
+                    {% if analysis_data.capacity_planning %}
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <h4 class="font-weight-bold text-primary">
+                                {{ analysis_data.capacity_planning.current_drivers }}
+                            </h4>
+                            <p class="text-muted">Current Drivers</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h5 class="font-weight-bold">
+                                {{ analysis_data.capacity_planning.required_drivers }}
+                            </h5>
+                            <p class="text-muted">Required Drivers</p>
+                        </div>
+
+                        <div
+                            class="alert {% if analysis_data.capacity_planning.capacity_status == 'adequate' %}alert-success{% else %}alert-warning{% endif %}">
+                            {{ analysis_data.capacity_planning.recommendation }}
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No capacity planning data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">AI-Powered Recommendations</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6 class="font-weight-bold text-success">Distribution Insights</h6>
+                            {% if analysis_data.product_distribution_forecast.recommendations %}
+                            {% for recommendation in analysis_data.product_distribution_forecast.recommendations %}
+                            <div class="alert alert-light border-left-success">
+                                <i class="fas fa-lightbulb mr-2"></i>{{ recommendation }}
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <p class="text-muted">No distribution recommendations available.</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <h6 class="font-weight-bold text-info">Weather Guidelines</h6>
+                            {% if analysis_data.weather_impact_assessment.recommendations %}
+                            {% for key, value in analysis_data.weather_impact_assessment.recommendations.items %}
+                            <div class="alert alert-light border-left-info">
+                                <strong>{{ key|title }}:</strong> {{ value }}
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <p class="text-muted">No weather recommendations available.</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <h6 class="font-weight-bold text-warning">Route Optimization</h6>
+                            {% if analysis_data.route_efficiency_forecast.optimization_recommendations %}
+                            {% for recommendation in analysis_data.route_efficiency_forecast.optimization_recommendations %}
+                            <div class="alert alert-light border-left-warning">
+                                <i class="fas fa-route mr-2"></i>{{ recommendation }}
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <p class="text-muted">No route optimization recommendations available.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
+
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
+
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
+
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
+
+    /* Dark mode support */
+    [data-theme="dark"] .card {
+        background: #2d3748;
+        border: 1px solid #4a5568;
+    }
+
+    [data-theme="dark"] .card-header {
+        background: #374151;
+        border-bottom: 1px solid #4a5568;
+    }
+
+    [data-theme="dark"] .table {
+        color: #e9ecef;
+    }
+
+    [data-theme="dark"] .table-bordered td,
+    [data-theme="dark"] .table-bordered th {
+        border: 1px solid #4a5568;
+    }
+
+    [data-theme="dark"] .alert-light {
+        background: #374151;
+        border-color: #4a5568;
+        color: #e9ecef;
+    }
+</style>
+{% endblock %}

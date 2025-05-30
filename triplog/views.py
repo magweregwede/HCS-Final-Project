@@ -1,5 +1,6 @@
 from collections import defaultdict
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION
+from django.core.management import call_command
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -14,15 +15,16 @@ from .utils.utils import log_change
 from django.db.models import Q
 from datetime import datetime
 from triplog.stats import get_trip_stats
-from django.http import JsonResponse
 from .models import DriverLeaderboard, MonthlyDriverRanking
 
 import os
 import glob
+import json
 from django.http import FileResponse, Http404, JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.apps import apps
+
 
 # Create your views here.
 
@@ -663,3 +665,43 @@ def reports_info(request):
         'latest': latest_report,
         'total_count': len(reports_info)
     })
+
+
+@login_required
+def predictive_analytics_dashboard(request):
+    """Predictive analytics dashboard view"""
+    
+    # Generate fresh analysis
+    try:
+        call_command('generate_predictive_analysis')
+    except Exception as e:
+        print(f"Error generating analysis: {e}")
+    
+    # Load analysis results
+    results_path = os.path.join('reports', 'predictive_analysis.json')
+    analysis_data = {}
+    
+    if os.path.exists(results_path):
+        with open(results_path, 'r') as f:
+            analysis_data = json.load(f)
+    
+    context = {
+        'analysis_data': analysis_data,
+        'page_title': 'Predictive Analytics Dashboard'
+    }
+    
+    return render(request, 'reporting/predictive_analytics.html', context)
+
+@login_required
+def predictive_analysis_api(request):
+    """API endpoint for predictive analysis data"""
+    
+    results_path = os.path.join('reports', 'predictive_analysis.json')
+    
+    if os.path.exists(results_path):
+        with open(results_path, 'r') as f:
+            data = json.load(f)
+        return JsonResponse(data)
+    
+    return JsonResponse({'error': 'Analysis data not available'}, status=404)
+
