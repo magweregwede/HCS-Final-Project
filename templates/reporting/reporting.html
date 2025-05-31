@@ -52,48 +52,6 @@
     </a>
 </div>
 
-<!-- ML Insights Section -->
-<div class="ml-insights-section mt-5">
-    <h2 class="section-title mb-4">Machine Learning Insights</h2>
-    <div class="row">
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="insight-card">
-                <div class="insight-icon">
-                    <i class="fas fa-route"></i>
-                </div>
-                <h5>Route Optimization</h5>
-                <p class="text-muted">AI-powered route suggestions for optimal delivery paths</p>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="insight-card">
-                <div class="insight-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <h5>Demand Forecasting</h5>
-                <p class="text-muted">Predict future delivery demands using historical data</p>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="insight-card">
-                <div class="insight-icon">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-                <h5>Anomaly Detection</h5>
-                <p class="text-muted">Identify unusual patterns in delivery operations</p>
-            </div>
-        </div>
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="insight-card">
-                <div class="insight-icon">
-                    <i class="fas fa-user-tie"></i>
-                </div>
-                <h5>Performance Analysis</h5>
-                <p class="text-muted">Driver and fleet performance optimization insights</p>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- JavaScript -->
 <script>
@@ -158,11 +116,6 @@
                 icon.style.display = 'block';
                 spinner.style.display = 'none';
                 smallText.textContent = 'Download latest Logistics Report';
-
-                // Show specific error message
-                const errorMessage = error.message.includes('No reports available')
-                    ? 'No reports found. Please generate a report first.'
-                    : 'Failed to download report. Please try again.';
 
                 showNotification(errorMessage, 'error');
             });

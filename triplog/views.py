@@ -46,6 +46,19 @@ class DashboardView(TemplateView):
 class ReportingView(TemplateView):
     template_name = "reporting/reporting.html"
 
+    @login_required
+    def predictive_analysis_api(request):
+        """API endpoint for predictive analysis data"""
+        
+        results_path = os.path.join('reports', 'predictive_analysis.json')
+        
+        if os.path.exists(results_path):
+            with open(results_path, 'r') as f:
+                data = json.load(f)
+            return JsonResponse(data)
+        
+        return JsonResponse({'error': 'Analysis data not available'}, status=404)
+
 
 # Truck Company Views
 class TruckCompanyListView(ListView):
