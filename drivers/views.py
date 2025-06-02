@@ -11,14 +11,22 @@ def is_clerk(user):
     """Check if user is in clerks group"""
     return user.groups.filter(name='clerks').exists()
 
+def is_manager(user):
+    """Check if user is in managers group"""
+    return user.groups.filter(name='managers').exists()
+
 def is_driver(user):
     """Check if user is in drivers group"""
     return user.groups.filter(name='drivers').exists()
 
+def is_clerk_or_manager(user):
+    """Check if user is clerk or manager (managers have clerk permissions)"""
+    return is_clerk(user) or is_manager(user)
+
 @login_required
 def driver_availability_dashboard(request):
     """Main dashboard for driver availability"""
-    user_is_clerk = is_clerk(request.user)
+    user_is_clerk = is_clerk_or_manager(request.user)  # Include managers
     user_is_driver = is_driver(request.user)
     
     if not (user_is_clerk or user_is_driver):
@@ -43,6 +51,7 @@ def driver_availability_dashboard(request):
         'driver_availability': driver_availability,
         'is_clerk': user_is_clerk,
         'is_driver': user_is_driver,
+        'is_manager': is_manager(request.user),
         'available_count': availabilities.filter(is_available=True).count(),
         'unavailable_count': availabilities.filter(is_available=False).count(),
     }
@@ -79,10 +88,10 @@ def update_driver_availability(request):
     return render(request, 'availability/update.html', context)
 
 @login_required
-@user_passes_test(is_clerk)
+@user_passes_test(is_clerk_or_manager)  # Include managers
 @csrf_exempt
 def toggle_driver_availability(request):
-    """AJAX endpoint for clerks to toggle driver availability"""
+    """AJAX endpoint for clerks/managers to toggle driver availability"""
     if request.method == 'POST':
         try:
             data = json.loads(request.body)

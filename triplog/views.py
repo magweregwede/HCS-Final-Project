@@ -1,5 +1,6 @@
 from collections import defaultdict
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.management import call_command
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -7,11 +8,17 @@ from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
 from django.views.generic.edit import UpdateView, DeleteView
-
 from django.views.generic.base import TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 from .forms import TripForm, TripProductForm
 from .models import TruckCompany, Truck, Route, Driver, Trip, Product, TripProduct, TripRoute
 from .utils.utils import log_change
+from .utils.permissions import (
+    ManagerRequiredMixin, ClerkOrManagerRequiredMixin, LogisticsReadOnlyMixin,
+    LogisticsEditMixin, DriverClerkManagerMixin, is_clerk, is_manager, is_driver,
+    is_clerk_or_manager, is_driver_clerk_or_manager
+)
 from django.db.models import Q
 from datetime import datetime
 from triplog.stats import get_trip_stats
@@ -22,49 +29,53 @@ import glob
 import json
 from django.http import FileResponse, Http404, JsonResponse
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.apps import apps
 
 
 # Create your views here.
 
-# Dashboard View
-class DashboardView(TemplateView):
+# Dashboard View - Clerks and Managers only
+class DashboardView(ClerkOrManagerRequiredMixin, TemplateView):
     template_name = "dashboard.html"
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Fetching stats from the utility function
         context['stats'] = get_trip_stats()
+        # Add user permissions to context
+        context['is_manager'] = is_manager(self.request.user)
+        context['is_clerk'] = is_clerk(self.request.user)
+        context['is_driver'] = is_driver(self.request.user)
         return context
     
     def post(self, request, *args, **kwargs):
         stats = get_trip_stats()
         return JsonResponse(stats, safe=False)
-    
-    
-class ReportingView(TemplateView):
+
+class ReportingView(LoginRequiredMixin, TemplateView):
     template_name = "reporting/reporting.html"
+    login_url = '/accounts/login/'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add user permissions to context for template rendering
+        context['is_manager'] = is_manager(self.request.user)
+        context['is_clerk'] = is_clerk(self.request.user)
+        context['is_driver'] = is_driver(self.request.user)
+        return context
 
-
-# Truck Company Views
-class TruckCompanyListView(ListView):
+# Truck Company Views (Logistics Partners - Read only for clerks, edit for managers)
+class TruckCompanyListView(LogisticsReadOnlyMixin, ListView):
     model = TruckCompany
     template_name = "truckCompany/truckcompany_list.html"
 
-class TruckCompanyDetailView(DetailView):
+class TruckCompanyDetailView(LogisticsReadOnlyMixin, DetailView):
     model = TruckCompany
     template_name = "truckCompany/truckcompany_detail.html"
 
-
-class TruckCompanyUpdateView(UpdateView):
+class TruckCompanyUpdateView(LogisticsEditMixin, UpdateView):
     model = TruckCompany
-    fields = (
-        "name",
-        "contact",
-        "email",
-        "address",
-    )
+    fields = ("name", "contact", "email", "address")
     template_name = "truckCompany/truckcompany_edit.html"
 
     def form_valid(self, form):
@@ -72,8 +83,7 @@ class TruckCompanyUpdateView(UpdateView):
         log_change(self.request, self.object, message="updated", action_flag=CHANGE)
         return response
 
-
-class TruckCompanyDeleteView(DeleteView):
+class TruckCompanyDeleteView(LogisticsEditMixin, DeleteView):
     model = TruckCompany
     template_name = "truckCompany/truckcompany_delete.html"
     success_url = reverse_lazy("truckcompany_list")
@@ -83,39 +93,28 @@ class TruckCompanyDeleteView(DeleteView):
         log_change(self.request, self.object, message="deleted", action_flag=DELETION)
         return super().delete(request, *args, **kwargs)
 
-class TruckCompanyCreateView(CreateView):
+class TruckCompanyCreateView(LogisticsEditMixin, CreateView):
     model = TruckCompany
     template_name = "truckCompany/truckcompany_new.html"
-    fields = (
-        "name",
-        "contact",
-        "email",
-        "address",
-    )
+    fields = ("name", "contact", "email", "address")
 
     def form_valid(self, form):
         response = super().form_valid(form)
         log_change(self.request, self.object, message="created", action_flag=ADDITION)
         return response
 
-# Truck
-class TruckListView(ListView):
+# Truck Views (Logistics Partners - Read only for clerks, edit for managers)
+class TruckListView(LogisticsReadOnlyMixin, ListView):
     model = Truck
     template_name = "truck/truck_list.html"
 
-class TruckDetailView(DetailView):
+class TruckDetailView(LogisticsReadOnlyMixin, DetailView):
     model = Truck
     template_name = "truck/truck_detail.html"
 
-
-class TruckUpdateView(UpdateView):
+class TruckUpdateView(LogisticsEditMixin, UpdateView):
     model = Truck
-    fields = (
-        "plate_number",
-        "capacity_kg",
-        "truck_company",
-        "status",
-    )
+    fields = ("plate_number", "capacity_kg", "truck_company", "status")
     template_name = "truck/truck_edit.html"
 
     def form_valid(self, form):
@@ -123,9 +122,7 @@ class TruckUpdateView(UpdateView):
         log_change(self.request, self.object, message="updated", action_flag=CHANGE)
         return response
 
-
-
-class TruckDeleteView(DeleteView):
+class TruckDeleteView(LogisticsEditMixin, DeleteView):
     model = Truck
     template_name = "truck/truck_delete.html"
     success_url = reverse_lazy("truck_list")
@@ -135,39 +132,28 @@ class TruckDeleteView(DeleteView):
         log_change(self.request, self.object, message="deleted", action_flag=DELETION)
         return super().delete(request, *args, **kwargs)
 
-class TruckCreateView(CreateView):
+class TruckCreateView(LogisticsEditMixin, CreateView):
     model = Truck
     template_name = "truck/truck_new.html"
-    fields = (
-        "plate_number",
-        "capacity_kg",
-        "truck_company",
-        "status",
-    )
+    fields = ("plate_number", "capacity_kg", "truck_company", "status")
 
     def form_valid(self, form):
         response = super().form_valid(form)
         log_change(self.request, self.object, message="created", action_flag=ADDITION)
         return response
 
-# Route
-class RouteListView(ListView):
+# Route Views (Logistics Partners - Read only for clerks, edit for managers)
+class RouteListView(LogisticsReadOnlyMixin, ListView):
     model = Route
     template_name = "route/route_list.html"
 
-class RouteDetailView(DetailView):
+class RouteDetailView(LogisticsReadOnlyMixin, DetailView):
     model = Route
     template_name = "route/route_detail.html"
 
-
-class RouteUpdateView(UpdateView):
+class RouteUpdateView(LogisticsEditMixin, UpdateView):
     model = Route
-    fields = (
-        "origin",
-        "destination",
-        "distance_km",
-        "estimated_time_min",
-    )
+    fields = ("origin", "destination", "distance_km", "estimated_time_min")
     template_name = "route/route_edit.html"
 
     def form_valid(self, form):
@@ -175,9 +161,7 @@ class RouteUpdateView(UpdateView):
         log_change(self.request, self.object, message="updated", action_flag=CHANGE)
         return response
 
-
-
-class RouteDeleteView(DeleteView):
+class RouteDeleteView(LogisticsEditMixin, DeleteView):
     model = Route
     template_name = "route/route_delete.html"
     success_url = reverse_lazy("route_list")
@@ -187,23 +171,18 @@ class RouteDeleteView(DeleteView):
         log_change(self.request, self.object, message="deleted", action_flag=DELETION)
         return super().delete(request, *args, **kwargs)
 
-class RouteCreateView(CreateView):
+class RouteCreateView(LogisticsEditMixin, CreateView):
     model = Route
     template_name = "route/route_new.html"
-    fields = (
-        "origin",
-        "destination",
-        "distance_km",
-        "estimated_time_min",
-    )
+    fields = ("origin", "destination", "distance_km", "estimated_time_min")
 
     def form_valid(self, form):
         response = super().form_valid(form)
         log_change(self.request, self.object, message="created", action_flag=ADDITION)
         return response
 
-# Driver
-class DriverListView(ListView):
+# Driver Views (Deliveries - Clerks and Managers can access)
+class DriverListView(ClerkOrManagerRequiredMixin, ListView):
     model = Driver
     template_name = "driver/driver_list.html"
     context_object_name = "driver_list"
@@ -219,19 +198,13 @@ class DriverListView(ListView):
             )
         return queryset.select_related('assigned_truck__truck_company')
 
-class DriverDetailView(DetailView):
+class DriverDetailView(ClerkOrManagerRequiredMixin, DetailView):
     model = Driver
     template_name = "driver/driver_detail.html"
 
-
-class DriverUpdateView(UpdateView):
+class DriverUpdateView(ClerkOrManagerRequiredMixin, UpdateView):
     model = Driver
-    fields = (
-        "name",
-        "license_number",
-        "assigned_truck",
-        "contact",
-    )
+    fields = ("name", "license_number", "assigned_truck", "contact")
     template_name = "driver/driver_edit.html"
 
     def form_valid(self, form):
@@ -239,7 +212,7 @@ class DriverUpdateView(UpdateView):
         log_change(self.request, self.object, message="updated", action_flag=CHANGE)
         return response
 
-class DriverDeleteView(DeleteView):
+class DriverDeleteView(ClerkOrManagerRequiredMixin, DeleteView):
     model = Driver
     template_name = "driver/driver_delete.html"
     success_url = reverse_lazy("driver_list")
@@ -249,23 +222,18 @@ class DriverDeleteView(DeleteView):
         log_change(self.request, self.object, message="deleted", action_flag=DELETION)
         return super().delete(request, *args, **kwargs)
 
-class DriverCreateView(CreateView):
+class DriverCreateView(ClerkOrManagerRequiredMixin, CreateView):
     model = Driver
     template_name = "driver/driver_new.html"
-    fields = (
-        "name",
-        "license_number",
-        "assigned_truck",
-        "contact",
-    )
+    fields = ("name", "license_number", "assigned_truck", "contact")
 
     def form_valid(self, form):
         response = super().form_valid(form)
         log_change(self.request, self.object, message="created", action_flag=ADDITION)
         return response
 
-# Trip
-class TripListView(ListView):
+# Trip Views (Deliveries - Clerks and Managers can access)
+class TripListView(ClerkOrManagerRequiredMixin, ListView):
     model = Trip
     template_name = "trip/trip_list.html"
     context_object_name = "trip_list"
@@ -273,11 +241,8 @@ class TripListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        
-        # Filter for ongoing trips only
         queryset = queryset.filter(status="Ongoing")
         
-        # Search functionality (works independently of date filter)
         search_query = self.request.GET.get('search')
         if search_query:
             queryset = queryset.filter(
@@ -285,7 +250,6 @@ class TripListView(ListView):
                 Q(driver__name__icontains=search_query)
             )
         
-        # Date filter (optional)
         departure_date = self.request.GET.get('departure_date')
         if departure_date:
             try:
@@ -294,34 +258,30 @@ class TripListView(ListView):
             except ValueError:
                 pass
 
-        # Default sorting
         if self.request.GET.get('sort') == 'departure_time':
             queryset = queryset.order_by('departure_time')
         else:
-            queryset = queryset.order_by('-departure_time')  # newest first by default
+            queryset = queryset.order_by('-departure_time')
         
         return queryset.select_related('truck', 'driver')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Add the status parameter to the context for pagination links
         context['status'] = "ongoing"
         return context
 
-class TripDetailView(DetailView):
+class TripDetailView(ClerkOrManagerRequiredMixin, DetailView):
     model = Trip
     template_name = "trip/trip_detail.html"
     context_object_name = "trip"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Fetch TripRoute objects related to this Trip
         context['trip_routes'] = TripRoute.objects.filter(trip=self.object)
         context['tripproducts'] = TripProduct.objects.filter(trip=self.object)
         return context
 
-
-class TripUpdateView(UpdateView):
+class TripUpdateView(ClerkOrManagerRequiredMixin, UpdateView):
     model = Trip
     template_name = "trip/trip_edit.html"
     form_class = TripForm
@@ -331,23 +291,18 @@ class TripUpdateView(UpdateView):
         log_change(self.request, self.object, message="updated", action_flag=CHANGE)
         return response
 
-
-
-class TripDeleteView(DeleteView):
+class TripDeleteView(ClerkOrManagerRequiredMixin, DeleteView):
     model = Trip
     template_name = "trip/trip_delete.html"
     success_url = reverse_lazy("trip_list")
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()
-
-        # Delete related TripRoute if it exists
         try:
-            trip_route = self.object.triproute  # related_name defaults to lowercase model name
+            trip_route = self.object.triproute
             trip_route.delete()
         except TripRoute.DoesNotExist:
-            pass  # No TripRoute linked, do nothing
-
+            pass
         return super().delete(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -355,14 +310,13 @@ class TripDeleteView(DeleteView):
         log_change(self.request, self.object, message="deleted", action_flag=DELETION)
         return response
 
-class TripCreateView(CreateView):
+class TripCreateView(ClerkOrManagerRequiredMixin, CreateView):
     model = Trip
     template_name = "trip/trip_new.html"
     form_class = TripForm
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Preserve the selected driver in the form
         if self.request.method == 'GET':
             driver_id = self.request.GET.get('driver')
             if driver_id:
@@ -374,13 +328,8 @@ class TripCreateView(CreateView):
                     pass
         return context
 
-
-
-
     def form_valid(self, form):
-        # Automatically set the clerk field to the logged-in user
         form.instance.clerk = self.request.user
-        # Set truck automatically from driver's assignment
         driver = form.cleaned_data.get('driver')
         if driver and hasattr(driver, 'assigned_truck'):
             form.instance.truck = driver.assigned_truck
@@ -393,25 +342,20 @@ class TripCreateView(CreateView):
         return response
     
     def get_success_url(self):
-        return reverse('tripproduct_new', kwargs={'trip_id': self.object.id})  # Redirect to trip product form
+        return reverse('tripproduct_new', kwargs={'trip_id': self.object.id})
 
-# Product
-class ProductListView(ListView):
+# Product Views (Deliveries - Clerks and Managers can access)
+class ProductListView(ClerkOrManagerRequiredMixin, ListView):
     model = Product
     template_name = "product/product_list.html"
 
-class ProductDetailView(DetailView):
+class ProductDetailView(ClerkOrManagerRequiredMixin, DetailView):
     model = Product
     template_name = "product/product_detail.html"
 
-
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(ClerkOrManagerRequiredMixin, UpdateView):
     model = Product
-    fields = (
-        "name",
-        "category",
-        "description",
-    )
+    fields = ("name", "category", "description")
     template_name = "product/product_edit.html"
 
     def form_valid(self, form):
@@ -419,8 +363,7 @@ class ProductUpdateView(UpdateView):
         log_change(self.request, self.object, message="updated", action_flag=CHANGE)
         return response
 
-
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(ClerkOrManagerRequiredMixin, DeleteView):
     model = Product
     template_name = "product/product_delete.html"
     success_url = reverse_lazy("product_list")
@@ -430,47 +373,35 @@ class ProductDeleteView(DeleteView):
         log_change(self.request, self.object, message="deleted", action_flag=DELETION)
         return super().delete(request, *args, **kwargs)
 
-class ProductCreateView(CreateView):
+class ProductCreateView(ClerkOrManagerRequiredMixin, CreateView):
     model = Product
     template_name = "product/product_new.html"
-    fields = (
-        "name",
-        "category",
-        "description",
-    )
+    fields = ("name", "category", "description")
 
     def form_valid(self, form):
         response = super().form_valid(form)
         log_change(self.request, self.object, message="created", action_flag=ADDITION)
         return response
 
-# Trip Product
-class TripProductListView(ListView):
+# Trip Product Views (Deliveries - Clerks and Managers can access)
+class TripProductListView(ClerkOrManagerRequiredMixin, ListView):
     model = TripProduct
     template_name = "tripProduct/tripproduct_list.html"
     context_object_name = "grouped_tripproducts"
 
     def get_queryset(self):
-        """ Group trip products by trip. """
         grouped_products = defaultdict(list)
         for tripproduct in TripProduct.objects.select_related("trip", "trip__truck", "trip__driver", "product"):
             grouped_products[tripproduct.trip].append(tripproduct)
+        return dict(grouped_products)
 
-        return dict(grouped_products)  # Convert defaultdict to a regular dict for template use
-
-class TripProductDetailView(DetailView):
+class TripProductDetailView(ClerkOrManagerRequiredMixin, DetailView):
     model = TripProduct
     template_name = "tripProduct/tripproduct_detail.html"
 
-
-class TripProductUpdateView(UpdateView):
+class TripProductUpdateView(ClerkOrManagerRequiredMixin, UpdateView):
     model = TripProduct
-    fields = (
-        "trip",
-        "product",
-        "quantity",
-        "unit",
-    )
+    fields = ("trip", "product", "quantity", "unit")
     template_name = "tripProduct/tripproduct_edit.html"
 
     def form_valid(self, form):
@@ -478,8 +409,7 @@ class TripProductUpdateView(UpdateView):
         log_change(self.request, self.object, message="updated", action_flag=CHANGE)
         return response
 
-
-class TripProductDeleteView(DeleteView):
+class TripProductDeleteView(ClerkOrManagerRequiredMixin, DeleteView):
     model = TripProduct
     template_name = "tripProduct/tripproduct_delete.html"
     success_url = reverse_lazy("tripproduct_list")
@@ -489,29 +419,26 @@ class TripProductDeleteView(DeleteView):
         log_change(self.request, self.object, message="deleted", action_flag=DELETION)
         return super().delete(request, *args, **kwargs)
 
-class TripProductCreateView(CreateView):
+class TripProductCreateView(ClerkOrManagerRequiredMixin, CreateView):
     model = TripProduct
     form_class = TripProductForm
     template_name = "tripProduct/tripproduct_new.html"
 
-
     def form_valid(self, form):
-        trip = Trip.objects.get(id=self.kwargs['trip_id'])  # Get the trip ID from URL
+        trip = Trip.objects.get(id=self.kwargs['trip_id'])
         trip_product = form.save(commit=False)
-        trip_product.trip = trip  # Assign the trip
+        trip_product.trip = trip
         trip_product.save()
         response = super().form_valid(form)
         log_change(self.request, self.object, message="created", action_flag=ADDITION)
 
-        # Check which button was clicked
         if "save_and_add_another" in self.request.POST:
-            return redirect(reverse("tripproduct_new", kwargs={"trip_id": trip.id}))  # Stay on form
+            return redirect(reverse("tripproduct_new", kwargs={"trip_id": trip.id}))
         else:
-            return redirect(reverse("triproute_new", kwargs={"trip_id": trip.id}))  # Move to next step
-        # return response
+            return redirect(reverse("triproute_new", kwargs={"trip_id": trip.id}))
 
-# Trip Route
-class TripRouteListView(ListView):
+# Trip Route Views (Deliveries - Clerks and Managers can access)
+class TripRouteListView(ClerkOrManagerRequiredMixin, ListView):
     model = TripRoute
     template_name = "tripRoute/triproute_list.html"
     paginate_by = 10
@@ -539,17 +466,13 @@ class TripRouteListView(ListView):
 
         return queryset
 
-class TripRouteDetailView(DetailView):
+class TripRouteDetailView(ClerkOrManagerRequiredMixin, DetailView):
     model = TripRoute
     template_name = "tripRoute/triproute_detail.html"
 
-class TripRouteUpdateView(UpdateView):
+class TripRouteUpdateView(ClerkOrManagerRequiredMixin, UpdateView):
     model = TripRoute
-    fields = (
-        "trip",
-        "route",
-        "actual_time_min",
-    )
+    fields = ("trip", "route", "actual_time_min")
     template_name = "tripRoute/triproute_edit.html"
 
     def form_valid(self, form):
@@ -557,9 +480,7 @@ class TripRouteUpdateView(UpdateView):
         log_change(self.request, self.object, message="updated", action_flag=CHANGE)
         return response
 
-
-
-class TripRouteDeleteView(DeleteView):
+class TripRouteDeleteView(ClerkOrManagerRequiredMixin, DeleteView):
     model = TripRoute
     template_name = "tripRoute/triproute_delete.html"
     success_url = reverse_lazy("triproute_list")
@@ -569,53 +490,56 @@ class TripRouteDeleteView(DeleteView):
         log_change(self.request, self.object, message="deleted", action_flag=DELETION)
         return super().delete(request, *args, **kwargs)
 
-class TripRouteCreateView(CreateView):
+class TripRouteCreateView(ClerkOrManagerRequiredMixin, CreateView):
     model = TripRoute
     template_name = "tripRoute/triproute_new.html"
-    fields = ['route']  # Exclude 'trip' since we auto-assign it
+    fields = ['route']
 
     def form_valid(self, form):
-        trip_id = self.kwargs.get('trip_id')  # Get trip_id from the URL
-        form.instance.trip_id = trip_id  # Assign trip automatically
+        trip_id = self.kwargs.get('trip_id')
+        form.instance.trip_id = trip_id
         response = super().form_valid(form)
         log_change(self.request, self.object, message="created", action_flag=ADDITION)
         return response
     
     def get_success_url(self):
-        return reverse('trip_detail', kwargs={'pk': self.object.trip.id})  # Redirect to trip details page
+        return reverse('trip_detail', kwargs={'pk': self.object.trip.id})
 
+# Reporting Views
+@login_required
+@user_passes_test(is_driver_clerk_or_manager, login_url='/accounts/login/')
 def driver_leaderboard(request):
-    """Display the overall driver leaderboard"""
-    leaderboard = DriverLeaderboard.objects.all()[:10]  # Top 10 drivers
+    """Display the overall driver leaderboard - accessible to drivers, clerks, and managers"""
+    leaderboard = DriverLeaderboard.objects.all()[:10]
     recent_rankings = MonthlyDriverRanking.objects.select_related().order_by('-month', 'rank')[:15]
     
     context = {
         'leaderboard': leaderboard,
         'recent_rankings': recent_rankings,
+        'is_manager': is_manager(request.user),
+        'is_clerk': is_clerk(request.user),
+        'is_driver': is_driver(request.user),
     }
     return render(request, 'reporting/leaderboard.html', context)
 
 @login_required
+@user_passes_test(is_manager, login_url='/accounts/login/')
 def latest_report_download(request):
-    """Download the latest report from the reports folder in BASE_DIR"""
+    """Download the latest report - managers only"""
     
-    # Since reports is in BASE_DIR/reports
     reports_dir = os.path.join(settings.BASE_DIR, 'reports')
     
     if not os.path.exists(reports_dir):
         return JsonResponse({'error': 'Reports directory not found'}, status=404)
     
-    # Get all PDF files in reports directory
     pdf_files = glob.glob(os.path.join(reports_dir, '*.pdf'))
     
     if not pdf_files:
         return JsonResponse({'error': 'No reports available'}, status=404)
     
-    # Get the most recent file by modification time
     latest_file = max(pdf_files, key=os.path.getmtime)
     
     try:
-        # Return file response
         response = FileResponse(
             open(latest_file, 'rb'),
             content_type='application/pdf',
@@ -627,10 +551,10 @@ def latest_report_download(request):
         return JsonResponse({'error': f'Error serving file: {str(e)}'}, status=500)
 
 @login_required
+@user_passes_test(is_manager, login_url='/accounts/login/')
 def reports_info(request):
-    """Get information about available reports"""
+    """Get information about available reports - managers only"""
     
-    # Get the triplog app directory
     triplog_config = apps.get_app_config('triplog')
     app_path = triplog_config.path
     reports_dir = os.path.join(app_path, 'reports')
@@ -638,13 +562,11 @@ def reports_info(request):
     if not os.path.exists(reports_dir):
         return JsonResponse({'error': 'Reports directory not found'}, status=404)
     
-    # Get all PDF files in reports directory
     pdf_files = glob.glob(os.path.join(reports_dir, '*.pdf'))
     
     if not pdf_files:
         return JsonResponse({'reports': [], 'latest': None})
     
-    # Get file information
     reports_info = []
     for file_path in pdf_files:
         file_stat = os.stat(file_path)
@@ -655,9 +577,7 @@ def reports_info(request):
             'path': file_path
         })
     
-    # Sort by modification time (newest first)
     reports_info.sort(key=lambda x: x['modified'], reverse=True)
-    
     latest_report = reports_info[0] if reports_info else None
     
     return JsonResponse({
@@ -666,18 +586,16 @@ def reports_info(request):
         'total_count': len(reports_info)
     })
 
-
 @login_required
+@user_passes_test(is_manager, login_url='/accounts/login/')
 def predictive_analytics_dashboard(request):
-    """Predictive analytics dashboard view"""
+    """Predictive analytics dashboard view - managers only"""
     
-    # Generate fresh analysis
     try:
         call_command('generate_predictive_analysis')
     except Exception as e:
         print(f"Error generating analysis: {e}")
     
-    # Load analysis results
     results_path = os.path.join('reports', 'predictive_analysis.json')
     analysis_data = {}
     
@@ -693,8 +611,9 @@ def predictive_analytics_dashboard(request):
     return render(request, 'reporting/predictive_analytics.html', context)
 
 @login_required
+@user_passes_test(is_manager, login_url='/accounts/login/')
 def predictive_analysis_api(request):
-    """API endpoint for predictive analysis data"""
+    """API endpoint for predictive analysis data - managers only"""
     
     results_path = os.path.join('reports', 'predictive_analysis.json')
     

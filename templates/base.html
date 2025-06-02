@@ -1,4 +1,5 @@
 {% load static %}
+{% load user_groups %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,6 +13,7 @@
 
 <body>
     <div class="container">
+        {% if user.is_authenticated %}
         <!-- Sidebar -->
         <aside class="sidebar">
             <div onclick="window.location.href='/';" style="cursor: pointer;" class="sidebar-header">
@@ -20,13 +22,16 @@
             </div>
 
             <div class="sidebar-menu">
+                {% if user|is_clerk_or_manager %}
                 <div class="menu-category">Main</div>
                 <div class="menu-item active" onclick="window.location.href='/app'">
                     <i class="icon-home"></i>
                     <span>Dashboard</span>
                 </div>
+                {% endif %}
 
                 <div class="menu-category">Operations</div>
+                {% if user|is_clerk_or_manager %}
                 <div class="menu-item" onclick="toggleSubmenu('trip-ai-menu')">
                     <i class="icon-chevron"></i>
                     <span>Trip AI</span>
@@ -47,6 +52,7 @@
                             Drivers</div>
                     </div>
                 </div>
+                {% endif %}
 
                 <div class="menu-item" onclick="navigateToDriverAvailability();">
                     <i class="icon-availability"></i>
@@ -60,15 +66,18 @@
                 </div>
             </div>
         </aside>
+        {% endif %}
 
         <!-- Main Content -->
         <main class="main-content">
             <!-- Navbar -->
             <nav class="navbar">
+                {% if user|is_clerk_or_manager %}
                 <ul class="nav-links">
                     <li><a href="{% url 'product_list'  %}" class="btn btn-secondary">Products</a></li>
                     <li><a href="{% url 'route_list'  %}" class="btn btn-secondary">Routes</a></li>
                 </ul>
+                {% endif %}
                 <a href="/admin" class="btn btn-secondary" target=" _blank">Admin</a>
 
                 <div class="user-actions">
