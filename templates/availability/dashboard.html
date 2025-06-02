@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Driver Availability{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Driver Availability Dashboard</h1>
+        {% if is_driver %}
+        <a href="{% url 'drivers:update_availability' %}" class="btn btn-primary">
+            <i class="fas fa-edit"></i> Update My Availability
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-6 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Available Drivers</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ available_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Unavailable Drivers</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ unavailable_count }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-times fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Driver Status Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-users mr-2"></i>Driver Status
+                {% if is_clerk %}(Clerk View - Click to toggle availability){% endif %}
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Driver Name</th>
+                            <th>Username</th>
+                            <th>Assigned Truck</th>
+                            <th>Contact</th>
+                            <th>Status</th>
+                            <th>Last Updated</th>
+                            {% if is_clerk %}<th>Notes</th>{% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for availability in availabilities %}
+                        <tr class="{% if availability.is_available %}table-success-light{% else %}table-danger-light{% endif %}">
+                            <td>{{ availability.triplog_driver.name }}</td>
+                            <td>{{ availability.user.username }}</td>
+                            <td>{{ availability.triplog_driver.assigned_truck|default:"Not assigned" }}</td>
+                            <td>{{ availability.triplog_driver.contact }}</td>
+                            <td>
+                                {% if is_clerk %}
+                                <button class="btn btn-sm toggle-availability btn-outline-{% if availability.is_available %}success{% else %}danger{% endif %}" 
+                                        data-driver-id="{{ availability.id }}"
+                                        data-driver-name="{{ availability.triplog_driver.name }}">
+                                    {% if availability.is_available %}
+                                        <i class="fas fa-check-circle mr-1"></i>
+                                        <span class="badge badge-success">Available</span>
+                                    {% else %}
+                                        <i class="fas fa-times-circle mr-1"></i>
+                                        <span class="badge badge-danger">Unavailable</span>
+                                    {% endif %}
+                                </button>
+                                {% else %}
+                                {% if availability.is_available %}
+                                    <span class="badge badge-success badge-pill">
+                                        <i class="fas fa-check-circle mr-1"></i>Available
+                                    </span>
+                                {% else %}
+                                    <span class="badge badge-danger badge-pill">
+                                        <i class="fas fa-times-circle mr-1"></i>Unavailable
+                                    </span>
+                                {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>{{ availability.last_updated|date:"M d, Y H:i" }}</td>
+                            {% if is_clerk %}
+                            <td>
+                                <small class="text-muted">{{ availability.notes|default:"No notes" }}</small>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="{% if is_clerk %}7{% else %}6{% endif %}" class="text-center text-muted">
+                                No driver availability records found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Driver's Own Status (if driver) -->
+    {% if is_driver and driver_availability %}
+    <div class="card shadow mb-4 {% if driver_availability.is_available %}border-success{% else %}border-danger{% endif %}">
+        <div class="card-header py-3 {% if driver_availability.is_available %}bg-success text-white{% else %}bg-danger text-white{% endif %}">
+            <h6 class="m-0 font-weight-bold">
+                <i class="fas fa-user mr-2"></i>Your Current Status
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Status:
+                        {% if driver_availability.is_available %}
+                        <span class="badge badge-success badge-lg">
+                            <i class="fas fa-check-circle mr-2"></i>Available
+                        </span>
+                        {% else %}
+                        <span class="badge badge-danger badge-lg">
+                            <i class="fas fa-times-circle mr-2"></i>Unavailable
+                        </span>
+                        {% endif %}
+                    </h5>
+                    <p><strong>Last Updated:</strong> {{ driver_availability.last_updated|date:"M d, Y H:i" }}</p>
+                    {% if driver_availability.notes %}
+                    <p><strong>Notes:</strong> {{ driver_availability.notes }}</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 text-right">
+                    <a href="{% url 'drivers:update_availability' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-edit mr-2"></i>Update Status
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if is_clerk %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggleButtons = document.querySelectorAll('.toggle-availability');
+
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const driverId = this.dataset.driverId;
+                const driverName = this.dataset.driverName;
+
+                if (confirm(`Toggle availability for ${driverName}?`)) {
+                    fetch('{% url "drivers:toggle_availability" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({
+                            driver_id: driverId
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Update the badge and button styling
+                                const badge = this.querySelector('span.badge');
+                                const icon = this.querySelector('i');
+                                
+                                if (data.is_available) {
+                                    badge.className = 'badge badge-success';
+                                    badge.innerHTML = '<i class="fas fa-check-circle mr-1"></i>Available';
+                                    this.className = 'btn btn-sm toggle-availability btn-outline-success';
+                                } else {
+                                    badge.className = 'badge badge-danger';
+                                    badge.innerHTML = '<i class="fas fa-times-circle mr-1"></i>Unavailable';
+                                    this.className = 'btn btn-sm toggle-availability btn-outline-danger';
+                                }
+
+                                // Show success message
+                                showMessage('success', data.message);
+
+                                // Update summary counts
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1000);
+                            } else {
+                                showMessage('error', data.message);
+                            }
+                        })
+                        .catch(error => {
+                            showMessage('error', 'Error updating availability: ' + error);
+                        });
+                }
+            });
+        });
+
+        function showMessage(type, message) {
+            // Create a temporary alert
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check' : 'exclamation-triangle'} mr-2"></i>
+            ${message}
+            <button type="button" class="close" data-dismiss="alert">
+                <span>&times;</span>
+            </button>
+        `;
+
+            // Insert at top of container
+            const container = document.querySelector('.container-fluid');
+            container.insertBefore(alertDiv, container.firstChild);
+
+            // Auto-dismiss after 3 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+    });
+</script>
+{% endif %}
+
+<style>
+    /* Custom badge styling */
+    .badge-lg {
+        font-size: 1.1em;
+        padding: 0.6em 1em;
+    }
+
+    /* Bootstrap badge colors */
+    .badge-success {
+        background-color: #28a745 !important;
+        color: white !important;
+    }
+
+    .badge-danger {
+        background-color: #dc3545 !important;
+        color: white !important;
+    }
+
+    /* Toggle button styling */
+    .toggle-availability {
+        border: 1px solid;
+        padding: 5px 10px;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-availability:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Table row highlighting */
+    .table-success-light {
+        background-color: rgba(40, 167, 69, 0.1) !important;
+    }
+
+    .table-danger-light {
+        background-color: rgba(220, 53, 69, 0.1) !important;
+    }
+
+    /* Border colors for driver status card */
+    .border-success {
+        border-color: #28a745 !important;
+        border-width: 2px !important;
+    }
+
+    .border-danger {
+        border-color: #dc3545 !important;
+        border-width: 2px !important;
+    }
+
+    /* Header background colors */
+    .bg-success {
+        background-color: #28a745 !important;
+    }
+
+    .bg-danger {
+        background-color: #dc3545 !important;
+    }
+
+    /* Ensure icons are visible */
+    .fas {
+        color: inherit;
+    }
+
+    /* Button outline styling */
+    .btn-outline-success {
+        color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-outline-success:hover {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .btn-outline-danger {
+        color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+</style>
+{% endblock %}

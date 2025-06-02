@@ -24,4 +24,5 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("", include("pages.urls")),
     path("app/", include("triplog.urls")),
+    path('availability/', include('drivers.urls')),
 ]

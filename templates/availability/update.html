@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Availability{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Update Your Availability</h1>
+        <a href="{% url 'drivers:availability_dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-user mr-2"></i>{{ driver_availability.triplog_driver.name }}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Current Status Display -->
+                        <div class="mb-4 p-3 bg-light rounded">
+                            <h6 class="font-weight-bold">Current Status:</h6>
+                            {% if driver_availability.is_available %}
+                            <span class="badge badge-success badge-lg">Available</span>
+                            {% else %}
+                            <span class="badge badge-danger badge-lg">Unavailable</span>
+                            {% endif %}
+                            <small class="text-muted d-block mt-2">
+                                Last updated: {{ driver_availability.last_updated|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+
+                        <!-- Availability Selection -->
+                        <div class="form-group">
+                            <label class="font-weight-bold">Set Your Availability:</label>
+                            <div class="mt-2">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="is_available" id="available"
+                                        value="true" {% if driver_availability.is_available %}checked{% endif %}>
+                                    <label class="form-check-label text-success" for="available">
+                                        <i class="fas fa-check-circle mr-1"></i>Available
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="is_available" id="unavailable"
+                                        value="false" {% if not driver_availability.is_available %}checked{% endif %}>
+                                    <label class="form-check-label text-danger" for="unavailable">
+                                        <i class="fas fa-times-circle mr-1"></i>Unavailable
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="form-group">
+                            <label for="notes" class="font-weight-bold">Notes (Optional):</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3"
+                                placeholder="Add any notes about your availability status...">{{ driver_availability.notes }}</textarea>
+                            <small class="form-text text-muted">
+                                You can add details like expected return time, reason for unavailability, etc.
+                            </small>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="form-group text-center">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save mr-2"></i>Update Availability
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Driver Info Card -->
+            <div class="card shadow mt-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">Your Driver Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Name:</strong> {{ driver_availability.triplog_driver.name }}</p>
+                            <p><strong>Contact:</strong> {{ driver_availability.triplog_driver.contact }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Username:</strong> {{ driver_availability.user.username }}</p>
+                            <p><strong>Assigned Truck:</strong> {{ driver_availability.triplog_driver.assigned_truck|default:"Not assigned" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .badge-lg {
+        font-size: 1.1em;
+        padding: 0.5em 0.75em;
+    }
+
+    .form-check-label {
+        font-size: 1.1em;
+        cursor: pointer;
+    }
+
+    .form-check-input:checked+.form-check-label {
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

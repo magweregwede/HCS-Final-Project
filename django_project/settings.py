@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "triplog",
     "accounts",
     "pages",
+    "drivers",
     # Third Party
     "import_export",
     "simple_history",

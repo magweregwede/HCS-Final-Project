@@ -48,7 +48,7 @@
                     </div>
                 </div>
 
-                <div class="menu-item" onclick="loadContent('driver-availability')">
+                <div class="menu-item" onclick="navigateToDriverAvailability();">
                     <i class="icon-availability"></i>
                     <span>Driver Availability</span>
                 </div>
@@ -154,6 +154,11 @@
     </footer>
 
     <script src="{% static 'js/trip.js' %}"></script>
+    <script>
+        function navigateToDriverAvailability() {
+            window.location.href = '{% url "drivers:availability_dashboard" %}';
+        }
+    </script>
 </body>
 
 </html>

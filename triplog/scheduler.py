@@ -40,44 +40,55 @@ def update_leaderboard():
     except Exception as e:
         logger.error(f"Update leaderboard job failed: {e}")
 
+def run_stats_and_leaderboard():
+    """Function to run export historical stats first, then update leaderboard"""
+    try:
+        logger.info("Starting combined stats and leaderboard update job...")
+        
+        # First: Export historical stats
+        logger.info("Step 1: Running export historical stats...")
+        call_command('export_hist_stats')
+        logger.info("Export historical stats completed successfully")
+        
+        # Second: Update leaderboard (which may depend on the exported stats)
+        logger.info("Step 2: Running update leaderboard...")
+        call_command('update_leaderboard')
+        logger.info("Update leaderboard completed successfully")
+        
+        logger.info("Combined stats and leaderboard update job completed successfully")
+    except Exception as e:
+        logger.error(f"Combined stats and leaderboard update job failed: {e}")
+
 def start_scheduler():
     """Start the background scheduler"""
     scheduler = BackgroundScheduler()
     
     # Test job - every 2 minutes
-    scheduler.add_job(
-        func=run_monthly_report,
-        trigger="interval",
-        # minutes=2,
-        hours=1,
-        id='test_monthly_report'
-    )
+    # scheduler.add_job(
+    #     func=run_monthly_report,
+    #     trigger="interval",
+    #     # minutes=2,
+    #     hours=1,
+    #     id='test_monthly_report'
+    # )
     
-    # Export historical stats - every 15 minutes
+    # Combined job - export historical stats then update leaderboard - every 15 minutes
     scheduler.add_job(
-        func=export_historical_stats,
+        func=run_stats_and_leaderboard,
         trigger="interval",
         minutes=15,
-        id='export_hist_stats'
-    )
-    
-    # Update leaderboard - every 15 minutes
-    scheduler.add_job(
-        func=update_leaderboard,
-        trigger="interval",
-        minutes=15,
-        id='update_leaderboard'
+        id='stats_and_leaderboard'
     )
     
     # Production job - 25th of every month at 9 AM
-    # scheduler.add_job(
-    #     func=run_monthly_report,
-    #     trigger="cron",
-    #     day=25,
-    #     hour=9,
-    #     minute=0,
-    #     id='monthly_report'
-    # )
+    scheduler.add_job(
+        func=run_monthly_report,
+        trigger="cron",
+        day=25,
+        hour=9,
+        minute=0,
+        id='monthly_report'
+    )
     
     scheduler.start()
     
@@ -86,8 +97,7 @@ def start_scheduler():
     
     logger.info("Scheduler started successfully")
     logger.info("Jobs scheduled:")
-    logger.info("- Monthly report: Every 1 hour (test mode)")
-    logger.info("- Export historical stats: Every 15 minutes")
-    logger.info("- Update leaderboard: Every 15 minutes")
+    logger.info("- Monthly report: 25th of every month at 9 AM")
+    logger.info("- Combined stats export and leaderboard update: Every 15 minutes")
     
     return scheduler

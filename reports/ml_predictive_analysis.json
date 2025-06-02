@@ -32,13 +32,13 @@
         "ml_used": true
       },
       "Mazoe Cream Soda": {
-        "current_weekly_avg": 15.67,
-        "trend_percentage": 780.0,
-        "next_week_prediction": 15.1,
+        "current_weekly_avg": 23.0,
+        "trend_percentage": 66.67,
+        "next_week_prediction": 20.4,
         "confidence_level": "Low",
-        "seasonal_pattern": "Weekly patterns detected",
-        "ml_model_accuracy": -68.144,
-        "prediction_error": 4.41,
+        "seasonal_pattern": "Moderate seasonality",
+        "ml_model_accuracy": -94.726,
+        "prediction_error": 5.07,
         "ml_used": true
       },
       "Bonaqua 5L Water": {
@@ -72,13 +72,13 @@
         "ml_used": true
       },
       "Minute Maid": {
-        "current_weekly_avg": 19.67,
-        "trend_percentage": 25.0,
-        "next_week_prediction": 9.8,
-        "confidence_level": "High",
-        "seasonal_pattern": "Moderate seasonality",
-        "ml_model_accuracy": 0.742,
-        "prediction_error": 3.16,
+        "current_weekly_avg": 28.33,
+        "trend_percentage": 47.73,
+        "next_week_prediction": 41.8,
+        "confidence_level": "Low",
+        "seasonal_pattern": "Strong monthly seasonality",
+        "ml_model_accuracy": -1.225,
+        "prediction_error": 5.25,
         "ml_used": true
       }
     },
@@ -93,16 +93,6 @@
         "prediction_error": 0.86,
         "ml_used": true
       },
-      "Mazoe Cream Soda": {
-        "current_weekly_avg": 15.67,
-        "trend_percentage": 780.0,
-        "next_week_prediction": 15.1,
-        "confidence_level": "Low",
-        "seasonal_pattern": "Weekly patterns detected",
-        "ml_model_accuracy": -68.144,
-        "prediction_error": 4.41,
-        "ml_used": true
-      },
       "Mazoe Peach": {
         "current_weekly_avg": 18.67,
         "trend_percentage": 69.23,
@@ -111,6 +101,16 @@
         "seasonal_pattern": "Low seasonality",
         "ml_model_accuracy": -0.765,
         "prediction_error": 4.6,
+        "ml_used": true
+      },
+      "Mazoe Cream Soda": {
+        "current_weekly_avg": 23.0,
+        "trend_percentage": 66.67,
+        "next_week_prediction": 20.4,
+        "confidence_level": "Low",
+        "seasonal_pattern": "Moderate seasonality",
+        "ml_model_accuracy": -94.726,
+        "prediction_error": 5.07,
         "ml_used": true
       }
     },
@@ -148,7 +148,6 @@
     },
     "recommendations": [
       "ML MODELS ACTIVE: 8/8 products analyzed with machine learning",
-      "ML HIGH CONFIDENCE: Increase inventory for Minute Maid - 25.0% growth predicted",
       "ML HIGH CONFIDENCE: Review Schweppes Still Water 500ml demand - -32.1% decline predicted"
     ],
     "ml_model_performance": {
@@ -210,21 +209,21 @@
         ]
       },
       "Mazoe Cream Soda": {
-        "mae": 4.41,
-        "r2_score": -68.144,
-        "data_points": 14,
+        "mae": 5.07,
+        "r2_score": -94.726,
+        "data_points": 15,
         "top_features": [
           [
+            "month",
+            0.2953370296217987
+          ],
+          [
             "week",
-            0.36036729995985384
+            0.28715125662205043
           ],
           [
             "days_since_start",
-            0.19938191226125948
-          ],
-          [
-            "month",
-            0.19615388583426036
+            0.19831376164369052
           ]
         ]
       },
@@ -286,21 +285,21 @@
         ]
       },
       "Minute Maid": {
-        "mae": 3.16,
-        "r2_score": 0.742,
-        "data_points": 16,
+        "mae": 5.25,
+        "r2_score": -1.225,
+        "data_points": 17,
         "top_features": [
           [
-            "week",
-            0.20151861498811172
-          ],
-          [
-            "quantity_lag_1",
-            0.19390136150564516
-          ],
-          [
             "month",
-            0.18758845881304684
+            0.3016601717766406
+          ],
+          [
+            "week",
+            0.2321922716769267
+          ],
+          [
+            "days_since_start",
+            0.2199536453166487
           ]
         ]
       }
@@ -309,13 +308,13 @@
     "debug_info": {
       "ml_models_used": 8,
       "fallback_used": 0,
-      "total_records": 123,
+      "total_records": 125,
       "products_found": 8
     }
   },
   "route_efficiency_forecast": {
     "route_efficiency_scores": {
-      "Harare \u2192 Bulawayo": 1.639,
+      "Harare \u2192 Bulawayo": 1.579,
       "Harare \u2192 Masvingo": 1.027,
       "Harare \u2192 Mutare": 1.001,
       "Harare \u2192 Gweru": 1.078,
@@ -326,11 +325,11 @@
     },
     "detailed_analysis": {
       "Harare \u2192 Bulawayo": {
-        "efficiency_score": 1.639,
-        "avg_delay_minutes": -135.89,
-        "predicted_optimal_time": 377.93,
-        "data_points": 9,
-        "improvement_potential": -13.12,
+        "efficiency_score": 1.579,
+        "avg_delay_minutes": -123.9,
+        "predicted_optimal_time": 430.25,
+        "data_points": 10,
+        "improvement_potential": -24.31,
         "ml_used": true
       },
       "Harare \u2192 Masvingo": {
@@ -400,11 +399,11 @@
         "ml_used": true
       },
       "Harare \u2192 Bulawayo": {
-        "efficiency_score": 1.639,
-        "avg_delay_minutes": -135.89,
-        "predicted_optimal_time": 377.93,
-        "data_points": 9,
-        "improvement_potential": -13.12,
+        "efficiency_score": 1.579,
+        "avg_delay_minutes": -123.9,
+        "predicted_optimal_time": 430.25,
+        "data_points": 10,
+        "improvement_potential": -24.31,
         "ml_used": true
       },
       "Bulawayo \u2192 Masvingo": {
@@ -446,10 +445,10 @@
       "Harare \u2192 Bulawayo": {
         "feature_importance": {
           "route__distance_km": 0.0,
-          "hour": 0.7690368311054857,
-          "day_of_week": 0.23096316889451435
+          "hour": 0.9654592032189953,
+          "day_of_week": 0.034540796781004704
         },
-        "model_score": 0.695
+        "model_score": 0.385
       },
       "Harare \u2192 Masvingo": {
         "feature_importance": {
@@ -510,7 +509,7 @@
     },
     "optimization_recommendations": [
       "ML MODELS ACTIVE: 8/8 routes analyzed with machine learning",
-      "ML BENCHMARK: Use Harare \u2192 Bulawayo as efficiency model - 1.64 efficiency score",
+      "ML BENCHMARK: Use Harare \u2192 Bulawayo as efficiency model - 1.58 efficiency score",
       "ML OPPORTUNITY: Review Harare \u2192 Gweru scheduling - 15.8% improvement possible",
       "ML HIGH PRIORITY: Optimize Bulawayo \u2192 Gweru - 21.9% time reduction potential",
       "ML BENCHMARK: Use Harare \u2192 Victoria Falls as efficiency model - 2.47 efficiency score",
@@ -520,11 +519,11 @@
     "debug_info": {
       "ml_models_used": 8,
       "fallback_used": 0,
-      "total_records": 67,
+      "total_records": 68,
       "routes_found": 9
     }
   },
-  "generated_at": "2025-05-31T12:08:10.999549",
+  "generated_at": "2025-06-02T17:47:01.492705",
   "ml_models_used": [
     "Random Forest",
     "Gradient Boosting",

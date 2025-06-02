@@ -171,10 +171,27 @@ def get_trip_stats():
         if weekly_total_completed_trips > 0 else 0
     )
     
-    # Current available drivers and active deliveries
-    stats['available_drivers'] = Driver.objects.annotate(
-        ongoing_trips=Count('trips', filter=Q(trips__status="Ongoing"))
-    ).filter(ongoing_trips=0).count()
+    # Updated available drivers calculation: exclude both drivers on active deliveries AND unavailable drivers
+    try:
+        from drivers.models import DriverAvailability
+        
+        # Get drivers that are marked as available in the availability system
+        available_driver_ids = DriverAvailability.objects.filter(
+            is_available=True
+        ).values_list('triplog_driver_id', flat=True)
+        
+        # From those available drivers, exclude ones with ongoing trips
+        stats['available_drivers'] = Driver.objects.filter(
+            id__in=available_driver_ids
+        ).annotate(
+            ongoing_trips=Count('trips', filter=Q(trips__status="Ongoing"))
+        ).filter(ongoing_trips=0).count()
+        
+    except ImportError:
+        # Fallback if drivers app is not available - just exclude drivers with ongoing trips
+        stats['available_drivers'] = Driver.objects.annotate(
+            ongoing_trips=Count('trips', filter=Q(trips__status="Ongoing"))
+        ).filter(ongoing_trips=0).count()
     
     stats['active_deliveries'] = Trip.objects.filter(status="Ongoing").count()
     
