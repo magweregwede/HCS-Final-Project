@@ -212,7 +212,7 @@ class DriverUpdateView(ClerkOrManagerRequiredMixin, UpdateView):
         log_change(self.request, self.object, message="updated", action_flag=CHANGE)
         return response
 
-class DriverDeleteView(ClerkOrManagerRequiredMixin, DeleteView):
+class DriverDeleteView(ManagerRequiredMixin, DeleteView):
     model = Driver
     template_name = "driver/driver_delete.html"
     success_url = reverse_lazy("driver_list")
@@ -222,7 +222,7 @@ class DriverDeleteView(ClerkOrManagerRequiredMixin, DeleteView):
         log_change(self.request, self.object, message="deleted", action_flag=DELETION)
         return super().delete(request, *args, **kwargs)
 
-class DriverCreateView(ClerkOrManagerRequiredMixin, CreateView):
+class DriverCreateView(ManagerRequiredMixin, CreateView):
     model = Driver
     template_name = "driver/driver_new.html"
     fields = ("name", "license_number", "assigned_truck", "contact")
@@ -353,7 +353,7 @@ class ProductDetailView(ClerkOrManagerRequiredMixin, DetailView):
     model = Product
     template_name = "product/product_detail.html"
 
-class ProductUpdateView(ClerkOrManagerRequiredMixin, UpdateView):
+class ProductUpdateView(ManagerRequiredMixin, UpdateView):
     model = Product
     fields = ("name", "category", "description")
     template_name = "product/product_edit.html"
@@ -363,7 +363,7 @@ class ProductUpdateView(ClerkOrManagerRequiredMixin, UpdateView):
         log_change(self.request, self.object, message="updated", action_flag=CHANGE)
         return response
 
-class ProductDeleteView(ClerkOrManagerRequiredMixin, DeleteView):
+class ProductDeleteView(ManagerRequiredMixin, DeleteView):
     model = Product
     template_name = "product/product_delete.html"
     success_url = reverse_lazy("product_list")
@@ -373,7 +373,7 @@ class ProductDeleteView(ClerkOrManagerRequiredMixin, DeleteView):
         log_change(self.request, self.object, message="deleted", action_flag=DELETION)
         return super().delete(request, *args, **kwargs)
 
-class ProductCreateView(ClerkOrManagerRequiredMixin, CreateView):
+class ProductCreateView(ManagerRequiredMixin, CreateView):
     model = Product
     template_name = "product/product_new.html"
     fields = ("name", "category", "description")

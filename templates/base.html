@@ -13,6 +13,21 @@
 
 <body>
     <div class="container">
+        <!-- Add messages display section here -->
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                <i class="icon-{{ message.tags }}"></i>
+                {{ message }}
+                <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'">
+                    <span>&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         {% if user.is_authenticated %}
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -161,6 +176,129 @@
             <p>&copy; Mark Magweregwede HCS Capstone Project R188837Y All rights reserved. | v1.0</p>
         </div>
     </footer>
+
+    <!-- Add CSS for messages -->
+    <style>
+        .messages-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .alert-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+
+        .alert-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        .alert-info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            font-weight: bold;
+            line-height: 1;
+            color: inherit;
+            opacity: 0.5;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .btn-close:hover {
+            opacity: 1;
+        }
+
+        .icon-error::before {
+            content: "⚠️";
+        }
+
+        .icon-warning::before {
+            content: "⚠️";
+        }
+
+        .icon-success::before {
+            content: "✅";
+        }
+
+        .icon-info::before {
+            content: "ℹ️";
+        }
+    </style>
+
+    <!-- Auto-hide messages after 5 seconds -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function (alert) {
+                setTimeout(function () {
+                    alert.style.animation = 'slideOut 0.3s ease-in forwards';
+                    setTimeout(function () {
+                        alert.style.display = 'none';
+                    }, 300);
+                }, 5000);
+            });
+        });
+
+        // Add slideOut animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 
     <script src="{% static 'js/trip.js' %}"></script>
     <script>

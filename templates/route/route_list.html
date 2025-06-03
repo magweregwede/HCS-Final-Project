@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load time_filters %}
+{% load user_groups %}
 
 {% block title %}Routes{% endblock %}
 
@@ -9,9 +10,11 @@
         <div class="card-header">
             <h2><i class="fas fa-route"></i> Routes</h2>
             {% if user.is_authenticated %}
+            {% if user|is_manager %}
             <a href="{% url 'route_new' %}" class="btn btn-primary btn-sm">
                 <i class="fas fa-plus"></i> New Route
             </a>
+            {% endif %}
             {% endif %}
         </div>
         <div class="card-body">
@@ -22,7 +25,9 @@
                             <th>Route</th>
                             <th>Distance</th>
                             <th>Estimated Time</th>
+                            {% if user|is_manager %}
                             <th class="actions">Actions</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -30,13 +35,14 @@
                         <tr>
                             <td>
                                 <a href="{{ route.get_absolute_url }}" class="route-link">
-                                    <i class="fas fa-map-marker-alt text-danger"></i> {{ route.origin }}
+                                    <i class="fas fa-map-marker-alt text-danger"></i> {{ route.origin }} -
                                     <i class="fas fa-arrow-right mx-2 text-muted"></i>
-                                    <i class="fas fa-flag-checkered text-success"></i> {{ route.destination }}
+                                    <i class="fas fa-flag-checkered text-success"></i> - {{ route.destination }}
                                 </a>
                             </td>
                             <td>{{ route.distance_km }} km</td>
                             <td>{{ route.estimated_time_min|minutes_to_hours|default:"-" }} min</td>
+                            {% if user|is_manager %}
                             <td class="actions">
                                 {% if user.is_authenticated %}
                                 <a href="{% url 'route_edit' route.pk %}" class="btn btn-sm btn-edit">
@@ -47,6 +53,7 @@
                                 </a>
                                 {% endif %}
                             </td>
+                            {% endif %}
                         </tr>
                         {% empty %}
                         <tr>

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
+{% load user_groups %}
 
 {% block title %}Reporting{% endblock %}
 
@@ -19,6 +20,7 @@
         </div>
     </a>
 
+    {% if user|is_clerk_or_manager %}
     <a href="javascript:void(0);" class="card-link" onclick="downloadLatestReport()">
         <div class="stat-card clickable-card">
             <h3>Generate Latest Report</h3>
@@ -35,7 +37,9 @@
             </div>
         </div>
     </a>
+    {% endif %}
 
+    {% if user|is_manager %}
     <!-- Update the Predictive Analytics card -->
     <a href="{% url 'predictive_analytics_dashboard' %}" class="card-link">
         <div class="stat-card clickable-card">
@@ -50,6 +54,7 @@
             </div>
         </div>
     </a>
+    {% endif %}
 </div>
 
 
@@ -66,7 +71,7 @@
         spinner.style.display = 'block';
         smallText.textContent = 'Searching for latest report...';
 
-        // Make request to get latest report - FIX: Add leading slash
+        // Make request to get latest report
         fetch('/app/api/latest-report/', {
             method: 'GET',
             headers: {

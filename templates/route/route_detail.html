@@ -1,14 +1,18 @@
 {% extends "base.html" %}
+{% load user_groups %}
 
 {% block content %}
 <div class="route">
-    <h2>{{ object.origin }} => {{ object.destination }}</h2>
-    <p>by {{ object.distance_km }} | {{ object.estimated_time_min }}</p>
+    <h2>{{ object.origin }} to {{ object.destination }}</h2>
+    <p>Distance (km) {{ object.distance_km }}</p>
 </div>
+<br>
 <div>
+    {% if user|is_manager %}
     <p><a href="{% url 'route_edit' route.pk %}">Edit</a>
         <a href="{% url 'route_delete' route.pk %}">Delete</a>
     </p>
+    {% endif %}
     <p>Back to <a href="{% url 'route_list' %}">All Routes</a>.</p>
 </div>
 {% endblock content %}

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load user_groups %}
 
 {% block title %}Truck Companies{% endblock %}
 
@@ -8,9 +9,11 @@
         <div class="card-header">
             <h2><i class="fas fa-truck-moving"></i> Truck Companies</h2>
             {% if user.is_authenticated %}
+            {% if user|is_manager %}
             <a href="{% url 'truckcompany_new' %}" class="btn btn-primary btn-sm">
                 <i class="fas fa-plus"></i> New Company
             </a>
+            {% endif %}
             {% endif %}
         </div>
         <div class="card-body">
@@ -20,7 +23,9 @@
                         <tr>
                             <th>Company Name</th>
                             <th>Contact</th>
+                            {% if user|is_manager %}
                             <th class="actions">Actions</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -34,12 +39,14 @@
                             <td>{{ truckcompany.contact }}</td>
                             <td class="actions">
                                 {% if user.is_authenticated %}
+                                {% if user|is_manager %}
                                 <a href="{% url 'truckcompany_edit' truckcompany.pk %}" class="btn btn-sm btn-edit">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>
                                 <a href="{% url 'truckcompany_delete' truckcompany.pk %}" class="btn btn-sm btn-delete">
                                     <i class="fas fa-trash-alt"></i> Delete
                                 </a>
+                                {% endif %}
                                 {% endif %}
                             </td>
                         </tr>
@@ -49,9 +56,11 @@
                                 <i class="fas fa-truck-moving fa-3x"></i>
                                 <p>No truck companies found</p>
                                 {% if user.is_authenticated %}
+                                {% if user|is_manager %}
                                 <a href="{% url 'truckcompany_new' %}" class="btn btn-primary mt-2">
                                     <i class="fas fa-plus"></i> Add First Company
                                 </a>
+                                {% endif %}
                                 {% endif %}
                             </td>
                         </tr>
