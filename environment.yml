@@ -1,4 +1,4 @@
-name: HCS-env22
+name: HCS-env
 channels:
   - conda-forge
   - defaults
