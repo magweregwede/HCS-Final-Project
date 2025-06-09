@@ -7,7 +7,24 @@ This capstone project focuses on designing a web-based real-time logistics data 
 # Setup
 ## Setup a Conda environment ...
 
-1. Install miniconda by selecting the installer that fits your OS version. Once it is installed you may have to restart your terminal (closing your terminal and opening again)
-1. In this directory, open terminal
-1. conda env create -f environment.yml
-1. conda activate HCS-env
+1. Install Miniconda by selecting the installer that fits your OS version. Once it is installed, you may have to restart your terminal (close it and open again).
+
+2. Navigate to this directory in the terminal.
+
+3. Run the following command to create the conda environment:
+
+   ```bash
+   conda env create -f environment.yml
+   ```
+
+4. Activate the environment:
+
+   ```bash
+   conda activate HCS-env
+   ```
+
+5. Run the Django development server:
+
+   ```bash
+   python manage.py runserver
+   ```
