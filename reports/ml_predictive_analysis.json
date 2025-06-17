@@ -12,13 +12,13 @@
         "ml_used": true
       },
       "Mazoe Orange Crush": {
-        "current_weekly_avg": 12.67,
-        "trend_percentage": -47.5,
-        "next_week_prediction": 15.61,
+        "current_weekly_avg": 13.67,
+        "trend_percentage": 63.64,
+        "next_week_prediction": 14.08,
         "confidence_level": "Low",
         "seasonal_pattern": "Low seasonality",
-        "ml_model_accuracy": -1.748,
-        "prediction_error": 2.74,
+        "ml_model_accuracy": -2.679,
+        "prediction_error": 4.08,
         "ml_used": true
       },
       "Mazoe Peach": {
@@ -125,16 +125,6 @@
         "prediction_error": 5.12,
         "ml_used": true
       },
-      "Mazoe Orange Crush": {
-        "current_weekly_avg": 12.67,
-        "trend_percentage": -47.5,
-        "next_week_prediction": 15.61,
-        "confidence_level": "Low",
-        "seasonal_pattern": "Low seasonality",
-        "ml_model_accuracy": -1.748,
-        "prediction_error": 2.74,
-        "ml_used": true
-      },
       "Mazoe Blackberry Syrup": {
         "current_weekly_avg": 21.0,
         "trend_percentage": -47.06,
@@ -143,6 +133,16 @@
         "seasonal_pattern": "Strong monthly seasonality",
         "ml_model_accuracy": -87.936,
         "prediction_error": 5.93,
+        "ml_used": true
+      },
+      "Schweppes Still Water 500ml": {
+        "current_weekly_avg": 34.33,
+        "trend_percentage": -32.1,
+        "next_week_prediction": 31.9,
+        "confidence_level": "High",
+        "seasonal_pattern": "Moderate seasonality",
+        "ml_model_accuracy": 0.836,
+        "prediction_error": 2.8,
         "ml_used": true
       }
     },
@@ -171,21 +171,21 @@
         ]
       },
       "Mazoe Orange Crush": {
-        "mae": 2.74,
-        "r2_score": -1.748,
-        "data_points": 20,
+        "mae": 4.08,
+        "r2_score": -2.679,
+        "data_points": 21,
         "top_features": [
           [
             "quantity_rolling_avg",
-            0.574688503954576
+            0.3209134543138652
           ],
           [
             "day_of_week",
-            0.17786287649721386
+            0.26404595018191357
           ],
           [
-            "days_since_start",
-            0.13614873684100015
+            "quantity_lag_1",
+            0.18727332683112902
           ]
         ]
       },
@@ -308,7 +308,7 @@
     "debug_info": {
       "ml_models_used": 8,
       "fallback_used": 0,
-      "total_records": 125,
+      "total_records": 126,
       "products_found": 8
     }
   },
@@ -523,7 +523,7 @@
       "routes_found": 9
     }
   },
-  "generated_at": "2025-06-02T17:47:01.492705",
+  "generated_at": "2025-06-17T12:33:45.690373",
   "ml_models_used": [
     "Random Forest",
     "Gradient Boosting",

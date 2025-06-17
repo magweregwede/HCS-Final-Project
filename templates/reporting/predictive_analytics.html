@@ -38,10 +38,11 @@
                                     <td>
                                         {% if data.trend_percentage > 0 %}
                                         <span class="text-success">+{{ data.trend_percentage }}%</span>
-                                        {% elif data.trend_percentage < 0 %} <span class="text-danger">{{ data.trend_percentage }}%</span>
-                                            {% else %}
-                                            <span class="text-secondary">0%</span>
-                                            {% endif %}
+                                        {% elif data.trend_percentage < 0 %}
+                                        <span class="text-danger">{{ data.trend_percentage }}%</span>
+                                        {% else %}
+                                        <span class="text-secondary">0%</span>
+                                        {% endif %}
                                     </td>
                                     <td>{{ data.next_week_prediction }}</td>
                                 </tr>
@@ -52,13 +53,16 @@
 
                     <!-- Recommendations -->
                     {% if analysis_data.product_distribution_forecast.recommendations %}
-                    <div class="mt-4">
-                        <h4 class="font-weight-bold text-info">ML Recommendations</h4>
-                        {% for recommendation in analysis_data.product_distribution_forecast.recommendations %}
-                        <div class="alert alert-light border-left-info">
-                            <i class="fas fa-lightbulb mr-2"></i><li style="font-size: large;">{{ recommendation }} <br></li>
+                    <div class="mt-4 recommendations-section permanent-display">
+                        <h4 class="font-weight-bold text-info">Recommendations</h4>
+                        <div class="recommendations-container">
+                            {% for recommendation in analysis_data.product_distribution_forecast.recommendations %}
+                            <div>
+                                <i class="fas fa-lightbulb mr-2"></i>
+                                <span>{{ recommendation }}</span>
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
                     {% endif %}
 
@@ -74,17 +78,25 @@
     <div class="row">
         <div class="col-lg-12 mb-4">
             <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h3 class="m-0 font-weight-bold text-warning">Route Efficiency</h3>
+                </div>
                 <div class="card-body">
-                    <!-- ML Recommendations -->
+                    <!-- ML Route Optimization -->
                     {% if analysis_data.route_efficiency_forecast.optimization_recommendations %}
-                    <div class="mt-4">
-                        <h4 class="font-weight-bold text-warning">ML Route Optimization</h4>
-                        {% for recommendation in analysis_data.route_efficiency_forecast.optimization_recommendations %}
-                        <div class="alert alert-light border-left-warning">
-                            <i class="fas fa-route mr-2"></i><li style="font-size: large;">{{ recommendation }} <br></li>
+                    <div class="mt-4 recommendations-section permanent-display">
+                        <h4 class="font-weight-bold text-warning">Route Optimization</h4>
+                        <div class="recommendations-container">
+                            {% for recommendation in analysis_data.route_efficiency_forecast.optimization_recommendations %}
+                            <div>
+                                <i class="fas fa-route mr-2"></i>
+                                <span>{{ recommendation }}</span>
+                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
                     </div>
+                    {% else %}
+                    <p class="text-muted">No route optimization recommendations available.</p>
                     {% endif %}
                 </div>
             </div>
@@ -94,6 +106,7 @@
 </div>
 
 <style>
+    /* Border styles */
     .border-left-primary {
         border-left: 0.25rem solid #4e73df !important;
     }
@@ -113,5 +126,186 @@
     .border-left-danger {
         border-left: 0.25rem solid #e74a3b !important;
     }
+
+    /* Permanent display styles for recommendations */
+    .recommendations-section {
+        position: relative !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        z-index: 1 !important;
+        margin-top: 20px !important;
+        margin-bottom: 20px !important;
+        /* Remove debug styles */
+        background-color: transparent !important;
+        border: none !important;
+        min-height: auto !important;
+    }
+
+    .permanent-display {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
+
+    .recommendations-container {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative !important;
+    }
+
+    .recommendation-item {
+        display: flex !important;
+        align-items: flex-start !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        margin-bottom: 10px !important;
+        padding: 15px !important;
+        background-color: #f8f9fa !important;
+        border-radius: 5px !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        position: relative !important;
+        z-index: 2 !important;
+        /* Prevent any hiding animations */
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
+
+    .recommendation-text {
+        flex: 1 !important;
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+        color: #333 !important;
+        font-weight: 500 !important;
+        margin-left: 5px !important;
+    }
+
+    /* Override any potential hiding styles */
+    .alert.alert-light {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative !important;
+    }
+
+    /* Prevent JavaScript from hiding these elements */
+    .recommendations-section * {
+        pointer-events: auto !important;
+        user-select: text !important;
+    }
+
+    /* Enhanced visibility for icons */
+    .recommendation-item i {
+        color: inherit !important;
+        font-size: 18px !important;
+        margin-right: 10px !important;
+        margin-top: 2px !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Specific styling for different recommendation types */
+    .border-left-info .recommendation-item {
+        border-left: 4px solid #36b9cc !important;
+    }
+
+    .border-left-warning .recommendation-item {
+        border-left: 4px solid #f6c23e !important;
+    }
+
+    /* Ensure recommendations are always on top */
+    .card-body {
+        position: relative !important;
+        z-index: 1 !important;
+    }
 </style>
+
+<script>
+    // Prevent any JavaScript from hiding the recommendations
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('Setting up permanent recommendations display...');
+        
+        // Force recommendations to stay visible
+        const recommendationSections = document.querySelectorAll('.recommendations-section');
+        console.log('Found', recommendationSections.length, 'recommendation sections');
+
+        recommendationSections.forEach(function (section, index) {
+            console.log('Setting up section', index + 1);
+            
+            // Create a mutation observer to prevent hiding
+            const observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.type === 'attributes' &&
+                        (mutation.attributeName === 'style' ||
+                            mutation.attributeName === 'class')) {
+                        // Reset visibility if something tries to hide it
+                        const target = mutation.target;
+                        if (target.style.display === 'none' ||
+                            target.style.visibility === 'hidden' ||
+                            target.style.opacity === '0') {
+                            target.style.display = 'block';
+                            target.style.visibility = 'visible';
+                            target.style.opacity = '1';
+                            console.log('Forced recommendation section to stay visible');
+                        }
+                    }
+                });
+            });
+
+            observer.observe(section, {
+                attributes: true,
+                subtree: true
+            });
+
+            // Force initial visibility with multiple properties
+            section.style.display = 'block';
+            section.style.visibility = 'visible';
+            section.style.opacity = '1';
+            section.style.position = 'relative';
+            section.style.zIndex = '1';
+            
+            // Also force visibility on all child elements
+            const children = section.querySelectorAll('*');
+            children.forEach(function(child) {
+                if (child.classList.contains('recommendation-item') || 
+                    child.classList.contains('recommendations-container')) {
+                    child.style.display = 'block';
+                    child.style.visibility = 'visible';
+                    child.style.opacity = '1';
+                }
+            });
+        });
+
+        console.log('Recommendations protection activated for', recommendationSections.length, 'sections');
+    });
+
+    // Override any external scripts that might hide elements
+    const originalHide = Element.prototype.hide;
+    if (originalHide) {
+        Element.prototype.hide = function () {
+            if (this.classList.contains('recommendations-section') ||
+                this.closest('.recommendations-section')) {
+                console.log('Blocked attempt to hide recommendation section');
+                return;
+            }
+            return originalHide.call(this);
+        };
+    }
+
+    // Also override jQuery hide if it exists
+    if (typeof $ !== 'undefined' && $.fn.hide) {
+        const originalJQueryHide = $.fn.hide;
+        $.fn.hide = function() {
+            return this.each(function() {
+                if ($(this).hasClass('recommendations-section') || 
+                    $(this).closest('.recommendations-section').length > 0) {
+                    console.log('Blocked jQuery hide attempt on recommendation section');
+                    return;
+                }
+                originalJQueryHide.call($(this));
+            });
+        };
+    }
+</script>
 {% endblock %}
