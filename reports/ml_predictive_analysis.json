@@ -2,304 +2,294 @@
   "product_distribution_forecast": {
     "predictions": {
       "Mazoe Blackberry Syrup": {
-        "current_weekly_avg": 21.0,
-        "trend_percentage": -47.06,
-        "next_week_prediction": 24.2,
+        "current_weekly_avg": 25.0,
+        "trend_percentage": 85.19,
+        "next_week_prediction": 24.77,
         "confidence_level": "Low",
         "seasonal_pattern": "Strong monthly seasonality",
-        "ml_model_accuracy": -87.936,
-        "prediction_error": 5.93,
+        "ml_model_accuracy": 0.216,
+        "prediction_error": 0.76,
         "ml_used": true
       },
       "Mazoe Orange Crush": {
-        "current_weekly_avg": 13.67,
-        "trend_percentage": 63.64,
-        "next_week_prediction": 14.08,
+        "current_weekly_avg": 26.33,
+        "trend_percentage": 63.89,
+        "next_week_prediction": 33.2,
         "confidence_level": "Low",
         "seasonal_pattern": "Low seasonality",
-        "ml_model_accuracy": -2.679,
-        "prediction_error": 4.08,
+        "ml_model_accuracy": -1.965,
+        "prediction_error": 3.79,
         "ml_used": true
       },
       "Mazoe Peach": {
-        "current_weekly_avg": 18.67,
-        "trend_percentage": 69.23,
-        "next_week_prediction": 22.72,
+        "current_weekly_avg": 18.33,
+        "trend_percentage": -6.82,
+        "next_week_prediction": 20.2,
         "confidence_level": "Low",
         "seasonal_pattern": "Low seasonality",
-        "ml_model_accuracy": -0.765,
-        "prediction_error": 4.6,
+        "ml_model_accuracy": -0.007,
+        "prediction_error": 5.36,
         "ml_used": true
       },
       "Mazoe Cream Soda": {
-        "current_weekly_avg": 23.0,
-        "trend_percentage": 66.67,
-        "next_week_prediction": 20.4,
-        "confidence_level": "Low",
-        "seasonal_pattern": "Moderate seasonality",
-        "ml_model_accuracy": -94.726,
-        "prediction_error": 5.07,
+        "current_weekly_avg": 26.67,
+        "trend_percentage": 22.22,
+        "next_week_prediction": 22.5,
+        "confidence_level": "High",
+        "seasonal_pattern": "Low seasonality",
+        "ml_model_accuracy": 0.895,
+        "prediction_error": 2.67,
         "ml_used": true
       },
       "Bonaqua 5L Water": {
-        "current_weekly_avg": 13.67,
-        "trend_percentage": 850.0,
-        "next_week_prediction": 14.9,
-        "confidence_level": "Low",
-        "seasonal_pattern": "Weekly patterns detected",
-        "ml_model_accuracy": -3.829,
-        "prediction_error": 0.86,
+        "current_weekly_avg": 22.0,
+        "trend_percentage": 7.89,
+        "next_week_prediction": 12.8,
+        "confidence_level": "Medium",
+        "seasonal_pattern": "Strong monthly seasonality",
+        "ml_model_accuracy": 0.607,
+        "prediction_error": 4.43,
         "ml_used": true
       },
       "Bonaqua 500ml Water": {
-        "current_weekly_avg": 6.33,
-        "trend_percentage": -90.32,
-        "next_week_prediction": 11.9,
-        "confidence_level": "Medium",
+        "current_weekly_avg": 6.67,
+        "trend_percentage": 0.0,
+        "next_week_prediction": 15.82,
+        "confidence_level": "Low",
         "seasonal_pattern": "Low seasonality",
-        "ml_model_accuracy": 0.311,
-        "prediction_error": 5.12,
+        "ml_model_accuracy": -0.187,
+        "prediction_error": 6.35,
         "ml_used": true
       },
       "Schweppes Still Water 500ml": {
-        "current_weekly_avg": 34.33,
-        "trend_percentage": -32.1,
-        "next_week_prediction": 31.9,
-        "confidence_level": "High",
-        "seasonal_pattern": "Moderate seasonality",
-        "ml_model_accuracy": 0.836,
-        "prediction_error": 2.8,
+        "current_weekly_avg": 29.0,
+        "trend_percentage": -15.07,
+        "next_week_prediction": 33.1,
+        "confidence_level": "Medium",
+        "seasonal_pattern": "Strong monthly seasonality",
+        "ml_model_accuracy": 0.521,
+        "prediction_error": 4.38,
         "ml_used": true
       },
       "Minute Maid": {
-        "current_weekly_avg": 28.33,
-        "trend_percentage": 47.73,
-        "next_week_prediction": 41.8,
+        "current_weekly_avg": 37.67,
+        "trend_percentage": 136.84,
+        "next_week_prediction": 44.0,
         "confidence_level": "Low",
-        "seasonal_pattern": "Strong monthly seasonality",
-        "ml_model_accuracy": -1.225,
-        "prediction_error": 5.25,
+        "seasonal_pattern": "Moderate seasonality",
+        "ml_model_accuracy": -3.179,
+        "prediction_error": 1.91,
         "ml_used": true
       }
     },
     "top_growth_products": {
-      "Bonaqua 5L Water": {
-        "current_weekly_avg": 13.67,
-        "trend_percentage": 850.0,
-        "next_week_prediction": 14.9,
-        "confidence_level": "Low",
-        "seasonal_pattern": "Weekly patterns detected",
-        "ml_model_accuracy": -3.829,
-        "prediction_error": 0.86,
-        "ml_used": true
-      },
-      "Mazoe Peach": {
-        "current_weekly_avg": 18.67,
-        "trend_percentage": 69.23,
-        "next_week_prediction": 22.72,
-        "confidence_level": "Low",
-        "seasonal_pattern": "Low seasonality",
-        "ml_model_accuracy": -0.765,
-        "prediction_error": 4.6,
-        "ml_used": true
-      },
-      "Mazoe Cream Soda": {
-        "current_weekly_avg": 23.0,
-        "trend_percentage": 66.67,
-        "next_week_prediction": 20.4,
+      "Minute Maid": {
+        "current_weekly_avg": 37.67,
+        "trend_percentage": 136.84,
+        "next_week_prediction": 44.0,
         "confidence_level": "Low",
         "seasonal_pattern": "Moderate seasonality",
-        "ml_model_accuracy": -94.726,
-        "prediction_error": 5.07,
+        "ml_model_accuracy": -3.179,
+        "prediction_error": 1.91,
+        "ml_used": true
+      },
+      "Mazoe Blackberry Syrup": {
+        "current_weekly_avg": 25.0,
+        "trend_percentage": 85.19,
+        "next_week_prediction": 24.77,
+        "confidence_level": "Low",
+        "seasonal_pattern": "Strong monthly seasonality",
+        "ml_model_accuracy": 0.216,
+        "prediction_error": 0.76,
+        "ml_used": true
+      },
+      "Mazoe Orange Crush": {
+        "current_weekly_avg": 26.33,
+        "trend_percentage": 63.89,
+        "next_week_prediction": 33.2,
+        "confidence_level": "Low",
+        "seasonal_pattern": "Low seasonality",
+        "ml_model_accuracy": -1.965,
+        "prediction_error": 3.79,
         "ml_used": true
       }
     },
     "declining_products": {
-      "Bonaqua 500ml Water": {
-        "current_weekly_avg": 6.33,
-        "trend_percentage": -90.32,
-        "next_week_prediction": 11.9,
-        "confidence_level": "Medium",
-        "seasonal_pattern": "Low seasonality",
-        "ml_model_accuracy": 0.311,
-        "prediction_error": 5.12,
-        "ml_used": true
-      },
-      "Mazoe Blackberry Syrup": {
-        "current_weekly_avg": 21.0,
-        "trend_percentage": -47.06,
-        "next_week_prediction": 24.2,
-        "confidence_level": "Low",
-        "seasonal_pattern": "Strong monthly seasonality",
-        "ml_model_accuracy": -87.936,
-        "prediction_error": 5.93,
-        "ml_used": true
-      },
       "Schweppes Still Water 500ml": {
-        "current_weekly_avg": 34.33,
-        "trend_percentage": -32.1,
-        "next_week_prediction": 31.9,
-        "confidence_level": "High",
-        "seasonal_pattern": "Moderate seasonality",
-        "ml_model_accuracy": 0.836,
-        "prediction_error": 2.8,
+        "current_weekly_avg": 29.0,
+        "trend_percentage": -15.07,
+        "next_week_prediction": 33.1,
+        "confidence_level": "Medium",
+        "seasonal_pattern": "Strong monthly seasonality",
+        "ml_model_accuracy": 0.521,
+        "prediction_error": 4.38,
+        "ml_used": true
+      },
+      "Mazoe Peach": {
+        "current_weekly_avg": 18.33,
+        "trend_percentage": -6.82,
+        "next_week_prediction": 20.2,
+        "confidence_level": "Low",
+        "seasonal_pattern": "Low seasonality",
+        "ml_model_accuracy": -0.007,
+        "prediction_error": 5.36,
         "ml_used": true
       }
     },
     "recommendations": [
       "ML MODELS ACTIVE: 8/8 products analyzed with machine learning",
-      "ML HIGH CONFIDENCE: Review Schweppes Still Water 500ml demand - -32.1% decline predicted"
+      "ML HIGH CONFIDENCE: Increase inventory for Mazoe Cream Soda - 22.2% growth predicted"
     ],
     "ml_model_performance": {
       "Mazoe Blackberry Syrup": {
-        "mae": 5.93,
-        "r2_score": -87.936,
-        "data_points": 16,
+        "mae": 0.76,
+        "r2_score": 0.216,
+        "data_points": 18,
         "top_features": [
           [
-            "quantity_rolling_avg",
-            0.44742521077188185
-          ],
-          [
             "month",
-            0.3121893033345661
+            0.3030517126386886
           ],
           [
-            "week",
-            0.09763270285781471
+            "quantity_rolling_avg",
+            0.27516523157460415
+          ],
+          [
+            "quantity_lag_1",
+            0.1594195817517889
           ]
         ]
       },
       "Mazoe Orange Crush": {
-        "mae": 4.08,
-        "r2_score": -2.679,
-        "data_points": 21,
+        "mae": 3.79,
+        "r2_score": -1.965,
+        "data_points": 23,
         "top_features": [
           [
             "quantity_rolling_avg",
-            0.3209134543138652
+            0.540721985341991
           ],
           [
             "day_of_week",
-            0.26404595018191357
+            0.16150472756048184
           ],
           [
-            "quantity_lag_1",
-            0.18727332683112902
+            "days_since_start",
+            0.13620944983123512
           ]
         ]
       },
       "Mazoe Peach": {
-        "mae": 4.6,
-        "r2_score": -0.765,
-        "data_points": 14,
+        "mae": 5.36,
+        "r2_score": -0.007,
+        "data_points": 16,
         "top_features": [
           [
             "quantity_lag_1",
-            0.5198310698683106
+            0.37077312946157054
+          ],
+          [
+            "day_of_week",
+            0.2213841581693157
           ],
           [
             "quantity_rolling_avg",
-            0.3115098913329159
-          ],
-          [
-            "week",
-            0.0666787834726765
+            0.14885203557920307
           ]
         ]
       },
       "Mazoe Cream Soda": {
-        "mae": 5.07,
-        "r2_score": -94.726,
-        "data_points": 15,
+        "mae": 2.67,
+        "r2_score": 0.895,
+        "data_points": 17,
         "top_features": [
           [
-            "month",
-            0.2953370296217987
-          ],
-          [
-            "week",
-            0.28715125662205043
+            "quantity_rolling_avg",
+            0.29924857382466313
           ],
           [
             "days_since_start",
-            0.19831376164369052
+            0.29898170965609383
+          ],
+          [
+            "week",
+            0.19641569130327424
           ]
         ]
       },
       "Bonaqua 5L Water": {
-        "mae": 0.86,
-        "r2_score": -3.829,
-        "data_points": 15,
-        "top_features": [
-          [
-            "week",
-            0.32557940276545627
-          ],
-          [
-            "days_since_start",
-            0.2910669536482835
-          ],
-          [
-            "month",
-            0.18131858725693162
-          ]
-        ]
-      },
-      "Bonaqua 500ml Water": {
-        "mae": 5.12,
-        "r2_score": 0.311,
-        "data_points": 13,
-        "top_features": [
-          [
-            "quantity_lag_1",
-            0.31494738138063605
-          ],
-          [
-            "week",
-            0.26787816617572463
-          ],
-          [
-            "month",
-            0.1451600117968112
-          ]
-        ]
-      },
-      "Schweppes Still Water 500ml": {
-        "mae": 2.8,
-        "r2_score": 0.836,
-        "data_points": 15,
-        "top_features": [
-          [
-            "quantity_rolling_avg",
-            0.3109585098694077
-          ],
-          [
-            "week",
-            0.17252933813705437
-          ],
-          [
-            "month",
-            0.15977604707929322
-          ]
-        ]
-      },
-      "Minute Maid": {
-        "mae": 5.25,
-        "r2_score": -1.225,
+        "mae": 4.43,
+        "r2_score": 0.607,
         "data_points": 17,
         "top_features": [
           [
             "month",
-            0.3016601717766406
+            0.35805151171705285
           ],
           [
             "week",
-            0.2321922716769267
+            0.2769970654444811
           ],
           [
             "days_since_start",
-            0.2199536453166487
+            0.174840472577793
+          ]
+        ]
+      },
+      "Bonaqua 500ml Water": {
+        "mae": 6.35,
+        "r2_score": -0.187,
+        "data_points": 14,
+        "top_features": [
+          [
+            "quantity_rolling_avg",
+            0.5182023848721835
+          ],
+          [
+            "quantity_lag_1",
+            0.20393076766270832
+          ],
+          [
+            "days_since_start",
+            0.19426592828578326
+          ]
+        ]
+      },
+      "Schweppes Still Water 500ml": {
+        "mae": 4.38,
+        "r2_score": 0.521,
+        "data_points": 16,
+        "top_features": [
+          [
+            "month",
+            0.33161988702377354
+          ],
+          [
+            "quantity_rolling_avg",
+            0.28348142163221357
+          ],
+          [
+            "week",
+            0.173845053695905
+          ]
+        ]
+      },
+      "Minute Maid": {
+        "mae": 1.91,
+        "r2_score": -3.179,
+        "data_points": 19,
+        "top_features": [
+          [
+            "quantity_rolling_avg",
+            0.30566913220470676
+          ],
+          [
+            "month",
+            0.23745183807457387
+          ],
+          [
+            "week",
+            0.20328610055521987
           ]
         ]
       }
@@ -308,20 +298,20 @@
     "debug_info": {
       "ml_models_used": 8,
       "fallback_used": 0,
-      "total_records": 126,
+      "total_records": 140,
       "products_found": 8
     }
   },
   "route_efficiency_forecast": {
     "route_efficiency_scores": {
       "Harare \u2192 Bulawayo": 1.579,
-      "Harare \u2192 Masvingo": 1.027,
-      "Harare \u2192 Mutare": 1.001,
+      "Harare \u2192 Masvingo": 0.966,
+      "Harare \u2192 Mutare": 1.025,
       "Harare \u2192 Gweru": 1.078,
       "Bulawayo \u2192 Gweru": 0.549,
-      "Harare \u2192 Victoria Falls": 2.468,
-      "Bulawayo \u2192 Masvingo": 1.221,
-      "Harare \u2192 Chinhoyi": 1.001
+      "Harare \u2192 Victoria Falls": 2.263,
+      "Bulawayo \u2192 Masvingo": 1.226,
+      "Harare \u2192 Chinhoyi": 0.943
     },
     "detailed_analysis": {
       "Harare \u2192 Bulawayo": {
@@ -333,19 +323,19 @@
         "ml_used": true
       },
       "Harare \u2192 Masvingo": {
-        "efficiency_score": 1.027,
-        "avg_delay_minutes": 9300.8,
-        "predicted_optimal_time": 35558.8,
-        "data_points": 10,
-        "improvement_potential": -269.22,
+        "efficiency_score": 0.966,
+        "avg_delay_minutes": 11340.08,
+        "predicted_optimal_time": 35422.41,
+        "data_points": 12,
+        "improvement_potential": -203.53,
         "ml_used": true
       },
       "Harare \u2192 Mutare": {
-        "efficiency_score": 1.001,
-        "avg_delay_minutes": 13.88,
-        "predicted_optimal_time": 350.33,
-        "data_points": 8,
-        "improvement_potential": -11.62,
+        "efficiency_score": 1.025,
+        "avg_delay_minutes": 5.3,
+        "predicted_optimal_time": 276.41,
+        "data_points": 10,
+        "improvement_potential": 9.46,
         "ml_used": true
       },
       "Harare \u2192 Gweru": {
@@ -365,37 +355,37 @@
         "ml_used": true
       },
       "Harare \u2192 Victoria Falls": {
-        "efficiency_score": 2.468,
-        "avg_delay_minutes": -191.83,
-        "predicted_optimal_time": 961.2,
-        "data_points": 6,
-        "improvement_potential": -41.74,
+        "efficiency_score": 2.263,
+        "avg_delay_minutes": -168.57,
+        "predicted_optimal_time": 1458.25,
+        "data_points": 7,
+        "improvement_potential": -107.9,
         "ml_used": true
       },
       "Bulawayo \u2192 Masvingo": {
-        "efficiency_score": 1.221,
-        "avg_delay_minutes": -55.71,
-        "predicted_optimal_time": 340.2,
-        "data_points": 7,
-        "improvement_potential": -4.91,
+        "efficiency_score": 1.226,
+        "avg_delay_minutes": -58.75,
+        "predicted_optimal_time": 300.2,
+        "data_points": 8,
+        "improvement_potential": 6.55,
         "ml_used": true
       },
       "Harare \u2192 Chinhoyi": {
-        "efficiency_score": 1.001,
-        "avg_delay_minutes": 43.38,
-        "predicted_optimal_time": 104.4,
-        "data_points": 8,
-        "improvement_potential": 48.67,
+        "efficiency_score": 0.943,
+        "avg_delay_minutes": 58.22,
+        "predicted_optimal_time": 142.05,
+        "data_points": 9,
+        "improvement_potential": 34.91,
         "ml_used": true
       }
     },
     "best_performing_routes": {
       "Harare \u2192 Victoria Falls": {
-        "efficiency_score": 2.468,
-        "avg_delay_minutes": -191.83,
-        "predicted_optimal_time": 961.2,
-        "data_points": 6,
-        "improvement_potential": -41.74,
+        "efficiency_score": 2.263,
+        "avg_delay_minutes": -168.57,
+        "predicted_optimal_time": 1458.25,
+        "data_points": 7,
+        "improvement_potential": -107.9,
         "ml_used": true
       },
       "Harare \u2192 Bulawayo": {
@@ -407,29 +397,29 @@
         "ml_used": true
       },
       "Bulawayo \u2192 Masvingo": {
-        "efficiency_score": 1.221,
-        "avg_delay_minutes": -55.71,
-        "predicted_optimal_time": 340.2,
-        "data_points": 7,
-        "improvement_potential": -4.91,
+        "efficiency_score": 1.226,
+        "avg_delay_minutes": -58.75,
+        "predicted_optimal_time": 300.2,
+        "data_points": 8,
+        "improvement_potential": 6.55,
         "ml_used": true
       }
     },
     "worst_performing_routes": {
-      "Harare \u2192 Mutare": {
-        "efficiency_score": 1.001,
-        "avg_delay_minutes": 13.88,
-        "predicted_optimal_time": 350.33,
-        "data_points": 8,
-        "improvement_potential": -11.62,
+      "Harare \u2192 Masvingo": {
+        "efficiency_score": 0.966,
+        "avg_delay_minutes": 11340.08,
+        "predicted_optimal_time": 35422.41,
+        "data_points": 12,
+        "improvement_potential": -203.53,
         "ml_used": true
       },
       "Harare \u2192 Chinhoyi": {
-        "efficiency_score": 1.001,
-        "avg_delay_minutes": 43.38,
-        "predicted_optimal_time": 104.4,
-        "data_points": 8,
-        "improvement_potential": 48.67,
+        "efficiency_score": 0.943,
+        "avg_delay_minutes": 58.22,
+        "predicted_optimal_time": 142.05,
+        "data_points": 9,
+        "improvement_potential": 34.91,
         "ml_used": true
       },
       "Bulawayo \u2192 Gweru": {
@@ -453,18 +443,18 @@
       "Harare \u2192 Masvingo": {
         "feature_importance": {
           "route__distance_km": 0.0,
-          "hour": 0.5785104248390361,
-          "day_of_week": 0.42148957516096386
+          "hour": 0.5973445388265386,
+          "day_of_week": 0.40265546117346146
         },
-        "model_score": 0.804
+        "model_score": 0.802
       },
       "Harare \u2192 Mutare": {
         "feature_importance": {
           "route__distance_km": 0.0,
-          "hour": 0.3770119999910912,
-          "day_of_week": 0.6229880000089089
+          "hour": 0.3355805721793176,
+          "day_of_week": 0.6644194278206825
         },
-        "model_score": 0.513
+        "model_score": 0.514
       },
       "Harare \u2192 Gweru": {
         "feature_importance": {
@@ -485,26 +475,26 @@
       "Harare \u2192 Victoria Falls": {
         "feature_importance": {
           "route__distance_km": 0.0,
-          "hour": 0.396298172260396,
-          "day_of_week": 0.6037018277396041
+          "hour": 0.6070869681469779,
+          "day_of_week": 0.39291303185302207
         },
-        "model_score": 0.847
+        "model_score": 0.83
       },
       "Bulawayo \u2192 Masvingo": {
         "feature_importance": {
           "route__distance_km": 0.0,
-          "hour": 0.25553595592584555,
-          "day_of_week": 0.7444640440741546
+          "hour": 0.5110902059794256,
+          "day_of_week": 0.4889097940205744
         },
-        "model_score": 0.714
+        "model_score": 0.661
       },
       "Harare \u2192 Chinhoyi": {
         "feature_importance": {
           "route__distance_km": 0.0,
-          "hour": 0.5824575412246762,
-          "day_of_week": 0.4175424587753239
+          "hour": 0.6701703518010155,
+          "day_of_week": 0.32982964819898447
         },
-        "model_score": 0.761
+        "model_score": 0.408
       }
     },
     "optimization_recommendations": [
@@ -512,18 +502,18 @@
       "ML BENCHMARK: Use Harare \u2192 Bulawayo as efficiency model - 1.58 efficiency score",
       "ML OPPORTUNITY: Review Harare \u2192 Gweru scheduling - 15.8% improvement possible",
       "ML HIGH PRIORITY: Optimize Bulawayo \u2192 Gweru - 21.9% time reduction potential",
-      "ML BENCHMARK: Use Harare \u2192 Victoria Falls as efficiency model - 2.47 efficiency score",
-      "ML BENCHMARK: Use Bulawayo \u2192 Masvingo as efficiency model - 1.22 efficiency score",
-      "ML HIGH PRIORITY: Optimize Harare \u2192 Chinhoyi - 48.7% time reduction potential"
+      "ML BENCHMARK: Use Harare \u2192 Victoria Falls as efficiency model - 2.26 efficiency score",
+      "ML BENCHMARK: Use Bulawayo \u2192 Masvingo as efficiency model - 1.23 efficiency score",
+      "ML HIGH PRIORITY: Optimize Harare \u2192 Chinhoyi - 34.9% time reduction potential"
     ],
     "debug_info": {
       "ml_models_used": 8,
       "fallback_used": 0,
-      "total_records": 68,
+      "total_records": 76,
       "routes_found": 9
     }
   },
-  "generated_at": "2025-06-17T12:33:45.690373",
+  "generated_at": "2025-07-02T12:39:35.212325",
   "ml_models_used": [
     "Random Forest",
     "Gradient Boosting",
